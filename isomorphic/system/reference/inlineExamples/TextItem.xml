@@ -1,5 +1,0 @@
-<DynamicForm width="300">
-    <fields>
-        <field title="Item" type="text"/>
-    </fields>
-</DynamicForm>

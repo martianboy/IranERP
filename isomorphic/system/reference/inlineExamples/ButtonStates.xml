@@ -1,7 +1,0 @@
-<HLayout membersMargin="10">
-    <members>
-        <Button title="Enabled"/>
-        <Button title="Selected" selected="true"/>
-        <Button title="Disabled" enabled="false"/>
-    </members>
-</HLayout>

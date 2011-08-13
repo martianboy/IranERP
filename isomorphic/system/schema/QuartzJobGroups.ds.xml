@@ -1,9 +1,0 @@
-<DataSource ID="QuartzJobGroups"
-			dbName="ANY_DATA"
-			serverConstructor="com.isomorphic.scheduler.QuartzJobGroups"
->
-
-	<fields>
-		<field name="name" type="string" primaryKey="true"/>
-	</fields>
-</DataSource>
