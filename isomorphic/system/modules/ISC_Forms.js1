@@ -1,0 +1,99 @@
+,isc.A.getHeight=function isc_FormItem_getHeight(){return this.height}
+,isc.A.getVisibleHeight=function isc_FormItem_getVisibleHeight(){var _1=this.isDrawn()?this.getOuterElement():null;if(_1==null){this.logInfo("getVisibleHeight() - unable to determine drawn height for this item -"+" returning pixel height from specified height","sizing");if(isc.isA.Number(this.height)){return this.height}
+this.logWarn("getVisibleHeight() unable to determine height - returning zero","sizing");return 0}
+return _1.offsetHeight}
+,isc.A.getIconHeight=function isc_FormItem_getIconHeight(_1){if(_1==null&&this.icons!=null&&this.icons.getLength()>0)_1=this.icons[0];else if(!this.$145(_1)){this.logWarn("getIconHeight() passed invalid icon:"+isc.Log.echoAll(_1));return null}
+return(_1.height!=null?_1.height:this.iconHeight)}
+,isc.A.getTitleVisibleHeight=function isc_FormItem_getTitleVisibleHeight(){var _1=this.isDrawn()&&this.form?isc.Element.get(this.form.$427(this)):null;if(_1==null){var _2="getTitleHeight() Unable to determine position for "+(this.name==null?"this item ":this.name)+". ";if(this.isDrawn()){_2+="This method is not supported by items of type "+this.getClass()}else{_2+="Position cannot be determined before the element is drawn"}
+_2+=" - returning zero.";this.form.logWarn(_2);return 0}
+return isc.Element.getVisibleHeight(_1)}
+,isc.A.getWidth=function isc_FormItem_getWidth(){return this.width}
+,isc.A.getVisibleWidth=function isc_FormItem_getVisibleWidth(){var _1=this.isDrawn()?this.getOuterElement():null;if(_1==null){this.logInfo("getVisibleWidth() - unable to determine drawn width for this item -"+" returning pixel width from specified width","sizing");if(isc.isA.Number(this.width)){return this.width}else if(this.form&&this.form.items.$8r!=null){return this.form.items.$8r[this.form.getItems().indexOf(this)]}
+this.logWarn("getVisibleWidth() unable to determine width - returning zero","sizing");return 0}
+return _1.offsetWidth}
+,isc.A.getVisibleTitleWidth=function isc_FormItem_getVisibleTitleWidth(){var _1=this.isDrawn()&&this.form?isc.Element.get(this.form.$427(this)):null;if(_1==null){this.logInfo("getVisibleTitleWidth() - unable to determine drawn width for this "+"item - returning 0","sizing");return 0}
+return _1.offsetWidth}
+,isc.A.getIconWidth=function isc_FormItem_getIconWidth(_1){if(_1==null&&this.icons!=null&&this.icons.getLength()>0)_1=this.icons[0];else if(!this.$145(_1)){this.logWarn("getIconWidth() passed invalid icon:"+isc.Log.echoAll(_1));return null}
+return(_1.width!=null?_1.width:this.iconWidth)}
+,isc.A.setHeight=function isc_FormItem_setHeight(_1){this.height=_1;this.redraw()}
+,isc.A.setWidth=function isc_FormItem_setWidth(_1){this.width=_1;this.redraw()}
+,isc.A.setLeft=function isc_FormItem_setLeft(_1){this.left=_1;this.redraw()}
+,isc.A.setTop=function isc_FormItem_setTop(_1){this.top=_1;this.redraw()}
+,isc.A.moved=function isc_FormItem_moved(){}
+,isc.A.visibilityChanged=function isc_FormItem_visibilityChanged(){}
+,isc.A.zIndexChanged=function isc_FormItem_zIndexChanged(){}
+,isc.A.getInactiveEditorHTML=function isc_FormItem_getInactiveEditorHTML(_1,_2,_3,_4){this.$68x=true;this.$68u=this.setupInactiveContext(_4);if(this.logIsDebugEnabled("inactiveEditorHTML")){this.logDebug("getInactiveEditorHTML() called - context passed in:"+this.echo(_4)+" generated context ID:"+this.$68u,"inactiveEditorHTML")}
+var _5=this.getStandaloneItemHTML(_1,_2,_3);delete this.$68u;delete this.$68x;return _5}
+,isc.A.setupInactiveContext=function isc_FormItem_setupInactiveContext(_1){if(_1==null)_1={};if(this.$68y())_1.isPrintHTML=true;var _2=this.$68w++;_1.inactiveContextID=_2;_1.formItem=this;if(!this.$68v)this.$68v={};this.$68v[_2]=_1;return _2}
+,isc.A.clearAllInactiveEditorContexts=function isc_FormItem_clearAllInactiveEditorContexts(){delete this.$68v}
+,isc.A.clearInactiveEditorContext=function isc_FormItem_clearInactiveEditorContext(_1){if(isc.isAn.Object(_1))_1=_1.inactiveContextID;if(this.$68v)delete this.$68v[_1]}
+,isc.A.$681=function isc_FormItem__getInactiveContextFromElement(_1){if(_1&&_1.id!=null&&this.$68v!=null){var _2=_1.id,_3=this.$557(_2);if(_3){var _4=_3.match(this.$682);if(_4){return this.$68v[_4[1]]}}}
+return null}
+,isc.A.isInactiveHTML=function isc_FormItem_isInactiveHTML(){if(this.parentItem&&this.parentItem.isInactiveHTML())return true;return this.$68y()||this.$68x}
+,isc.A.$68y=function isc_FormItem__isPrinting(){return this.containerWidget&&this.containerWidget.isPrinting}
+,isc.A.getStandaloneItemHTML=function isc_FormItem_getStandaloneItemHTML(_1,_2,_3){var _4=isc.SB.create(),_5=this.form;if(_5){if(this.$11e()){var _6=this.$11p(this.left),_7=this.$11p(this.top,true),_8=this.getInnerWidth(),_9=this.getInnerHeight();if(!isc.isA.Number(_6))_6=0;if(!isc.isA.Number(_7))_7=0;_4.append(this.$13a);_4.appendNumber(_6);_4.append(this.$13b);_4.appendNumber(_7);if(isc.isA.Number(_8)){_4.append(this.$13c);_4.appendNumber(_8)}
+if(isc.isA.Number(_9)){_4.append(this.$13d);_4.appendNumber(_9)}
+_4.append(this.$13e,this.$146(),this.$13f)}
+var _10=this.$13h,_11=_5.getID(),_12=this.getID();_10[1]=_11;_10[3]=_12;_10[5]=this.$qs(this.$13j);_4.append(_10);_4.append(this.getInnerHTML(_1,_2,_3,true));_4.append(this.$13i);if(this.$11e()){_4.append(this.$13g)}}
+return _4.release()}
+,isc.A.$146=function isc_FormItem__getAbsDivID(){return this.$qs(this.$13l)}
+,isc.A.getAbsDiv=function isc_FormItem_getAbsDiv(){if(this.$13m)return this.$13m;if(!this.isDrawn())return;this.$13m=isc.Element.get(this.$146());return this.$13m}
+,isc.A.$147=function isc_FormItem__hasExternalIcons(){var _1=this.icons;if(!_1)return false;for(var i=0;i<_1.length;i++){if(!_1[i].writeIntoItem)return true}
+return false}
+,isc.A.useDisabledEventMask=function isc_FormItem_useDisabledEventMask(){return(isc.Browser.isMoz&&this.hasDataElement())||(isc.Browser.isIE&&isc.isA.TextItem(this))}
+,isc.A.$148=function isc_FormItem__getEventMaskHTML(){var _1=this.$13n;_1[1]=this.$149();_1[3]=this.getHeight();_1[5]=this.getItemID();_1[7]=this.$qs("eventMask");return _1.join(isc.emptyString)}
+,isc.A.$43b=function isc_FormItem__getEventMaskElement(){return isc.Element.get(this.$qs("eventMask"))}
+,isc.A.$149=function isc_FormItem__getEventMaskWidth(){return this.getElementWidth()}
+,isc.A.getBrowserSpellCheck=function isc_FormItem_getBrowserSpellCheck(){if(this.browserSpellCheck!=null)return this.browserSpellCheck;return this.form.browserSpellCheck}
+,isc.A.$11d=function isc_FormItem__useHiddenDataElement(){return(this.shouldSaveValue&&!this.hasDataElement()&&this.shouldSubmitValue())}
+,isc.A.$15a=function isc_FormItem__getHiddenDataElementID(){return this.$qs(this.$13o)}
+,isc.A.$15b=function isc_FormItem__getHiddenDataElement(){return this.$15c(this.$13o)}
+,isc.A.$15c=function isc_FormItem__getHTMLPartHandle(_1){if(!this.isDrawn())return null;if(!this.$15d)this.$15d={};var _2=this.$15d[_1];if(_2==null){_2=isc.Element.get(this.$qs(_1));if(_2!=null)this.$15d[_1]=_2}
+return _2}
+,isc.A.$15e=function isc_FormItem__getControlTableID(){return this.$qs(this.$13p)}
+,isc.A.$15f=function isc_FormItem__getControlTableElement(){return this.$15c(this.$13p)}
+,isc.A.$15g=function isc_FormItem__getTextBoxID(){return this.$qs(this.$13q)}
+,isc.A.$15h=function isc_FormItem__getTextBoxElement(){if(this.hasDataElement()&&this.$15i)return this.getDataElement();return this.$15c(this.$13q)}
+,isc.A.$15j=function isc_FormItem__getPickerIconCellID(){return this.$qs(this.$13r)}
+,isc.A.$15k=function isc_FormItem__getPickerIconCellElement(){return this.$15c(this.$13r)}
+,isc.A.$15l=function isc_FormItem__getHiddenDataElementHTML(){return"<INPUT type='hidden' name='"+this.getFieldName()+"' ID='"+this.$15a()+"'>"}
+,isc.A.$59s=function isc_FormItem__getHintCellID(){return this.$qs(this.$59p)}
+,isc.A.$59t=function isc_FormItem__getHintCellElement(){return this.$15c(this.$59p)}
+,isc.A.updateState=function isc_FormItem_updateState(){if(!this.isDrawn())return;var _1=this.logIsDebugEnabled(this.$13s);if(this.containerWidget==this.form&&!this.$11e()){var _2=this.getCellStyle();if(_1)this.logDebug("About to apply basic cell style:"+_2,"FormItemStyling");var _3=this.getFormCell();if(_3)_3.className=_2;var _4=this.getOuterTableElement();if(_4)_4.className=_2;if(this.showTitle)this.form.updateTitleCellState(this)}
+if(this.showPickerIcon){var _5=this.getControlStyle(),_6=this.getPickerIconStyle();if(_1){this.logDebug("About to apply cell styles to control box and picker icon cell:"+[_5,_6],"FormItemStyling")}
+var _7=this.$15f();if(_7)_7.className=_5;var _8=this.$15k();if(_8)_8.className=_6}
+var _9=this.getTextBoxStyle();if(_1)this.logDebug("About to apply text box style:"+_9,"FormItemStyling");var _10=this.$15h();if(_10){_10.className=_9}
+if(this.$15m()&&_10){if(!this.$15n){var _11=this.getTextBoxWidth(),_12=this.getTextBoxHeight();_11+=isc.Element.getHBorderSize(_10)-2;_12+=isc.Element.getVBorderSize(_10)-2;var _13=this.$qs("focusOutline");isc.Element.insertAdjacentHTML(_10,"beforeBegin","<DIV ID='"+_13+(this.textBoxStyle?"' CLASS='"+this.textBoxStyle+"Focused'":"'")+" STYLE='background-image:none;background-color:transparent;position:absolute;width:"+_11+"px;height:"+_12+"px;visibility:hidden;border:1px dotted white;z-index:100;'>&nbsp;</DIV>");this.$15n=isc.Element.get(_13)}
+if(this.hasFocus)this.$15n.style.visibility="inherit";else this.$15n.style.visibility="hidden"}}
+,isc.A.$15o=function isc_FormItem__warnDeprecated(_1,_2,_3){if(!this.logIsInfoEnabled(this.$13t))return;if(!this.$15p)this.$15p={};if(this.$15p[_1]==true)return;if(_3==null)_3="5.5";var _4=isc.SB.create();_4.append("Using '",_1,"': ",this[_1]," to style this form item. This property is deprecated as of SmartClient Version ",_3," - we recommend removing this property and using '",_2,"' instead.");this.logInfo(_4.release(),"deprecated");this.$15p[_1]=true}
+,isc.A.getInnerHTML=function isc_FormItem_getInnerHTML(_1,_2,_3,_4){var _5,_6;if(this.isInactiveHTML()&&this.$68u==null){_5=true;var _7,_8=this.parentItem;if(_8!=null&&_8.isInactiveHTML()){if(_8.$68u==null){_8.setupInactiveContext();_6=true}
+_7=_8.$68v[_8.$68u]}
+this.$68u=this.setupInactiveContext(_7);if(this.logIsDebugEnabled("inactiveEditorHTML")){this.logDebug("getInnerHTML(): Item is marked as inactive - set up "+"new inactive context ID:"+this.$68u,"inactiveEditorHTML")}}
+this.$15q=_2&&!this.$712();var _9;if((this.isInactiveHTML()||this.isDisabled())&&this.useDisabledEventMask()){_9=isc.SB.create();_9.append(this.$148())}
+if(this.$11d()){if(!_9)_9=isc.SB.create();_9.append(this.$15l())}
+if(this.$712())_2=false;var _10=this.$15r(_1,_2,_3);var _11;if(_9!=null){_9.append(_10);if(_4)_11=_9.getArray();_11=_9.release()}else{_11=(_4?_10:_10.join(isc.emptyString))}
+if(_5)delete this.$68u;if(this.parentItem&&_6)
+delete this.parentItem.$68u;return _11}
+,isc.A.$15s=function isc_FormItem__writeOuterTable(_1,_2){if(_2)return true;if(_1&&this.getHint()!=null)return true;if(this.icons&&this.icons.length>0)return true}
+,isc.A.$144=function isc_FormItem__getValueIcon(_1){if(this.suppressValueIcon)return null;var _2,_3;if(_1===_3)_1=this.getValue();if(this.getValueIcon)_2=this.getValueIcon(_1);else{if(_1==null)_2=this.emptyValueIcon;else if(this.valueIcons!=null)_2=this.valueIcons[_1]}
+if(_2==null)return null;var _4=(this.isDisabled()&&this.showValueIconDisabled?this.$13w:this.$15t);if(_4!=null){if(!isc.CheckboxItem.$15u)isc.CheckboxItem.$15u={};var _5=isc.CheckboxItem.$15u[_2];if(!_5){_5={};_5.Over=isc.Img.urlForState(_2,false,false,this.$13u);_5.Down=isc.Img.urlForState(_2,false,false,this.$13v);_5.Disabled=isc.Img.urlForState(_2,false,false,this.$13w);isc.CheckboxItem.$15u[_2]=_5}
+_2=_5[_4]}
+return _2}
+,isc.A.$xq=function isc_FormItem__getValueIconHTML(_1){var _2=this.$144(_1);if(_2==null){return isc.emptyString}
+var _3=this.imageURLPrefix||this.baseURL||this.imgDir,_4=this.imageURLSuffix;if(_4)_2=_2+_4;var _5=this.getValueIconWidth();var _6=this.getValueIconHeight();return isc.Canvas.$xq(_2,_3,_5,_6,this.valueIconLeftPadding,this.valueIconRightPadding,this.$qs(this.$13x))}
+,isc.A.$15v=function isc_FormItem__getValueIconHandle(){if(!this.isDrawn())return null;var _1=isc.Element.get(this.$qs(this.$13x));return _1}
+,isc.A.$15r=function isc_FormItem__getTableHTML(_1,_2,_3){var _4=this.getErrorOrientation(),_5,_6=_4==isc.Canvas.LEFT,_7;if(_3&&(_6||_4==isc.Canvas.RIGHT))
+{var _8=this.getErrors();if(_8){_5=true;_7=this.getErrorHTML(_8)}}
+var _9=this.iconVAlign,_10=this.mapValueToDisplay(_1),_11=this.$15s(_2,_5),_12=this.showPickerIcon;;var _13=_11?isc.FormItem.$82b():[];if(_11){_13.length=13;_13[1]=this.$15w();_13[3]=this.getOuterTableCSS();if(this.containerWidget==this.form&&!this.$11e()){_13[5]=this.getCellStyle()}else{_13[5]=null}
+if(_5&&_6){_13[7]=isc.StringBuffer.concat("<TD STYLE='",isc.Canvas.$42a,"' CLASS='",this.getCellStyle(),"'>",_7,"</TD>")}else _13[7]=null;if(!_12)_13[9]=this.getTextBoxCellCSS();else _13[9]=isc.Canvas.$42a;_13[11]=_9}
+if(!_12){_13[_13.length]=this.getElementHTML(_10,_1)}else{var _14=this.getPickerIconStyle(),_15=this.getID(),_16=this.getControlStyle(),_17=this.$130,_18=this.$15e(),_19=this.$15g(),_20=this.$15j();_17[1]=_18;_17[3]=_15;_17[6]=this.getControlTableCSS();if(_16==null&&this.containerWidget==this.form&&!this.$11e()){_17[8]=this.getCellStyle();_17[6]+=isc.Canvas.$42a}else{_17[8]=_16}
+_17[10]=this.getTextBoxCellCSS();_17[12]=this.getElementHTML(_10,_1);_17[14]=_20;_17[16]=_14;_17[18]=this.getPickerIconCellCSS();var _21=this.getPickerIcon(),_22=_21&&this.hasFocus&&this.showFocusedPickerIcon&&(_21.showFocusedWithItem!=false);_17[20]=this.getIconHTML(this.getPickerIcon(),_22);for(var i=0;i<_17.length;i++){_13[_13.length]=_17[i]}}
+if(_11){if(this.$147()){var _24=isc.FormItem.$82c();_24[1]=_9;_24[3]=this.getTotalIconsWidth();_24[5]=this.getCellStyle();_24[7]=this.getIconsHTML();for(var i=0;i<_24.length;i++){_13[_13.length]=_24[i]}}
+var _25=(_5&&!_6);var _26;if(_2){_26=this.getHint();if(isc.isA.emptyString(_26))_26=null}
+if(_26||_25){var _27=this.$132;_27[1]=this.$59s();_27[3]=_26?this.getHintStyle():null;_27[5]=(_26||"")+(_25?_7||"":"");for(var i=0;i<_27.length;i++){_13[_13.length]=this.$132[i]}}
+_13[_13.length]=this.$13z}
+return _13}
+,isc.A.$15w=function isc_FormItem__getOuterTableID(){return this.$qs(this.$133)}
+,isc.A.$15x=function isc_FormItem__getCellStyle(_1){var _2=this.hasErrors();if(!isc.FormItem.$15y)isc.FormItem.$15y={};var _3=isc.FormItem.$15y[_1];if(!_3){_3={};_3.Error=_1+"Error";_3.Focused=_1+"Focused"
+_3.Disabled=_1+"Disabled"
+isc.FormItem.$15y[_1]=_3}
