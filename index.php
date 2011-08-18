@@ -10,6 +10,7 @@ require_once 'MsdTools/Common.php';
 require_once 'MsdTools/PageResponser.php';
 $smarty = new Smarty();
 //Get Page To Redirect To From URL
+//Test
 $phpfile ='JAHAD_UI/'. $_GET['phpmodule'].'.php';
 require $phpfile;
 ?>
