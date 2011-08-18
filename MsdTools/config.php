@@ -1,8 +1,8 @@
 <?php
-define ('BasicPath','http://178.248.41.150/msd/');
+define ('BasicPath','http://localhost/IranERP/');
 define ('dbname' , 'JAHADDoctorine');
-define ('user' , 'JAHADDoctorine');
-define ( 'password' ,'JAHADDoctorine');
+define ('user' , 'root');
+define ( 'password' ,'tiras55555');
 define( 'host' , 'localhost');
 define (   'driver' , 'pdo_mysql');
 

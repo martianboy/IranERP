@@ -5,12 +5,7 @@ require_once('DBEntity.php');
  */
 class Human extends DbEntity
 {
-	 /**
-     * @Id @Column(type="integer") @GeneratedValue
-     */
-	protected $id;
-	public function getID(){return $this->id;}
-	public function setID($id){$this->id=$id;}
+	
 	/**
 	 * @Column(type="string",length=50)
 	 */

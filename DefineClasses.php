@@ -4,6 +4,7 @@ require_once 'JAHAD_Entities/Human.php';
 require_once 'JAHAD_Entities/Magazine.php';
 require_once 'JAHAD_Entities/SimpleEntities.php';
 require_once 'JAHAD_Entities/media.php';
+require_once 'JAHAD_Entities/Menu.php';
 $DBClasses = array(
 	'BasicNamedClass',
 	'TVRD',
@@ -20,7 +21,8 @@ $DBClasses = array(
 	'Magazine_Version',
 	'Human',
 	'Media',
-	'Section'  
+	'Section',
+	'MenuItem'  
 	  
 );
 

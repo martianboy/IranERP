@@ -1,0 +1,17 @@
+<DataSource
+    ID="largeValueMap_orderItemHB"
+    serverType="hibernate"
+    beanClassName="com.isomorphic.examples.server.largeValueMapHibernate.ValMapOrderItem"
+>
+    <fields>
+        <field name="pk" type="sequence" primaryKey="true" hidden="true" />
+        <field name="orderID" type="long" />
+        <field name="orderDate" type="date" />
+        <field name="itemID" type="text" valueXPath="item/itemID" />
+        <field name="unitPrice" type="double" />
+        <field name="quantity" type="long" />
+        <field name="itemName" type="text" valueXPath="item/itemName" />
+    </fields>
+    
+</DataSource>
+ 

@@ -1,0 +1,13 @@
+<SimpleType name="zipCodeUS" inheritsFrom="text">
+    <validators>
+        <validator type="regexp"
+                   expression="^\d{5}(-\d{4})?$"/>
+    </validators>
+</SimpleType>
+
+<DataSource ID="customTypes">
+    <fields>
+        <field name="zipCode" title="Zip Code" type="zipCodeUS"/>
+    </fields>
+</DataSource>
+    
