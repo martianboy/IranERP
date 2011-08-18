@@ -5,9 +5,8 @@ use
     Doctrine\Common\Annotations\AnnotationRegistry,
     Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Mapping\MappingException;
-    
-function parseObjectToArray($object) {
 
+function parseObjectToArray($object) {
     $array = array();
     if (is_object($object)) {
         $array = get_object_vars($object);
@@ -15,27 +14,27 @@ function parseObjectToArray($object) {
     return $array;
 }
 
-function GetSimpleDataSource($ClassName,$ExceptedProperties)
-
+function GetSimpleDataSource($ClassName,$ExcludedProperties)
 {
 	$reader = new AnnotationReader();
 	$reader->setDefaultAnnotationNamespace('.');
+
 	//Get All scget functions in Class
-	$rtnval='';
+	$result='';
 	$methods = get_class_methods($ClassName);
-	foreach($methods as $m){
-	
-		if(substr($m,0,5)=='scget'){
-			if(is_array($ExceptedProperties)) 
-				if (in_array(substr($m,5),$ExceptedProperties)) {continue;}
-			$rtnval.='{';
+	foreach($methods as $m) {
+		if(substr($m,0,5)=='scget') {
+			if(is_array($ExcludedProperties)) 
+			    if (in_array(substr($m,5),$ExcludedProperties)) 
+			        continue;
+			$result.='{';
 			$relmethod = new ReflectionMethod($ClassName,$m);
 			$methoddefine = $reader->getMethodAnnotations($relmethod);
 			foreach($methoddefine as $annots)
-			if(is_a($annots,'scField')) 
+    			if(is_a($annots,'scField'))
 					foreach(parseObjectToArray($annots) as $k=>$v)
 						if($v!=null) {
-							switch($k){
+							switch($k) {
 								case "canEdit":
 								case "canExport":
 								case "canFilter":
@@ -44,7 +43,7 @@ function GetSimpleDataSource($ClassName,$ExceptedProperties)
 								case "detail":
 								case "hidden":
 								case "primaryKey":
-									$rtnval.=$k.':"'.($v?"true":"false").'",';
+									$result.=$k.':"'.($v?"true":"false").'",';
 									break;
 								case "childrenProperty":
 								case "childTagName":
@@ -53,33 +52,32 @@ function GetSimpleDataSource($ClassName,$ExceptedProperties)
 								case "name":
 								case "type":
 								case "title":
-					
-									$rtnval.=$k.':"'.$v.'",';
+									$result.=$k.':"'.$v.'",';
 									break;
-									
 							}
-							
 						}
 
-			$rtnval = substr($rtnval,0,strlen($rtnval)-1);
-			$rtnval.='},';
-			}
-			
+			$result = substr($result,0,strlen($result)-1);
+			$result.='},';
 		}
-	   $rtnval = substr($rtnval,0,strlen($rtnval)-1);
-	   $rtnval='isc.RestDataSource.create({ID:"'.$ClassName.'",fields:['.$rtnval.']';
-	   $rtnval.='})';
-		return $rtnval;
 	}
 
+    $result = substr($result,0,strlen($result)-1);
+    $result='isc.RestDataSource.create({ID:"'.$ClassName.'",fields:['.$result.']';
+    $result.='})';
+    return $result;
+}
 
-	function GetCompleteDataSource($ClassName,$EM)
-	{
-	$rtnval ='';
-	$rtnval = GetSimpleDataSource($ClassName,null);
+
+function GetCompleteDataSource($ClassName,$EM) 
+{
+	$result ='';
+	$result = GetSimpleDataSource($ClassName,null);
+
 	//Get Related Classes
 	foreach($EM->getClassMetadata($ClassName)->associationMappings as $a)
-	$rtnval.=GetSimpleDataSource($a['targetEntity'],null);
-	return $rtnval;
-	} 
+	    $result.=GetSimpleDataSource($a['targetEntity'],null);
+
+	return $result;
+} 
 ?>
