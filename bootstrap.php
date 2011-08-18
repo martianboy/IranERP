@@ -13,11 +13,10 @@ use Doctrine\ORM\EntityManager,
 
 $applicationMode ='development';
 
-if ($applicationMode == "development") {
+if ($applicationMode == "development")
     $cache = new \Doctrine\Common\Cache\ArrayCache;
-} else {
+else
     $cache = new \Doctrine\Common\Cache\ApcCache;
-}
 
 $config = new Configuration;
 $config->setMetadataCacheImpl($cache);
@@ -27,16 +26,13 @@ $config->setMetadataDriverImpl($driverImpl);
 
 $config->setQueryCacheImpl($cache);
 
-
-
 $config->setProxyDir('./JAHAD_Entities');
 $config->setProxyNamespace('./JAHAD_Entities');
 
-if ($applicationMode == "development") {
+if ($applicationMode == "development")
     $config->setAutoGenerateProxyClasses(true);
-} else {
+else
     $config->setAutoGenerateProxyClasses(false);
-}
 
 //Making Connection To Db
 $connectionParams = array(
@@ -47,10 +43,7 @@ $connectionParams = array(
     'driver' => driver,
 );
 
-
 $conn = Doctrine\DBAL\DriverManager::getConnection($connectionParams, $config);
 $conn->setCharset('UTF8');
 $em = EntityManager::create($conn, $config);
-
-
 ?>
