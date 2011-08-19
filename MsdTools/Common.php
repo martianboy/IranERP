@@ -86,7 +86,7 @@ $rtnval=null;
  * @param string $ClassName
  * @param string $namespace
  */
-public static function TranslateVars($VarName,$ClassName,$namespace)
+public static function TranslateSCVarsToDoctrine($VarName,$ClassName,$namespace)
 {
 	$reader= new AnnotationReader();
 	//$reader->setDefaultAnnotationNamespace($namespace);
