@@ -1,4 +1,5 @@
 <?php
+use Doctrine\Common\Annotations\AnnotationReader;
 date_default_timezone_set('UTC');
 
 /**
@@ -73,33 +74,37 @@ class DbEntity
 	public function getIsDeleted(){return $this->IsDeleted;}
 	public function setIsDeleted($d){$this->IsDeleted=$d;}
 
-	public function CreateClassFromScUsingMethod($functionName,$ExceptedProperties)
-	{
-	$isarray=is_array($ExceptedProperties);
-	$methods = get_class_methods($this);
-	foreach($methods as $m){
-		
-		if(substr($m,0,5)=='scset'){
-			$propname=substr($m,5);
-			
-			if($isarray){
-				//Check That propname exist in ExcepredProperties
-				if(in_array($propname,$ExceptedProperties)) continue;
+	public function CreateClassFromScUsingMethod($functionName,$ExceptedProperties=NULL,$ValueArray = NULL){
+		$reader=new AnnotationReader();
+		$methods=get_class_methods(get_class($this));
+		foreach ($methods as $methodName)
+		{
+			//Check That Method is getter or setter else continue
+			if(!(substr($methodName, 0,3)=='get' ||	substr($methodName,0,3)=='set')	) continue;
+			$propname = substr($methodName, 3,strlen($methodName)-3);
+			//if propname is in $ExceptedProperties jump to next property
+			if(is_array($ExceptedProperties))
+				if(in_array($propname, $ExceptedProperties)) continue; 
+			//Get Method Annotation
+			$reflMethod = new ReflectionMethod(get_class($this), $methodName);
+			$MethodAnns = $reader->getMethodAnnotations($reflMethod);
+			foreach ($MethodAnns as $annots){
+				if(is_a($annots,'scField')){
+					//if defined Annotation is scField
+					//Get Value From User
+					$fieldvalue = call_user_func($functionName,$annots->name,$ValueArray);
+					//Try To Set To Class 
+					call_user_func(array(&$this, 'set'.$propname),$fieldvalue);
+				}
 			}
-			$rtn = call_user_func($functionName,$propname);
-			call_user_method($m,$this,$rtn);
+			
 		}
-		
 	}
-	}
+	
+	
 protected function parseObjectToArray() {
 	return Common::parseObjectToArray($this);
-	/*$object = $this;
-    $array = array();
-    if (is_object($object)) {
-        $array = get_object_vars($object);
-    }
-    return $array;*/
+	
 }
 
 
@@ -111,32 +116,32 @@ protected function _Save($EM){
 
 function Save($EM){$this->_Save($EM);}
 
-
-function GetClassSCPropertiesInArray($ExceptedProperties)
-{
-$rtnval = array();
-	$isarray=is_array($ExceptedProperties);
-	$methods = get_class_methods($this);
-	foreach($methods as $m){
-		
-		if(substr($m,0,5)=='scget'){
-			$propname=substr($m,5);
-			
-			if($isarray){
-				//Check That propname exist in ExcepredProperties
-				if(in_array($propname,$ExceptedProperties)) continue;
+public function GetClassSCPropertiesInArray($ExceptedProperties=NULL){
+		$rtnval=array();
+		$isarray=is_array($ExceptedProperties);
+		$reader=new AnnotationReader();
+		$methods=get_class_methods(get_class($this));
+		foreach ($methods as $methodName)
+		{
+			//Check That Method is getter or setter else continue
+			if(!(substr($methodName, 0,3)=='get')) continue;
+			$propname = substr($methodName, 3,strlen($methodName)-3);
+			//if propname is in $ExceptedProperties jump to next property
+			if($isarray) if(in_array($propname, $ExceptedProperties)) continue; 
+			//Get Method Annotation
+			$reflMethod= NUll;
+			$reflMethod = new ReflectionMethod(get_class($this), $methodName);
+			$MethodAnns = $reader->getMethodAnnotations($reflMethod);
+			foreach ($MethodAnns as $annots){
+				if(is_a($annots,'scField')){
+					//if defined Annotation is scField
+					//Get Value
+					$rtnval[$annots->name]=	call_user_func(array(&$this, 'get'.$propname));
+				}
 			}
-			
-			//$rtnval[$propname]=call_user_method($m,$this);
-			$rtnval[$propname]= call_user_func(array(&$this, $m));
 		}
-	}
-		
-return $rtnval;
-	
+		return $rtnval;
 }
-
-
 
 function GetClassPropertiesinArray($ExceptedProperties)
 {
@@ -173,8 +178,111 @@ public function __construct()
 	$this->CreatedDate=new DateTime();
 	
 }
+
+
+	public function fetchObjects($em,$startRow,$endRow,$whstr,$whparam,$orderby){
+		$qb = $em->createQueryBuilder();
+			$qb->add('select', 'tmp')
+			   ->add('from', get_class($this).' tmp')
+			   ->setFirstResult( $startRow )
+			   ->setMaxResults( $endRow-$startRow );
+
+            $tmp=0;
+            foreach($orderby as $fn=>$kn) 
+                if($tmp==0){
+                	$qb->orderBy('tmp.'.$fn,$kn);
+                	$tmp=1;
+                }
+                else
+                    $qb->addOrderBy('tmp.'.$fn,$kn);
+
+            if($whstr!='') {
+                $qb->add('where',$whstr.' and tmp.IsDeleted = 0 ');
+                $qb->setParameters($whparam);
+            }
+            else {
+                $qb->add('where','tmp.IsDeleted =0');
+            }
+			  
+            $query = $qb->getQuery();
+			$results = $query->getResult();
+
+			$qb = $em->createQueryBuilder();
+			$qb->add('select', 'count(tmp.id)')
+			   ->add('from', get_class($this).' tmp');
+
+			if($whstr!='') {
+			    $qb->add('where',$whstr.' and tmp.IsDeleted = 0 ');
+			    $qb->setParameters($whparam);
+			} else {
+			    $qb->add('where','tmp.IsDeleted =0');
+			}
+			   
+			//get Total Rows
+			$dql = $qb->getQuery();
+			$tmptest= $dql->getResult();
+			
+			$totalRows = $tmptest[0][1];
+			return array('totalRows'=>$totalRows,'results'=>$results);
+			
+	}
+	
+}
+/***
+ * Old
+ * /*
+function GetClassSCPropertiesInArray($ExceptedProperties=NULL)
+{
+$rtnval = array();
+	$isarray=is_array($ExceptedProperties);
+	$methods = get_class_methods($this);
+	foreach($methods as $m){
+		
+		if(substr($m,0,5)=='scget'){
+			$propname=substr($m,5);
+			
+			if($isarray){
+				//Check That propname exist in ExcepredProperties
+				if(in_array($propname,$ExceptedProperties)) continue;
+			}
+			
+			$rtnval[$propname]= call_user_func(array(&$this, $m));
+		}
+	}
+		
+return $rtnval;
+	
 }
 
+/*public function CreateClassFromScUsingMethod($functionName,$ExceptedProperties=NULL)
+	{
+	$isarray=is_array($ExceptedProperties);
+	$methods = get_class_methods($this);
+	foreach($methods as $m){
+		
+		if(substr($m,0,5)=='scset'){
+			$propname=substr($m,5);
+			
+			if($isarray){
+				//Check That propname exist in ExcepredProperties
+				if(in_array($propname,$ExceptedProperties)) continue;
+			}
+			$rtn = call_user_func($functionName,$propname);
+			//call_user_method($m,$this,$rtn);
+			call_user_func(array(&$this, $m),$rtn);
+		}
+		
+	}
+	}
+	public static function parseObjectToArray(){
+	/*$object = $this;
+    $array = array();
+    if (is_object($object)) {
+        $array = get_object_vars($object);
+    }
+    return $array;
+}
+	*/
 
 
 

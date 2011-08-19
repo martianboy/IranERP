@@ -102,49 +102,13 @@ class PageResponser
 				$whparam=$wh[1];
 			}
 			
-			$qb = $em->createQueryBuilder();
-			$qb->add('select', 'tmp')
-			   ->add('from', $ClassName.' tmp')
-			   ->setFirstResult( $startRow )
-			   ->setMaxResults( $endRow-$startRow );
-
-            $tmp=0;
-            foreach($orderby as $fn=>$kn) 
-                if($tmp==0){
-                	$qb->orderBy('tmp.'.$fn,$kn);
-                	$tmp=1;
-                }
-                else
-                    $qb->addOrderBy('tmp.'.$fn,$kn);
-
-            if($whstr!='') {
-                $qb->add('where',$whstr.' and tmp.IsDeleted = 0 ');
-                $qb->setParameters($whparam);
-            }
-            else {
-                $qb->add('where','tmp.IsDeleted =0');
-            }
-			  
-            $query = $qb->getQuery();
-			$results = $query->getResult();
-
-			$qb = $em->createQueryBuilder();
-			$qb->add('select', 'count(tmp.id)')
-			   ->add('from', $ClassName.' tmp');
-
-			if($whstr!='') {
-			    $qb->add('where',$whstr.' and tmp.IsDeleted = 0 ');
-			    $qb->setParameters($whparam);
-			} else {
-			    $qb->add('where','tmp.IsDeleted =0');
-			}
-			   
-			//get Total Rows
-			$dql = $qb->getQuery();
-			$tmptest= $dql->getResult();
-			
-			$totalRows = $tmptest[0][1];
-			
+			//Get Objects Form Db
+			$cls=new ReflectionClass($ClassName);
+			$cls=$cls->newInstance();
+			$rtn=$cls->fetchObjects($em,$startRow,$endRow,$whstr,$whparam,$orderby);
+			$results=$rtn['results'];
+			$totalRows=$rtn['totalRows'];
+		
 		    //Making Result Array
 		    $resarr = array();
 		    foreach($results as $item)

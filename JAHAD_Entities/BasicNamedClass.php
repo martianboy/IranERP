@@ -45,36 +45,21 @@ class BasicNamedClass extends DbEntity
 	/*******************
 	 * BL Functions
 	 */
-	public function getID(){return $this->id;}
-	public function setID($newid){$this->id=$newid;}
-	
-	public function getName(){return $this->Name;}
-	public function setName($newName){$this->Name=$newName;}
-	
-	public function getDescription(){return $this->Description;}
-	public function setDescription($newDesc){$this->Description=$newDesc;}
-
-	
-	/****************************
-	 * Smart Client DataSource Generator Functions
-	 */
 	/**
 	 * @scField(name="id",primaryKey=true,hidden=true,type="integer")
 	 */
-	public function scgetid(){return $this->getID() ;}
-	public function scsetid($newid){$this->setID($newid);}
+	public function getID(){return $this->id;}
+	public function setID($newid){$this->id=$newid;}
 	/**
 	 * @scField(name="Name",type="string",title="نام")
 	 */
-	public function scgetName(){return $this->getName();}
-	public function scsetName($newName){$this->setName($newName);}
+	public function getName(){return $this->Name;}
+	public function setName($newName){$this->Name=$newName;}
 	/**
 	 * @scField(name="Description",type="string",title="شرح")
 	 */
-	public function scgetDescription(){return $this->getDescription();}
-	public function scsetDescription($newDesc){$this->setDescription($newDesc);}
-	
-	
+	public function getDescription(){return $this->Description;}
+	public function setDescription($newDesc){$this->Description=$newDesc;}
 	
 }
 ?>
