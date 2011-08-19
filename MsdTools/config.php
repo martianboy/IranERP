@@ -1,9 +1,8 @@
 <?php
-define ('BasicPath','http://localhost/IranERP/');
-define ('dbname' , 'JAHADDoctorine');
-define ('user' , 'root');
-define ( 'password' ,'tiras55555');
-define( 'host' , 'localhost');
-define (   'driver' , 'pdo_mysql');
-
+define ('BasicPath','http://a-mashayekh.com/masouderp');
+define ('dbname',   'mashayekh_masouderp');
+define ('user',     'mashayekh_mysql');
+define ('password', 'MKmk$1389');
+define ('host',     'localhost');
+define ('driver',   'pdo_mysql');
 ?>
