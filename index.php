@@ -1,5 +1,5 @@
 <?php
-error_reporting(0);
+error_reporting(-1);
 require_once 'MsdTools/RestDataSource.php';
 require_once 'MsdTools/SmartClientInclude.php';
 require_once 'DefineClasses.php';

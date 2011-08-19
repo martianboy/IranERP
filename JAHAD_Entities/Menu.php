@@ -53,17 +53,23 @@ class MenuItem extends DbEntity
 	public function setMenuItemCommand($value){$this->MenuItemCommand=$value;}
 	
 	/**
-	 * SC Functions
-	 * Enter description here ...
 	 * 
-	 * 
+	 * @scField(name="MenuTitle",DoctrineField="MenuItemTitle",
+	 * 			type="string",length="100")
 	 */
 	public function scgetMenuItemTitle(){return $this->getMenuItemTitle();}
 	public function scsetMenuItemTitle($value){$this->setMenuItemTitle($value);}
-	
+	/**
+	 * 
+	 * @scField(name="IconPath",DoctrineField="MenuItemIcon",
+	 * 			type="string",length="500")
+	 */
 	public function scgetMenuItemIcon(){return $this->getMenuItemIcon();}
 	public function scsetMenuItemIcon($value){$this->setMenuItemIcon($value);}
-	
+	/**
+	 * 
+	 * @scField(name="ParentTitle",DoctrineField
+	 */
 	public function scgetMenuItemParentTitle(){return $this->getMenuItemParent()->getMenuItemTitle();}
 	/**
 	 * @scField(name="MenuItemParentID",DoctrineField="Parent.id")

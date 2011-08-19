@@ -50,7 +50,7 @@ class PageResponser
 		}
 	}
 	
-	public static function  fetchResponse($ClassName,$em)
+	public static function  fetchResponse($ClassName,$em,$ExceptedProperties=NULL)
 	{
 	    $Perfix='_';
 	    $startRow = Common::GetVar($Perfix.'startRow');
@@ -97,7 +97,10 @@ class PageResponser
 			$wh = setwhere($criteria);
 			$whstr='';
 			$whparam =null;
-			if (count($criteria)>0){$whstr = $wh[0];$whparam=$wh[1];}
+			if (count($criteria)>0){
+				$whstr = $wh[0];
+				$whparam=$wh[1];
+			}
 			
 			$qb = $em->createQueryBuilder();
 			$qb->add('select', 'tmp')
@@ -106,9 +109,11 @@ class PageResponser
 			   ->setMaxResults( $endRow-$startRow );
 
             $tmp=0;
-            foreach($orderby as $fn=>$kn) {
-                if($tmp==0)
-                    $qb->orderBy('tmp.'.$fn,$kn);$tmp=1;
+            foreach($orderby as $fn=>$kn) 
+                if($tmp==0){
+                	$qb->orderBy('tmp.'.$fn,$kn);
+                	$tmp=1;
+                }
                 else
                     $qb->addOrderBy('tmp.'.$fn,$kn);
 
@@ -143,7 +148,7 @@ class PageResponser
 		    //Making Result Array
 		    $resarr = array();
 		    foreach($results as $item)
-		        $resarr[]=$item->GetClassSCPropertiesInArray();
+		        $resarr[]=$item->GetClassSCPropertiesInArray($ExceptedProperties);
 		    
 		    RestDataSource::fetchResponse($startRow,$endRow,$totalRows,$resarr);
 		} catch(Exception $e) {

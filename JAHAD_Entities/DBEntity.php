@@ -93,12 +93,13 @@ class DbEntity
 	}
 	}
 protected function parseObjectToArray() {
-	$object = $this;
+	return Common::parseObjectToArray($this);
+	/*$object = $this;
     $array = array();
     if (is_object($object)) {
         $array = get_object_vars($object);
     }
-    return $array;
+    return $array;*/
 }
 
 
@@ -126,7 +127,8 @@ $rtnval = array();
 				if(in_array($propname,$ExceptedProperties)) continue;
 			}
 			
-			$rtnval[$propname]=call_user_method($m,$this);
+			//$rtnval[$propname]=call_user_method($m,$this);
+			$rtnval[$propname]= call_user_func(array(&$this, $m));
 		}
 	}
 		
@@ -176,12 +178,8 @@ public function __construct()
 
 
 
- function Delete($EM){}
 
-function CreateClassFromSCArray( $a)
-{
-	
-}
+
 
 
  

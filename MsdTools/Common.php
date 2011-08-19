@@ -29,7 +29,7 @@ public static function parseObjectToArray($object) {
 	 * @param string $VarName
 	 * @param Array $ARRAY
 	 */
-public static function GetVar($VarName,$ARRAY)
+public static function GetVar($VarName,$ARRAY=NULL)
 {
 //Get From Query String
 if(is_array($ARRAY)){
@@ -58,17 +58,15 @@ $rtnval=null;
 			else
 			$Variable[$tmp[0]]=urldecode($tmp[1]);
 		}
-		
-		$rtnval=$Variable[$VarName];
-		
+		if(array_key_exists($VarName,$Variable))
+			$rtnval=$Variable[$VarName];
 	}catch(Exception $e)
 	{
 		print_r($e);
 	}
 	if($rtnval==null){
-	$rtnval = $_GET[$VarName];
-	if($rtnval != null) return $rtnval;
-	$rtnval = $_POST[$VarName];
+		if(array_key_exists($VarName, $_GET) && $rtnval==NULL)	$rtnval = $_GET[$VarName];
+		if(array_key_exists($VarName, $_POST) && $rtnval==NULL) $rtnval = $_POST[$VarName]; 
 	}
 	//if($VarName=='criteria') print_r($rtnval);
 	//print_r($_SERVER['QUERY_STRING']);
@@ -89,7 +87,6 @@ $rtnval=null;
 public static function TranslateSCVarsToDoctrine($VarName,$ClassName,$namespace)
 {
 	$reader= new AnnotationReader();
-	//$reader->setDefaultAnnotationNamespace($namespace);
 	$methods = get_class_methods($ClassName);
 	foreach ($methods as $methodName)
 	{

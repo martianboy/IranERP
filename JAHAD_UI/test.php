@@ -8,7 +8,7 @@ $Perfix='_';
 header('Content-Type: text/html;charset=utf-8');
 
 $currentFile = 'test';
-
+$optype='';
 //Detect Operation 
 $optype =Common::GetVar($Perfix.'operationType');
 switch($optype){
