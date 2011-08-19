@@ -53,7 +53,9 @@ class DbEntity
 	protected $ModifierUserId=-1;
 	
 
-
+	public function getID(){return $this->id;}
+	protected function setID($value){$this->id=$value;}
+	
  	public function getVersion(){return $this->version;}
 	
 	public function getCreatorUserID(){return $this->CreatorUserId;}

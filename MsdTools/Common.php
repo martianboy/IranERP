@@ -1,10 +1,41 @@
 <?php 
+require_once 'SmartClientAnnotation.php';
+use 
+    Doctrine\Common\Annotations\AnnotationReader,
+    Doctrine\Common\Annotations\AnnotationRegistry,
+    Doctrine\ORM\Mapping\ClassMetadataInfo,
+    Doctrine\ORM\Mapping\MappingException;
+
 class Common
 {
+	/**
+	 * 
+	 * Convert Object To Array 
+	 * 
+	 * @param Object $object
+	 */
+public static function parseObjectToArray($object) {
+    $array = array();
+    if (is_object($object)) {
+        $array = get_object_vars($object);
+    }
+    return $array;
+}
 	
-public static function GetVar($VarName)
+	/**
+	 * 
+	 * Tries To Retrive VarName From QueryString or $_GET or $_POST
+	 * if it can not find VarName in Array
+	 * @param string $VarName
+	 * @param Array $ARRAY
+	 */
+public static function GetVar($VarName,$ARRAY)
 {
 //Get From Query String
+if(is_array($ARRAY)){
+	if (array_key_exists($VarName, $ARRAY)) return $ARRAY[$VarName];
+}
+	
 $rtnval=null;
 	try{
 		$query = explode('?',$_SERVER['QUERY_STRING']);
@@ -44,6 +75,38 @@ $rtnval=null;
 	//print_r($Variable);
 	return $rtnval;
 }
-	
+
+
+/**
+ * 
+ * Translate $VarName To Doctrine Fields Using 
+ * scField Annotation Defined in $ClassName
+ * for scget or scset methods
+ * @param string $VarName
+ * @param string $ClassName
+ * @param string $namespace
+ */
+public static function TranslateVars($VarName,$ClassName,$namespace)
+{
+	$reader= new AnnotationReader();
+	//$reader->setDefaultAnnotationNamespace($namespace);
+	$methods = get_class_methods($ClassName);
+	foreach ($methods as $methodName)
+	{
+		if(
+			substr($methodName,0,5)=='scget' || 
+			substr($methodName,0,5=='scset')
+			){
+			$reflmethod = new ReflectionMethod($ClassName, $methodName);
+			$MethodAnns = $reader->getMethodAnnotations($reflmethod);
+			foreach($MethodAnns as $annots)
+				if(is_a($annots,'scField'))
+					//Check That VarName Defined in $annots
+					if($annots->name==$VarName)
+					 return $annots->DoctrineField;
+		}
+	}
+	return $VarName;
+}
 }
 ?>

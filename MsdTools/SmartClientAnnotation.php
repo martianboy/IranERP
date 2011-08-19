@@ -21,5 +21,6 @@ use Doctrine\Common\Annotations\Annotation;
 	public $primaryKey;
 	public $type;
 	public $title;
+	public $DoctrineField;
 	
 }

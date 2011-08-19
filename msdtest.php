@@ -2,6 +2,8 @@
 require_once 'DefineClasses.php';
 require_once 'bootstrap.php';
 require_once 'MsdTools/Generate_SC_Resources.php';
+require_once 'MsdTools/Common.php';
+
 /*require_once 'Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php';*/
 use Doctrine\Common\Cache\ArrayCache,
     Doctrine\Common\Annotations\AnnotationReader,
@@ -16,7 +18,7 @@ use Doctrine\Common\Cache\ArrayCache,
 $reader = $Drv->GetReader();
 */
 //print_r($em->getClassMetadata('Magazine'));
-
+echo Common::TranslateVars('MenuItemParentID', 'MenuItem', '.');
 
 
 ?>
