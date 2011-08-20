@@ -42,6 +42,11 @@
 			<location>/var/www/msd/templates</location>
 		</link>
 		<link>
+			<name>templates/Menu</name>
+			<type>2</type>
+			<location>/var/www/IranERP/templates/Menu</location>
+		</link>
+		<link>
 			<name>templates/test/test.html</name>
 			<type>1</type>
 			<location>/var/www/msd/templates/test/test.html</location>

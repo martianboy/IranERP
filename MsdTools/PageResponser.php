@@ -8,6 +8,7 @@ class PageResponser
 	    try {
        		$cls=$em->getRepository($ClassName)
     				->find(Common::GetVar('id'));
+    		$cls->setEntityManager($em);
 			$cls->setIsDeleted(true);
 
        		$cls->Save($em);
@@ -25,6 +26,7 @@ class PageResponser
 		try {
        		$cls=$em->getRepository($ClassName)
     				->find(Common::GetVar('id'));
+    		$cls->setEntityManager($em);
 			$cls->CreateClassFromScUsingMethod('Common::GetVar',array("ID"));    								
        		$cls->Save($em);
        		$em->flush();
@@ -41,6 +43,7 @@ class PageResponser
     	try{
     		$r = new ReflectionClass($ClassName);
     		$cls=$r->newInstance();
+    		$cls->setEntityManager($em);
        		$cls->CreateClassFromScUsingMethod('Common::GetVar');
        		$cls->Save($em);
        		$em->flush();
@@ -105,6 +108,7 @@ class PageResponser
 			//Get Objects Form Db
 			$cls=new ReflectionClass($ClassName);
 			$cls=$cls->newInstance();
+			$cls->setEntityManager($em);
 			$rtn=$cls->fetchObjects($em,$startRow,$endRow,$whstr,$whparam,$orderby);
 			$results=$rtn['results'];
 			$totalRows=$rtn['totalRows'];

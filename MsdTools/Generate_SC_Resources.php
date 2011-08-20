@@ -23,9 +23,9 @@ function GetSimpleDataSource($ClassName,$ExcludedProperties)
 	$result='';
 	$methods = get_class_methods($ClassName);
 	foreach($methods as $m) {
-		if(substr($m,0,5)=='scget') {
+		if(substr($m,0,3)=='get') {
 			if(is_array($ExcludedProperties)) 
-			    if (in_array(substr($m,5),$ExcludedProperties)) 
+			    if (in_array(substr($m,3),$ExcludedProperties)) 
 			        continue;
 			$result.='{';
 			$relmethod = new ReflectionMethod($ClassName,$m);

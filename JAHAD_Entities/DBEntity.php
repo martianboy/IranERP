@@ -9,6 +9,12 @@ date_default_timezone_set('UTC');
  */
 class DbEntity
 {
+	/**
+	 * Entity Manager That This Class Use To 
+	 * Doing Something To Objects
+	 * @var Doctrine EntityManager
+	 */
+	protected $EM;
 	
 	/**
 	 * @Id @generatedValue(strategy="AUTO") @Column(type="integer")
@@ -53,10 +59,19 @@ class DbEntity
 	 */
 	protected $ModifierUserId=-1;
 	
-
+	public function setEntityManager($value){$this->EM=$value;}
+	public function getEntityManager(){return $this->EM;}
+	
+	/**
+	 *@scField(name="id",DoctrineField="id",type="integer",primaryKey="true",hidden="true") 
+	 */
+	public function getid(){return $this->id;}
+	public function setid($v){$this->id=$v;}
+	
+/*
 	public function getID(){return $this->id;}
 	protected function setID($value){$this->id=$value;}
-	
+	*/
  	public function getVersion(){return $this->version;}
 	
 	public function getCreatorUserID(){return $this->CreatorUserId;}
@@ -100,7 +115,11 @@ class DbEntity
 			
 		}
 	}
-	
+	public function GetByID($id) {return $this
+												->getEntityManager()
+												->getRepository(get_class($this))
+												->find($id);
+	}
 	
 protected function parseObjectToArray() {
 	return Common::parseObjectToArray($this);

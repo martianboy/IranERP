@@ -18,7 +18,8 @@ use Doctrine\Common\Cache\ArrayCache,
 $reader = $Drv->GetReader();
 */
 //print_r($em->getClassMetadata('Magazine'));
-echo Common::TranslateVars('MenuItemParentID', 'MenuItem', '.');
+//echo Common::TranslateVars('MenuItemParentID', 'MenuItem', '.');
+echo GetCompleteDataSource('MenuItem', $em);
 
 
 ?>

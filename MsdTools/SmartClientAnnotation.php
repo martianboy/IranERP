@@ -22,5 +22,6 @@ use Doctrine\Common\Annotations\Annotation;
 	public $type;
 	public $title;
 	public $DoctrineField;
+	public $length;
 	
 }

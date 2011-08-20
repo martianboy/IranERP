@@ -36,12 +36,47 @@ class MenuItem extends DbEntity
 	/**
 	 * 
 	 * BL Functions
+	 * @scField(name="MenuTitle",DoctrineField="MenuItemTitle",
+	 * 			type="string",length="100",title="عنوان منو")
 	 */
 	public function getMenuItemTitle(){return $this->MenuItemTitle;}
 	public function setMenuItemTitle($value){$this->MenuItemTitle=$value;}
-	
+	/**
+	 * 
+	 * @scField(name="IconPath",DoctrineField="MenuItemIcon",
+	 * 			type="string",length="500",title="مسیر آیکون")
+	 */
 	public function getMenuItemIcon(){return $this->MenuItemIcon;}
 	public function setMenuItemIcon($value){$this->MenuItemIcon=$value;}
+	/**
+	 * @scField(name="MenuItemCommand",DoctrineField="MenuItemCommand",type="string",length=200,title="دستور منو") 
+	 */
+	public function getMenuItemCommand(){return $this->MenuItemCommand;}
+	public function setMenuItemCommand($value){$this->MenuItemCommand=$value;}
+	
+	
+	/**
+	 * 
+	 * @scField(name="ParentTitle",DoctrineField="MenuItemParent.MenuItemTitle",type="string",length=100,title="منوی پدر")
+	 */
+	public function getMenuItemParentTitle(){
+		if ($this->getMenuItemParent()==null) return '';
+		return $this->getMenuItemParent()->getMenuItemTitle();
+	}
+	public function setMenuItemParentTitle($v){}
+	/**
+	 * @scField(name="MenuItemParentID",DoctrineField="MenuItemParent.id",foreignKey="id",hidden=true)
+	 * Enter description here ...
+	 */	
+	public function getMenuItemParentID(){
+		if ($this->getMenuItemParent() == null) return NULL;
+		return $this->getMenuItemParent()->getID();}
+	public function setMenuItemParentID($value){
+		//Check That there is an object with this ID
+		$parent = $this->GetByID($value);
+		if($parent!=NULL) $this->setMenuItemParent($parent);
+		else $this->setMenuItemParent(NULL);
+	}
 	
 	public function getMenuItemChildren(){return $this->MenuItemChildren;}
 	public function setMenuItemChildren($value){$this->MenuItemChildren=$value;}
@@ -49,37 +84,5 @@ class MenuItem extends DbEntity
 	public function getMenuItemParent(){return $this->MenuItemParent;}
 	public function setMenuItemParent($value){$this->MenuItemParent=$value;}
 	
-	public function getMenuItemCommand(){return $this->MenuItemCommand;}
-	public function setMenuItemCommand($value){$this->MenuItemCommand=$value;}
-	
-	/**
-	 * 
-	 * @scField(name="MenuTitle",DoctrineField="MenuItemTitle",
-	 * 			type="string",length="100")
-	 */
-	public function scgetMenuItemTitle(){return $this->getMenuItemTitle();}
-	public function scsetMenuItemTitle($value){$this->setMenuItemTitle($value);}
-	/**
-	 * 
-	 * @scField(name="IconPath",DoctrineField="MenuItemIcon",
-	 * 			type="string",length="500")
-	 */
-	public function scgetMenuItemIcon(){return $this->getMenuItemIcon();}
-	public function scsetMenuItemIcon($value){$this->setMenuItemIcon($value);}
-	/**
-	 * 
-	 * @scField(name="ParentTitle",DoctrineField
-	 */
-	public function scgetMenuItemParentTitle(){return $this->getMenuItemParent()->getMenuItemTitle();}
-	/**
-	 * @scField(name="MenuItemParentID",DoctrineField="Parent.id")
-	 * Enter description here ...
-	 */	
-	public function scgetMenuItemParentID(){return $this->getMenuItemParent()->getID();}
-	public function scsetMenuItemParentID($value){$this->setMenuItemParent()->setID($value);}
-	
-	
-	public function scgetMenuItemCommand(){return $this->getMenuItemCommand();}
-	public function scsetMenuItemCommand($value){$this->setMenuItemCommand($value);}
 }
 ?>
