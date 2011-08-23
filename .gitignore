@@ -3,4 +3,5 @@ templates_c/*
 .project
 .buildpath
 .settings
-protected/config/
+protected/config/*
+protected/config/main.php
