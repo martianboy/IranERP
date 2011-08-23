@@ -1,4 +1,6 @@
 MsdTools/config.php
 templates_c/*
 .project
+.buildpath
 .settings
+protected/config/
