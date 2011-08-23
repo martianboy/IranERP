@@ -8,7 +8,7 @@ Yii::setPathOfAlias('BasePath', realpath(dirname(__FILE__) . '/../..'));
 // CWebApplication properties can be configured here.
 return array(
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
-	'name'=>'My Web Application',
+	'name'=>'IranERP',
 
 	// preloading 'log' component
 	'preload'=>array('log'),
@@ -34,6 +34,12 @@ return array(
 		'user'=>array(
 			// enable cookie-based authentication
 			'allowAutoLogin'=>true,
+		),
+		'viewRenderer'=>array(
+		  'class'=>'application.extensions.yiiext.renderers.smarty.ESmartyViewRenderer',
+		    'fileExtension' => '.tpl',
+		    //'pluginsDir' => 'application.smartyPlugins',
+		    //'configDir' => 'application.smartyConfig',
 		),
         'doctrine' => array(
             'class' => 'Wildkat\YiiExt\DoctrineOrm\DoctrineContainer',
@@ -62,8 +68,8 @@ return array(
                     'mappingPaths' => array(
                         'ext.Wildkat.YiiExt.DoctrineOrm.mapping'
                     ),
-                    'proxyDir' => 'BasePath.JAHAD_Entities',
-                    'proxyNamespace' => 'JAHAD_Entities',
+                    'proxyDir' => 'data',
+                    'proxyNamespace' => 'Proxy',
                 ),
             ),
         ),

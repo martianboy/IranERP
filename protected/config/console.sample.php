@@ -40,8 +40,8 @@ return array(
                     'mappingPaths' => array(
                         'ext.Wildkat.YiiExt.DoctrineOrm.mapping'
                     ),
-                    'proxyDir' => 'BasePath/JAHAD_Entities',
-                    'proxyNamespace' => 'JAHAD_Entities',
+                    'proxyDir' => 'data',
+                    'proxyNamespace' => 'Proxy',
                 ),
             ),
         ),
