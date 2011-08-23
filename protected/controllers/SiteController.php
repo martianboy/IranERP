@@ -74,13 +74,13 @@ class SiteController extends Controller
 		));
 		$tool = new \Doctrine\ORM\Tools\SchemaTool($em);
 		$classes=array();
-		/*
+		
 		foreach($DBClasses as $class)
 			$classes[]=$em->getClassMetadata($class);
 		
 		print_r($tool->getCreateSchemaSql($classes));
 		$tool->updateSchema($classes);
-		*/
+		
 		$a = new Doctrine\ORM\Mapping\MappedSuperclass();
 		
 		echo 'Everything is OK';
