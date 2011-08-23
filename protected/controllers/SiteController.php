@@ -1,5 +1,4 @@
 <?php
-
 class SiteController extends Controller
 {
 	/**
@@ -82,7 +81,7 @@ class SiteController extends Controller
 		print_r($tool->getCreateSchemaSql($classes));
 		$tool->updateSchema($classes);
 		*/
-		$a = new DoctrineContainer();
+		$a = new Doctrine\ORM\Mapping\MappedSuperclass();
 		
 		echo 'Everything is OK';
 	}

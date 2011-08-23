@@ -20,3 +20,8 @@ local.properties
 .classpath
 .settings/
 .loadpath
+bootstrap.php
+DefineClasses.php
+GenerateSchema.php
+msdtest.php
+configs/
