@@ -68,7 +68,7 @@ return array(
                     'mappingPaths' => array(
                         'ext.Wildkat.YiiExt.DoctrineOrm.mapping'
                     ),
-                    'proxyDir' => 'data',
+                    'proxyDir' => 'application.data',
                     'proxyNamespace' => 'Proxy',
                 ),
             ),

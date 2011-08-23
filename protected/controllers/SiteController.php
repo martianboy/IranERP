@@ -46,6 +46,47 @@ class SiteController extends Controller
 	    }
 	}
 
+	public function actionTestDoctrine()
+	{
+		$DBClasses = array(
+			'BasicNamedClass',
+			'TVRD',
+			'Matter',
+			'Title',
+			'Magazine_Type',
+			'Size',
+			'Year',
+			'Mag_No',
+			'Auidunce',
+			'Nationality',
+			'State',
+			'Magazine',
+			'Magazine_Version',
+			'Human',
+			'Media',
+			'Section',
+			'MenuItem'
+		);
+		
+		$em = Yii::app()->doctrine->getEntityManager();
+		$helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
+			'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
+		    'em' => new \Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper($em)
+		));
+		$tool = new \Doctrine\ORM\Tools\SchemaTool($em);
+		$classes=array();
+		/*
+		foreach($DBClasses as $class)
+			$classes[]=$em->getClassMetadata($class);
+		
+		print_r($tool->getCreateSchemaSql($classes));
+		$tool->updateSchema($classes);
+		*/
+		$a = new DoctrineContainer();
+		
+		echo 'Everything is OK';
+	}
+	
 	/**
 	 * Displays the contact page
 	 */
