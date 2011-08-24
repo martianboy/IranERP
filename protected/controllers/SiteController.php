@@ -26,8 +26,7 @@ class SiteController extends Controller
 	 */
 	public function actionIndex()
 	{
-		// renders the view file 'protected/views/site/index.php'
-		// using the default layout 'protected/views/layouts/main.php'
+		// renders the view file 'protected/views/site/index.tpl'
 		$this->render('index');
 	}
 
@@ -80,8 +79,6 @@ class SiteController extends Controller
 		
 		print_r($tool->getCreateSchemaSql($classes));
 		$tool->updateSchema($classes);
-		
-		$a = new Doctrine\ORM\Mapping\MappedSuperclass();
 		
 		echo 'Everything is OK';
 	}

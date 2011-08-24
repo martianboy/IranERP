@@ -1,3 +1,1 @@
 This is yiiversion branch of IranERP, a rewrite of all previous codes in Yii framework.
-
-Please note that Yii framework isn't included here. If you want to make it work, you should download Yii framework and place it wherever you want, and then change the first line in `index.php` to point to your Yii directory.

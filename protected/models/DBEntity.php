@@ -1,4 +1,6 @@
 <?php
+require_once '/srv/http/IranERP/protected/extensions/Wildkat/YiiExt/DoctrineOrm/vendor/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php';
+
 use Doctrine\Common\Annotations\AnnotationReader;
 date_default_timezone_set('UTC');
 

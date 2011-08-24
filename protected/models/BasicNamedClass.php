@@ -1,7 +1,6 @@
 <?php
 require_once 'DBEntity.php';
 
-
 /**
  * @Entity 
  * @Table(indexes={@Index(name="indx_Descrim",columns={"classname"})})
