@@ -1,4 +1,6 @@
 <?php
+require 'SimpleEntities.php';
+
 class SiteController extends Controller
 {
 	/**
@@ -63,7 +65,7 @@ class SiteController extends Controller
 			'Human',
 			'Media',
 			'Section',
-			'MenuItem'
+			//'MenuItem'
 		);
 		
 		$em = Yii::app()->doctrine->getEntityManager();

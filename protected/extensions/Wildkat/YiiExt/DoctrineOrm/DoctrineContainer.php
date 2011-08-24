@@ -7,10 +7,12 @@ use Doctrine\DBAL,
     Doctrine\Common\Cache,
     Doctrine\Common\ClassLoader,
     Doctrine\Common\Annotations\AnnotationReader,
-    Doctrine\ORM\Mapping\Driver\AnnotationDriver;
+    Doctrine\ORM\Mapping\Driver\AnnotationDriver,
+    Doctrine\ORM\Mapping;
 
 require_once 'vendor/Doctrine/Common/ClassLoader.php';
-
+require_once 'vendor/Doctrine/Common/Annotations/Annotation.php';
+require_once 'vendor/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php';
 /**
  * DoctrineContainer.
  *
@@ -125,11 +127,31 @@ class DoctrineContainer extends \CApplicationComponent
      */
     public function init()
     {
+    	//print_r('hello');
+    	$lib = dirname(__FILE__) . '/vendor/Doctrine';
+		
+		/*
+		$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\Common', $lib.'/Common' );
+		//$classLoader->register();
+		\Yii::registerAutoloader(array($classLoader, 'loadClass'));
+		
+		$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\DBAL', $lib.'/DBAL');
+		//$classLoader->register();
+		\Yii::registerAutoloader(array($classLoader, 'loadClass'));
+		
+		$classLoader = new \Doctrine\Common\ClassLoader('Doctrine\ORM', $lib.'/ORM');
+		//$classLoader->register();
+		\Yii::registerAutoloader(array($classLoader, 'loadClass'));
+*/
+		
         $classLoader = new ClassLoader('Doctrine', dirname(__FILE__) . '/vendor');
-        \Yii::registerAutoloader(array($classLoader, 'loadClass'));
+        //print_r($classLoader);
+		//$classLoader->register();
+    	\Yii::registerAutoloader(array($classLoader, 'loadClass'));
 
         $classLoader = new ClassLoader('Symfony', dirname(__FILE__) . '/vendor');
-        \Yii::registerAutoloader(array($classLoader, 'loadClass'));
+	//$classLoader->register();
+      \Yii::registerAutoloader(array($classLoader, 'loadClass'));
 
     }//end init()
 
