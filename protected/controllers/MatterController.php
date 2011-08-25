@@ -1,5 +1,5 @@
 <?php
-require '../models/SimpleEntities.php';
+//Yii::import('application.models.SimpleEntities');
 
 class MatterController extends Controller
 {
@@ -12,14 +12,16 @@ class MatterController extends Controller
 		
 		$accepts = isset($actionParams['isc_dataFormat']) ? $actionParams['isc_dataFormat'] : 'html';
 		
-		if ($req->getIsPutRequest() || $req->getIsDeleteRequest())
-			throw new CHttpException('Not implemented.');
-		if ($req->getIsPostRequest()) {
+		if ($req->getIsPutRequest())
+			CrudResponder::UpdateRecord('Matter');
+		else if ($req->getIsDeleteRequest())
+			CrudResponder::RemoveRecord('Matter');
+		else if ($req->getIsPostRequest()) {
+			//print_r($_SERVER);
 			CrudResponder::AddRecord('Matter', $actionParams);
 		}
 		else	// Is a GET request
 			if ($accepts == 'json')
-				//print_r(Yii::app()->doctrine->entityManager);
 				CrudResponder::fetchResponse('Matter', $actionParams);
 			else {
 				$view_vars = array(

@@ -23,5 +23,4 @@ class scField extends Annotation
 	public $title;
 	public $DoctrineField;
 	public $length;
-	
 }

@@ -31,42 +31,58 @@ public static function parseObjectToArray($object) {
 	 */
 public static function GetVar($VarName,$ARRAY=NULL)
 {
+	//print_r($_POST);
+	//print_r($_GET);
+	//die();
 //Get From Query String
-if(is_array($ARRAY)){
-	if (array_key_exists($VarName, $ARRAY)) return $ARRAY[$VarName];
-}
-	
-$rtnval=null;
-	try{
-		$query = explode('?',$_SERVER['QUERY_STRING']);
-		$tmpvar = explode('&',$query[0]);
+	if(is_array($ARRAY)){
+		if (array_key_exists($VarName, $ARRAY)) return $ARRAY[$VarName];
+	}
 		
-		$Variable = array();
-		foreach($tmpvar as $v){
-			$tmp= explode('=',$v);
-			if(array_key_exists($tmp[0],$Variable))
-			{
-				if(is_array($Variable[$tmp[0]])) $Variable[$tmp[0]][]=$tmp[1];
-				else
+	$rtnval=null;
+	
+	// FIXME does this try..catch block work? 
+	try{
+		//$query = explode('?',$_SERVER['QUERY_STRING']);
+		$query = Yii::app()->getRequest()->getQueryString();
+		
+		if ($query !== '') {
+			$tmpvar = explode('&',$query);
+			
+			$Variable = array();
+			foreach($tmpvar as $v){
+				$tmp= explode('=',$v);
+				if(array_key_exists($tmp[0],$Variable))
 				{
-					$oldvalue=$Variable[$tmp[0]];
-					$Variable[$tmp[0]]=array();
-					$Variable[$tmp[0]][]=$oldvalue;
-					$Variable[$tmp[0]][]=urldecode($tmp[1]);
+					if(is_array($Variable[$tmp[0]])) $Variable[$tmp[0]][]=$tmp[1];
+					else
+					{
+						$oldvalue=$Variable[$tmp[0]];
+						$Variable[$tmp[0]]=array();
+						$Variable[$tmp[0]][]=$oldvalue;
+						$Variable[$tmp[0]][]=urldecode($tmp[1]);
+					}
 				}
+				else
+				$Variable[$tmp[0]]=urldecode($tmp[1]);
 			}
-			else
-			$Variable[$tmp[0]]=urldecode($tmp[1]);
+			if(array_key_exists($VarName,$Variable))
+				$rtnval=$Variable[$VarName];
 		}
-		if(array_key_exists($VarName,$Variable))
-			$rtnval=$Variable[$VarName];
-	}catch(Exception $e)
+	} catch(Exception $e)
 	{
 		print_r($e);
 	}
 	if($rtnval==null){
-		if(array_key_exists($VarName, $_GET) && $rtnval==NULL)	$rtnval = $_GET[$VarName];
-		if(array_key_exists($VarName, $_POST) && $rtnval==NULL) $rtnval = $_POST[$VarName]; 
+		//if(array_key_exists($VarName, $_GET) && $rtnval==NULL)	$rtnval = $_GET[$VarName];
+		if(array_key_exists($VarName, $_REQUEST))
+			$rtnval = $_REQUEST[$VarName];
+		else {
+			$req = Yii::app()->getRequest();
+			if($req->getIsPutRequest()) 
+				$rtnval = $req->getPut($VarName);
+		}
+
 	}
 	//if($VarName=='criteria') print_r($rtnval);
 	//print_r($_SERVER['QUERY_STRING']);

@@ -33,6 +33,8 @@ class Controller extends CController
 	public function getActionParams()
 	{
 		$queryString = Yii::app()->getRequest()->getQueryString();
+
+		// FIXME check for other possible errors 
 		if ($queryString == '') return $_GET;
 		
 		$reqParams = explode('&', $queryString);

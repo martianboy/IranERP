@@ -10,13 +10,10 @@ require_once 'DBEntity.php';
  * 						"TVR"="TVRD",
  * 						"Mat"="Matter",
  * 					  	"Tit"="Title",
- * 						"MgT"="Magazine_Type",
+ * 						"MgT"="MagazineType",
  * 						"Siz"="Size",
  * 						"Yea"="Year",
- * 						"Mag"="Mag_No",
- * 						"Aui"="Auidunce",
- * 						"Nat"="Nationality",
- * 						"Sta"="State",
+ * 						"Mag"="MagNo",
  * 						"BNC"="BasicNamedClass"
  * 					})
  */

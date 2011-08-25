@@ -59,8 +59,8 @@ class DbEntity
 	 */
 	protected $ModifierUserId=-1;
 	
-	public function setEntityManager($value){$this->EM=$value;}
-	public function getEntityManager(){return $this->EM;}
+	public function setEntityManager($value){$this->EM=Yii::app()->doctrine->getEntityManager();}
+	public function getEntityManager(){return Yii::app()->doctrine->getEntityManager();}
 	
 	/**
 	 *@scField(name="id",DoctrineField="id",type="integer",primaryKey="true",hidden="true") 
@@ -112,7 +112,6 @@ class DbEntity
 					call_user_func(array(&$this, 'set'.$propname),$fieldvalue);
 				}
 			}
-			
 		}
 	}
 	public function GetByID($id)
@@ -129,7 +128,7 @@ class DbEntity
 
 	protected function _Save()
 	{
-		$this->EM->persist($this);
+		$this->getEntityManager()->persist($this);
 	}
 	function Save()
 	{

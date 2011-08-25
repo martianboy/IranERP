@@ -2,7 +2,6 @@
 //require_once 'ApplicationHelpers.php';
 //require_once 'RestDataSource.php';
 require_once 'WhereMaker.php';
-require_once 'scField.php';
 
 class CrudResponder 
 {
@@ -32,9 +31,9 @@ class CrudResponder
 		try {
        		$cls=$em->getRepository($ClassName)
     				->find(ApplicationHelpers::GetVar('id'));
-    		$cls->setEntityManager($em);
 			$cls->CreateClassFromScUsingMethod('ApplicationHelpers::GetVar',array("ID"));    								
-       		$cls->Save($em);
+       		//print_r($cls); die;
+			$cls->Save($em);
        		$em->flush();
 
        		RestDataSource::UpdateResponse($cls->GetClassSCPropertiesInArray());

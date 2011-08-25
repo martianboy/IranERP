@@ -13,6 +13,8 @@ use Doctrine\DBAL,
 require_once 'vendor/Doctrine/Common/ClassLoader.php';
 require_once 'vendor/Doctrine/Common/Annotations/Annotation.php';
 require_once 'vendor/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php';
+
+require_once \Yii::app()->basePath . '/components/scField.php';
 /**
  * DoctrineContainer.
  *
