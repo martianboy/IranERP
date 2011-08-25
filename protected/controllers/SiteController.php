@@ -1,6 +1,4 @@
 <?php
-require 'SimpleEntities.php';
-
 class SiteController extends Controller
 {
 	/**

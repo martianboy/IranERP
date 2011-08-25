@@ -1,12 +1,12 @@
 <?php 
-require_once 'SmartClientAnnotation.php';
+require_once 'scField.php';
 use 
     Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\Common\Annotations\AnnotationRegistry,
     Doctrine\ORM\Mapping\ClassMetadataInfo,
     Doctrine\ORM\Mapping\MappingException;
 
-class Common
+class ApplicationHelpers
 {
 	/**
 	 * 

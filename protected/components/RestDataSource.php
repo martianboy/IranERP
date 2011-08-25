@@ -27,9 +27,8 @@ class RestDataSource
 						"endRow"=>$endRow,
 						"totalRows"=>$totalRow,
 						"data"=>$data));
-		header('Content-Type: text/html;charset=utf-8');
+		header('Content-Type: text/json;charset=utf-8');
 		echo json_encode($response);
-		
 	}
 	
 	public static function RemoveResponse($PKeyRemoved)
@@ -42,8 +41,10 @@ class RestDataSource
 	
 	public static function UpdateResponse($UpdatedObject)
 	{
-		$response= array('response'=> array("status"=>0,
-												"data"=>$UpdatedObject));
+		$response= array('response'=> array(
+			"status"=>0,
+			"data"=>$UpdatedObject,
+		));
 		header('Content-Type: text/html;charset=utf-8');
 		echo json_encode($response);	
 		

@@ -1,13 +1,17 @@
 <?php
-require_once 'MsdTools/Common.php';
-require_once 'MsdTools/RestDataSource.php';
+//require_once 'ApplicationHelpers.php';
+//require_once 'RestDataSource.php';
+require_once 'WhereMaker.php';
+require_once 'scField.php';
 
-class PageResponser 
+class CrudResponder 
 {
-	public static function RemoveRecord($ClassName,$em) {
+	public static function RemoveRecord($ClassName,$em=NULL) {
+		$em = Yii::app()->doctrine->getEntityManager();
+		 
 	    try {
        		$cls=$em->getRepository($ClassName)
-    				->find(Common::GetVar('id'));
+    				->find(ApplicationHelpers::GetVar('id'));
     		$cls->setEntityManager($em);
 			$cls->setIsDeleted(true);
 
@@ -21,13 +25,15 @@ class PageResponser
 		}
 	}
 	
-	public static function UpdateRecord($ClassName,$em)
+	public static function UpdateRecord($ClassName,$em=NULL)
 	{
+		$em = Yii::app()->doctrine->getEntityManager();
+		 
 		try {
        		$cls=$em->getRepository($ClassName)
-    				->find(Common::GetVar('id'));
+    				->find(ApplicationHelpers::GetVar('id'));
     		$cls->setEntityManager($em);
-			$cls->CreateClassFromScUsingMethod('Common::GetVar',array("ID"));    								
+			$cls->CreateClassFromScUsingMethod('ApplicationHelpers::GetVar',array("ID"));    								
        		$cls->Save($em);
        		$em->flush();
 
@@ -38,52 +44,59 @@ class PageResponser
 		}
 	}
 	
-	public static  function AddRecord($ClassName,$em)
+	public static  function AddRecord($ClassName,$params=array(), $em=NULL)
 	{
-    	try{
+		$em = Yii::app()->doctrine->getEntityManager();
+		
+		try{
     		$r = new ReflectionClass($ClassName);
     		$cls=$r->newInstance();
-    		$cls->setEntityManager($em);
-       		$cls->CreateClassFromScUsingMethod('Common::GetVar');
-       		$cls->Save($em);
+    		$cls->CreateClassFromScUsingMethod('ApplicationHelpers::GetVar');
+       		$cls->Save();
        		$em->flush();
        		RestDataSource::AddResponse($cls->GetClassSCPropertiesInArray());
 		} catch(Exception $e) {
-    		RestDataSource::SendErrorToClient(-1,$e->getMessage());
+			throw $e;
+    		//RestDataSource::SendErrorToClient(-1,$e->getMessage());
 		}
 	}
 	
-	public static function  fetchResponse($ClassName,$em,$ExceptedProperties=NULL)
+	public static function fetchResponse($ClassName, $params=array(),$ExceptedProperties=NULL)
 	{
-	    $Perfix='_';
-	    $startRow = Common::GetVar($Perfix.'startRow');
-        $endRow =Common::GetVar($Perfix.'endRow');
+		$em = Yii::app()->doctrine->getEntityManager();
+		
+	    $Prefix='_';
+	    $startRow = $params[$Prefix.'startRow'];
+        $endRow = $params[$Prefix.'endRow'];
         if($startRow==null) $startRow =0;
         if($endRow==null) $endRow = 100;
         $totalRows=0;
 
-	    try {
-			$OneRecord = Common::GetVar("id");
-			if($OneRecord!=null)
-			{
+		try {
+			if (isset($params['id'])) {
+				$OneRecord = $params["id"];
 				$cls=$em->getRepository($ClassName)
-							->find($OneRecord);
+						->find($OneRecord);
 				RestDataSource::AddResponse(array($cls->GetClassSCPropertiesInArray()));
     			return;
 			}
 
 			//Get sortBy Defines
 			$orderby=array();
-			$order= Common::GetVar($Perfix.'sortBy');
-			$jsoncriteria = Common::GetVar('criteria');
+			$order = null;
+			if (isset($params[$Prefix.'sortBy'])) 
+				$order= $params[$Prefix.'sortBy'];
+			
 			$criteria = array();
-			if($jsoncriteria!=null)
-				if (is_array($jsoncriteria))
-					foreach($jsoncriteria as $v) 
-						$criteria[]=get_object_vars(json_decode($v));
-				else
-					$criteria[]=get_object_vars(json_decode($jsoncriteria));
-
+			if (isset($params[$Prefix.'criteria'])) {
+				$jsoncriteria = $params['criteria'];
+				if($jsoncriteria!=null)
+					if (is_array($jsoncriteria))
+						foreach($jsoncriteria as $v) 
+							$criteria[]=get_object_vars(json_decode($v));
+					else
+						$criteria[]=get_object_vars(json_decode($jsoncriteria));
+			}
 			if($order!=null)
 				if(is_array($order))
 					foreach($order as $fieldname)
@@ -108,15 +121,14 @@ class PageResponser
 			//Get Objects Form Db
 			$cls=new ReflectionClass($ClassName);
 			$cls=$cls->newInstance();
-			$cls->setEntityManager($em);
-			$rtn=$cls->fetchObjects($em,$startRow,$endRow,$whstr,$whparam,$orderby);
+			$rtn=$cls->fetchObjects($startRow,$endRow,$whstr,$whparam,$orderby);
 			$results=$rtn['results'];
 			$totalRows=$rtn['totalRows'];
-		
-		    //Making Result Array
+			
+			//Making Result Array
 		    $resarr = array();
 		    foreach($results as $item)
-		        $resarr[]=$item->GetClassSCPropertiesInArray($ExceptedProperties);
+				$resarr[]=$item->GetClassSCPropertiesInArray($ExceptedProperties);
 		    
 		    RestDataSource::fetchResponse($startRow,$endRow,$totalRows,$resarr);
 		} catch(Exception $e) {

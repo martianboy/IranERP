@@ -115,27 +115,28 @@ class DbEntity
 			
 		}
 	}
-	public function GetByID($id) {return $this
-												->getEntityManager()
-												->getRepository(get_class($this))
-												->find($id);
+	public function GetByID($id)
+	{
+		return $this->getEntityManager()
+					->getRepository(get_class($this))
+					->find($id);
 	}
 	
-protected function parseObjectToArray() {
-	return Common::parseObjectToArray($this);
-	
-}
+	protected function parseObjectToArray()
+	{
+		return Common::parseObjectToArray($this);
+	}
 
+	protected function _Save()
+	{
+		$this->EM->persist($this);
+	}
+	function Save()
+	{
+		$this->_Save();
+	}
 
-
-protected function _Save($EM){
-	
-	$EM->persist($this);
-}
-
-function Save($EM){$this->_Save($EM);}
-
-public function GetClassSCPropertiesInArray($ExceptedProperties=NULL){
+	public function GetClassSCPropertiesInArray($ExceptedProperties=NULL){
 		$rtnval=array();
 		$isarray=is_array($ExceptedProperties);
 		$reader=new AnnotationReader();
@@ -160,54 +161,56 @@ public function GetClassSCPropertiesInArray($ExceptedProperties=NULL){
 			}
 		}
 		return $rtnval;
-}
-
-function GetClassPropertiesinArray($ExceptedProperties)
-{
-	$rtnval = array();
-	$isarray=is_array($ExceptedProperties);
-	$methods = get_class_methods($this);
-	print_r($methods);
-	foreach($methods as $m){
-		
-		if(substr($m,0,3)=='get'){
-			$propname=substr($m,3);
-			
-			if($isarray){
-				//Check That propname exist in ExcepredProperties
-				if(in_array($propname,$ExceptedProperties)) continue;
-			}
-			
-			$rtnval[$propname]=call_user_method($m,$this);
-		}
 	}
+
+	function GetClassPropertiesinArray($ExceptedProperties)
+	{
+		$rtnval = array();
+		$isarray=is_array($ExceptedProperties);
+		$methods = get_class_methods($this);
+		print_r($methods);
+		foreach($methods as $m)
+		{
+			if(substr($m,0,3)=='get'){
+				$propname=substr($m,3);
+				
+				if($isarray){
+					//Check That propname exist in ExcepredProperties
+					if(in_array($propname,$ExceptedProperties)) continue;
+				}
+				
+				$rtnval[$propname]=call_user_method($m,$this);
+			}
+		}
+			
+		return $rtnval;
+	}
+
+
+	function GetClassArray()
+	{
+		return $this->parseObjectToArray();
+	}
+
+	public function __construct()
+	{
+		$this->LastModifyDate=new DateTime();
+		$this->CreatedDate=new DateTime();
+		$this->EM = Yii::app()->doctrine->getEntityManager();
+	}
+
+	public function fetchObjects($startRow,$endRow,$whstr,$whparam,$orderby){
+		$em = $this->EM;
 		
-return $rtnval;
-}
-
-
- function GetClassArray()
-{
-	return $this->parseObjectToArray();
-}
-
-public function __construct()
-{
-	$this->LastModifyDate=new DateTime();
-	$this->CreatedDate=new DateTime();
-	
-}
-
-
-	public function fetchObjects($em,$startRow,$endRow,$whstr,$whparam,$orderby){
 		$qb = $em->createQueryBuilder();
-			$qb->add('select', 'tmp')
-			   ->add('from', get_class($this).' tmp')
-			   ->setFirstResult( $startRow )
-			   ->setMaxResults( $endRow-$startRow );
+		$qb->add('select', 'tmp')
+		   ->add('from', get_class($this).' tmp')
+		   ->setFirstResult( $startRow )
+		   ->setMaxResults( $endRow-$startRow );
 
-            $tmp=0;
-            foreach($orderby as $fn=>$kn) 
+		$tmp=0;
+            
+        	foreach($orderby as $fn=>$kn) 
                 if($tmp==0){
                 	$qb->orderBy('tmp.'.$fn,$kn);
                 	$tmp=1;
@@ -243,9 +246,7 @@ public function __construct()
 			
 			$totalRows = $tmptest[0][1];
 			return array('totalRows'=>$totalRows,'results'=>$results);
-			
 	}
-	
 }
 /***
  * Old
@@ -301,15 +302,5 @@ return $rtnval;
     }
     return $array;
 }
-	*/
-
-
-
-
-
-
-
- 
- 
- 
+*/
 ?>

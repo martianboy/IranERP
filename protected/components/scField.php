@@ -1,7 +1,7 @@
 <?php
-require_once  'Doctrine/Common/ClassLoader.php';
+//require_once  'Doctrine/Common/ClassLoader.php';
 use Doctrine\Common\Annotations\Annotation;
- class scField extends Annotation
+class scField extends Annotation
 {
 /**
  * @var Boolean

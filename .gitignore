@@ -20,6 +20,7 @@ local.properties
 .classpath
 .settings/
 .loadpath
+.buildpath
 bootstrap.php
 DefineClasses.php
 GenerateSchema.php
