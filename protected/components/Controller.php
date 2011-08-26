@@ -91,7 +91,7 @@ class Controller extends CController
 	
 	public function beforeRender($view)
 	{
-		$this->baseUrl = Yii::app()->baseUrl;
+		$this->baseUrl ='http://localhost/iryii/index.php';// Yii::app()->baseUrl;
 		$res = MainLayoutHelpers::GetSmartClientJs();
 		$this->globalResources = array_merge($this->globalResources, $res);
 		
