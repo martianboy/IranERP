@@ -102,6 +102,7 @@ class CController extends CBaseController
 		$this->_id=$id;
 		$this->_module=$module;
 		$this->attachBehaviors($this->behaviors());
+		
 	}
 
 	/**

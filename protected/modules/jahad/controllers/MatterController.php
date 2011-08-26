@@ -5,7 +5,7 @@ class MatterController extends Controller
 {
 	public function actionIndex()
 	{
-		$req = Yii::app()->getRequest();
+		$req = \Yii::app()->getRequest();
 		$actionParams = $this->getActionParams();
 		\Yii::trace('Here is ActionIndex','system.web.CController');
 		
@@ -15,16 +15,16 @@ class MatterController extends Controller
 		$accepts = isset($actionParams['isc_dataFormat']) ? $actionParams['isc_dataFormat'] : 'html';
 		
 		if ($req->getIsPutRequest())
-			CrudResponder::UpdateRecord('Matter');
+			CrudResponder::UpdateRecord('\IRERP\modules\jahad\models\Matter');
 		else if ($req->getIsDeleteRequest())
-			CrudResponder::RemoveRecord('Matter');
+			CrudResponder::RemoveRecord('\IRERP\modules\jahad\models\Matter');
 		else if ($req->getIsPostRequest()) {
 			//print_r($_SERVER);
-			CrudResponder::AddRecord('Matter', $actionParams);
+			CrudResponder::AddRecord('\IRERP\modules\jahad\models\Matter', $actionParams);
 		}
 		else	// Is a GET request
 			if ($accepts == 'json')
-				CrudResponder::fetchResponse('Matter', $actionParams);
+				CrudResponder::fetchResponse('\IRERP\modules\jahad\models\Matter', $actionParams);
 			else {
 				$view_vars = array(
 					'dsMaster' => $this->getId(),

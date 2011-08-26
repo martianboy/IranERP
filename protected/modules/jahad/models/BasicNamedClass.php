@@ -1,5 +1,5 @@
 <?php
-require_once 'DBEntity.php';
+namespace IRERP\modules\jahad\models;
 
 /**
  * @Entity 
@@ -18,7 +18,7 @@ require_once 'DBEntity.php';
  * 					})
  */
 
-class BasicNamedClass extends DbEntity
+class BasicNamedClass extends \IRERP\models\DbEntity
 {
 
 	 /**

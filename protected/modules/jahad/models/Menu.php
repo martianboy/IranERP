@@ -1,5 +1,5 @@
 <?php
-require_once 'DBEntity.php';
+namespace IRERP\modules\jahad\models;
 
 /**
  * @Entity @Table(name="Menu")

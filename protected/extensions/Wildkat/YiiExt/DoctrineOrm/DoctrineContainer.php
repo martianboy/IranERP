@@ -129,6 +129,7 @@ class DoctrineContainer extends \CApplicationComponent
      */
     public function init()
     {
+    	\Yii::trace('init @@ init @@ init Doctrine');
     	//print_r('hello');
     	$lib = dirname(__FILE__) . '/vendor/Doctrine';
 		

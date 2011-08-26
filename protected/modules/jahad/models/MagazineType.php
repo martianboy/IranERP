@@ -1,4 +1,6 @@
 <?php
+
+namespace IRERP\modules\jahad\models;
 /**
  * @Entity
  * 

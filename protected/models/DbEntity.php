@@ -1,7 +1,9 @@
 <?php
+
+namespace IRERP\models;
+
 use Doctrine\Common\Annotations\AnnotationReader;
 date_default_timezone_set('UTC');
-
 /**
  * @MappedSuperclass
  * @author masoud
@@ -59,8 +61,8 @@ class DbEntity
 	 */
 	protected $ModifierUserId=-1;
 	
-	public function setEntityManager($value){$this->EM=Yii::app()->doctrine->getEntityManager();}
-	public function getEntityManager(){return Yii::app()->doctrine->getEntityManager();}
+	public function setEntityManager($value){$this->EM=\Yii::app()->doctrine->getEntityManager();}
+	public function getEntityManager(){return \Yii::app()->doctrine->getEntityManager();}
 	
 	/**
 	 *@scField(name="id",DoctrineField="id",type="integer",primaryKey="true",hidden="true") 
@@ -101,7 +103,7 @@ class DbEntity
 			if(is_array($ExceptedProperties))
 				if(in_array($propname, $ExceptedProperties)) continue; 
 			//Get Method Annotation
-			$reflMethod = new ReflectionMethod(get_class($this), $methodName);
+			$reflMethod = new \ReflectionMethod(get_class($this), $methodName);
 			$MethodAnns = $reader->getMethodAnnotations($reflMethod);
 			foreach ($MethodAnns as $annots){
 				if(is_a($annots,'scField')){
@@ -149,7 +151,7 @@ class DbEntity
 			if($isarray) if(in_array($propname, $ExceptedProperties)) continue; 
 			//Get Method Annotation
 			$reflMethod= NUll;
-			$reflMethod = new ReflectionMethod(get_class($this), $methodName);
+			$reflMethod = new \ReflectionMethod(get_class($this), $methodName);
 			$MethodAnns = $reader->getMethodAnnotations($reflMethod);
 			foreach ($MethodAnns as $annots){
 				if(is_a($annots,'scField')){
@@ -193,9 +195,9 @@ class DbEntity
 
 	public function __construct()
 	{
-		$this->LastModifyDate=new DateTime();
-		$this->CreatedDate=new DateTime();
-		$this->EM = Yii::app()->doctrine->getEntityManager();
+		$this->LastModifyDate=new \DateTime();
+		$this->CreatedDate=new \DateTime();
+		$this->EM = \Yii::app()->doctrine->getEntityManager();
 	}
 
 	public function fetchObjects($startRow,$endRow,$whstr,$whparam,$orderby){
