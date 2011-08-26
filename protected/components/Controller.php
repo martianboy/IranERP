@@ -30,30 +30,63 @@ class Controller extends CController
 	 */
 	public $globalResources = array();
 	
+	protected $actionParams = array();
+	
+	protected function getIsGetRequest()
+	{
+		$req = Yii::app()->getRequest();
+		return !($req->getIsDeleteRequest() || $req->getIsPostRequest() || $req->getIsPutRequest());
+	}
+	
+	public function getActionParam($paramName)
+	{
+		$req = Yii::app()->getRequest();
+		if ($req->getIsPutRequest())
+			return $req->getPut($paramName, NULL);
+		else
+		{
+			if (count($this->actionParams) == 0)
+				$this->actionParams = $this->getActionParams();
+			
+			if (isset($this->actionParams[$paramName]))
+				return $this->actionParams[$paramName];
+			else
+				return NULL;
+		}
+	}
 	public function getActionParams()
 	{
-		$queryString = Yii::app()->getRequest()->getQueryString();
-
-		// FIXME check for other possible errors 
-		if ($queryString == '') return $_GET;
+		$req = Yii::app()->getRequest();
 		
-		$reqParams = explode('&', $queryString);
-		
-		$actionParams = array();
-		foreach($reqParams as $param)
-		{
-			list($paramName, $paramValue) = explode('=',$param);
-			if(array_key_exists($paramName, $actionParams)) {
-				$temp = $actionParams[$paramName];
-				if (!is_array($temp))
-					$actionParams[$paramName] = array(0 => $temp);
-				$actionParams[$paramName][] = urldecode($paramValue);
+		if ($req->getIsPostRequest() || $req->getIsDeleteRequest())
+			return $_REQUEST;
+		if ($this->getIsGetRequest()) {
+			$queryString = $req->getQueryString();
+			
+			// FIXME check for other possible errors 
+			if ($queryString !== '') {
+				$reqParams = explode('&', $queryString);
+				
+				$actionParams = array();
+				foreach($reqParams as $param)
+				{
+					list($paramName, $paramValue) = explode('=',$param);
+					if(array_key_exists($paramName, $actionParams)) {
+						$temp = $actionParams[$paramName];
+						if (!is_array($temp))
+							$actionParams[$paramName] = array(0 => $temp);
+						$actionParams[$paramName][] = urldecode($paramValue);
+					}
+					else
+						$actionParams[$paramName] = urldecode($paramValue);
+				}
+				return $actionParams;
 			}
 			else
-				$actionParams[$paramName] = urldecode($paramValue);
+				return $_GET;
 		}
 		
-		return $actionParams;
+		return NULL;
 	}
 	
 	public function beforeRender($view)

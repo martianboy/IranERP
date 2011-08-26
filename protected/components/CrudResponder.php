@@ -11,7 +11,6 @@ class CrudResponder
 	    try {
        		$cls=$em->getRepository($ClassName)
     				->find(ApplicationHelpers::GetVar('id'));
-    		$cls->setEntityManager($em);
 			$cls->setIsDeleted(true);
 
        		$cls->Save($em);
@@ -31,8 +30,10 @@ class CrudResponder
 		try {
        		$cls=$em->getRepository($ClassName)
     				->find(ApplicationHelpers::GetVar('id'));
-			$cls->CreateClassFromScUsingMethod('ApplicationHelpers::GetVar',array("ID"));    								
+			//$cls->CreateClassFromScUsingMethod('ApplicationHelpers::GetVar',array("ID"));
+       		$cls->CreateClassFromScUsingMethod(array(Yii::app()->getController(), 'getActionParam'), array("ID"));
        		//print_r($cls); die;
+       		
 			$cls->Save($em);
        		$em->flush();
 
@@ -50,7 +51,8 @@ class CrudResponder
 		try{
     		$r = new ReflectionClass($ClassName);
     		$cls=$r->newInstance();
-    		$cls->CreateClassFromScUsingMethod('ApplicationHelpers::GetVar');
+    		//$cls->CreateClassFromScUsingMethod('ApplicationHelpers::GetVar');
+    		$cls->CreateClassFromScUsingMethod(array(Yii::app()->getController(), 'getActionParam'));
        		$cls->Save();
        		$em->flush();
        		RestDataSource::AddResponse($cls->GetClassSCPropertiesInArray());

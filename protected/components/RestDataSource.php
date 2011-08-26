@@ -35,7 +35,7 @@ class RestDataSource
 	{
 		$response= array('response'=> array("status"=>0,
 												"data"=>$PKeyRemoved));
-		header('application/json; charset=UTF-8');
+		header('Content-Type: text/json; charset=UTF-8');
 		echo json_encode($response);
 	}
 	
@@ -45,7 +45,7 @@ class RestDataSource
 			"status"=>0,
 			"data"=>$UpdatedObject,
 		));
-		header('Content-Type: text/html;charset=utf-8');
+		header('Content-Type: text/json;charset=utf-8');
 		echo json_encode($response);	
 		
 	}
@@ -54,7 +54,7 @@ class RestDataSource
 	{
 		$response= array('response'=> array("status"=>0,
 												"data"=>$AddedObject));
-		header('Content-Type: text/html;charset=utf-8');
+		header('Content-Type: text/json;charset=utf-8');
 		echo json_encode($response);
 		
 		
@@ -79,7 +79,7 @@ class RestDataSource
 	{
 
 		$response = array('response'=>array("status"=>$ErrorNo,"data"=>$Errors));
-		header('Content-Type: text/html;charset=utf-8');
+		header('Content-Type: text/json;charset=utf-8');
 		echo json_encode($response);
 	}
 }
