@@ -22,6 +22,12 @@ class Controller extends CController
 	 */
 	public $breadcrumbs=array();
 	
+	public function __construct($id,$m=NULL)
+	{
+	parent::__construct($id,$m);
+	Yii::app()->ir_ClassLoader->nop();
+	}
+	
 	public $baseUrl = '';
 	
 	public $direction = 'rtl';
@@ -93,7 +99,7 @@ class Controller extends CController
 	
 	public function beforeRender($view)
 	{
-		$this->baseUrl = Yii::app()->baseUrl;
+		$this->baseUrl ='http://localhost/iryii/index.php';// Yii::app()->baseUrl;
 		$res = MainLayoutHelpers::GetSmartClientJs();
 		$this->globalResources = array_merge($this->globalResources, $res);
 		$this->direction = Yii::app()->params['direction'];

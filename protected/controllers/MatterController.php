@@ -7,6 +7,8 @@ class MatterController extends Controller
 	{
 		$req = Yii::app()->getRequest();
 		$actionParams = $this->getActionParams();
+		\Yii::trace('Here is ActionIndex','system.web.CController');
+		
 		//print_r($actionParams);
 		//echo $req->getQueryString();
 		
