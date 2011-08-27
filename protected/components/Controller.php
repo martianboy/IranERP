@@ -23,6 +23,8 @@ class Controller extends CController
 	public $breadcrumbs=array();
 	
 	public $baseUrl = '';
+	
+	public $direction = 'rtl';
 	/**
 	 * 
 	 * Static resources for all controllers.
@@ -94,6 +96,7 @@ class Controller extends CController
 		$this->baseUrl = Yii::app()->baseUrl;
 		$res = MainLayoutHelpers::GetSmartClientJs();
 		$this->globalResources = array_merge($this->globalResources, $res);
+		$this->direction = Yii::app()->params['direction'];
 		
 		return parent::beforeRender($view);
 	}

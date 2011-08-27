@@ -6,8 +6,9 @@ require_once 'WhereMaker.php';
 class CrudResponder 
 {
 	public static function RemoveRecord($ClassName,$em=NULL) {
-		$em = Yii::app()->doctrine->getEntityManager();
-		 
+		if ($em == NULL)
+			$em = Yii::app()->doctrine->getEntityManager();
+				 
 	    try {
        		$cls=$em->getRepository($ClassName)
     				->find(ApplicationHelpers::GetVar('id'));
@@ -25,8 +26,9 @@ class CrudResponder
 	
 	public static function UpdateRecord($ClassName,$em=NULL)
 	{
-		$em = Yii::app()->doctrine->getEntityManager();
-		 
+		if ($em == NULL)
+			$em = Yii::app()->doctrine->getEntityManager();
+				 
 		try {
        		$cls=$em->getRepository($ClassName)
     				->find(ApplicationHelpers::GetVar('id'));
@@ -46,7 +48,8 @@ class CrudResponder
 	
 	public static  function AddRecord($ClassName,$params=array(), $em=NULL)
 	{
-		$em = Yii::app()->doctrine->getEntityManager();
+		if ($em == NULL)
+			$em = Yii::app()->doctrine->getEntityManager();
 		
 		try{
     		$r = new ReflectionClass($ClassName);
@@ -62,10 +65,11 @@ class CrudResponder
 		}
 	}
 	
-	public static function fetchResponse($ClassName, $params=array(),$ExceptedProperties=NULL)
+	public static function fetchResponse($ClassName, $params=array(),$ExceptedProperties=NULL, $em = NULL)
 	{
-		$em = Yii::app()->doctrine->getEntityManager();
-		
+		if ($em == NULL)
+			$em = Yii::app()->doctrine->getEntityManager();
+				
 	    $Prefix='_';
 	    $startRow = $params[$Prefix.'startRow'];
         $endRow = $params[$Prefix.'endRow'];

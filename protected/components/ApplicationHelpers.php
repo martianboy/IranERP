@@ -26,6 +26,7 @@ public static function parseObjectToArray($object) {
 	 * 
 	 * Tries To Retrive VarName From QueryString or $_GET or $_POST
 	 * if it can not find VarName in Array
+	 * @deprecated Please use {@link Controller::getActionParam()} instead.
 	 * @param string $VarName
 	 * @param Array $ARRAY
 	 */
