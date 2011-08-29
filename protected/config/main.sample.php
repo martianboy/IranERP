@@ -10,8 +10,11 @@ return array(
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
 	'name'=>'IranERP',
 
-	// preloading 'log' component
-	'preload'=>array('log'),
+	// preloading 'log' and 'irclassloader' components
+	'preload'=>array(
+		'log',
+		'irclassloader',
+	),
 
 	// autoloading model and component classes
 	'import'=>array(
@@ -27,6 +30,7 @@ return array(
 		 	// If removed, Gii defaults to localhost only. Edit carefully to taste.
 			'ipFilters'=>array('127.0.0.1','::1'),
 		),
+		'jahad',
 	),
 
 	// application components
@@ -34,6 +38,9 @@ return array(
 		'user'=>array(
 			// enable cookie-based authentication
 			'allowAutoLogin'=>true,
+		),
+		'ir_ClassLoader' => array(
+			'class' => 'application.extensions.IRext.IRLoader.IR_ClassLoader',
 		),
 		'viewRenderer'=>array(
 		  'class'=>'application.extensions.yiiext.renderers.smarty.ESmartyViewRenderer',
@@ -104,7 +111,7 @@ return array(
 			'routes'=>array(
 				array(
 					'class'=>'CFileLogRoute',
-					'levels'=>'error, warning',
+					'levels'=>'error, warning, trace', // Enabled trace messages
 				),
 				// uncomment the following to show log messages on web pages
 				/*
@@ -121,5 +128,6 @@ return array(
 	'params'=>array(
 		// this is used in contact page
 		'adminEmail'=>'webmaster@example.com',
+		'direction' => 'rtl',
 	),
 );

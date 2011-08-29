@@ -99,11 +99,34 @@ class Controller extends CController
 	
 	public function beforeRender($view)
 	{
-		$this->baseUrl ='http://localhost/iryii/index.php';// Yii::app()->baseUrl;
+		$this->baseUrl = Yii::app()->baseUrl;
 		$res = MainLayoutHelpers::GetSmartClientJs();
 		$this->globalResources = array_merge($this->globalResources, $res);
 		$this->direction = Yii::app()->params['direction'];
 		
 		return parent::beforeRender($view);
 	}
+	
+	/**
+	*
+	* Sends raw response with desired content-type
+	* @param object $response
+	* @param string $contentType
+	*/
+	public function ajaxRespond($response, $contentType)
+	{
+		header('Content-Type: ' . $contentType . '; charset=utf-8');
+		echo $response;
+	}
+	
+	/**
+	 *
+	 * Sends json response with content-type: text/json
+	 * @param array $responseArray
+	 */
+	public function ajaxRespondJSON($responseArray)
+	{
+		$this->ajaxRespond(json_encode($responseArray), 'text/json');
+	}
+	
 }

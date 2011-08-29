@@ -44,7 +44,7 @@ class SiteController extends Controller
 	    }
 	}
 
-	public function actionTestDoctrine()
+	public function actionInstallDB()
 	{
 		$DBClasses = array(
 			'BasicNamedClass',
@@ -136,5 +136,19 @@ class SiteController extends Controller
 	{
 		Yii::app()->user->logout();
 		$this->redirect(Yii::app()->homeUrl);
+	}
+	
+	public function actionPhpTest()
+	{
+		try {
+			$json = json_decode('{a : "c"}');
+			print_r($json);
+			print_r(get_object_vars($json));
+		}
+		catch(Exception $ex)
+		{
+			print_r($ex);
+			//throw $ex;
+		}
 	}
 }

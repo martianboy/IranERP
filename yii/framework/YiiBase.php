@@ -115,6 +115,28 @@ class YiiBase
 		return self::createApplication('CConsoleApplication',$config);
 	}
 
+	public static function LoadIRanClasses($classname)
+	{
+		\Yii::trace('#@! -- Request To Load '.$classname);
+		//Detect That namespce is IRERP
+		$secs = explode("\\", $classname);
+		if(isset($secs[0]))
+			if($secs[0]=='IRERP')
+			{
+			 $path =\Yii::app()->basePath;
+			 for($i=1;$i<count($secs);$i++) $path=$path.DIRECTORY_SEPARATOR.$secs[$i];
+			 $path=$path.'.php';
+			 \Yii::trace('#@! -- Try To Include '.$path);
+			 //Check That File Exist?
+			 if(file_exists($path)){
+			 	require $path;			 
+			 	return true;
+			 }
+			 else return false;
+			}
+		return FALSE;
+	}
+
 	/**
 	 * Creates an application of the specified class.
 	 * @param string $class the application class name
@@ -125,6 +147,7 @@ class YiiBase
 	 */
 	public static function createApplication($class,$config=null)
 	{
+	    spl_autoload_register('\Yii::LoadIRanClasses');
 		return new $class($config);
 	}
 

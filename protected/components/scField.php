@@ -1,7 +1,9 @@
 <?php
-//require_once  'Doctrine/Common/ClassLoader.php';
+namespace Doctrine\ORM\Mapping;
 use Doctrine\Common\Annotations\Annotation;
-class scField extends Annotation
+
+/** @Annotation */
+final class scField extends Annotation
 {
 /**
  * @var Boolean

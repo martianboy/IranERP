@@ -1,5 +1,7 @@
 <?php
 namespace IRERP\modules\jahad\models;
+use \IRERP\models\DbEntity;
+use \Doctrine\ORM\Mapping\scField;
 
 /**
  * @Entity 
@@ -18,7 +20,7 @@ namespace IRERP\modules\jahad\models;
  * 					})
  */
 
-class BasicNamedClass extends \IRERP\models\DbEntity
+class BasicNamedClass extends DbEntity
 {
 
 	 /**

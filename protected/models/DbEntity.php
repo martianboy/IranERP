@@ -2,7 +2,9 @@
 
 namespace IRERP\models;
 
-use Doctrine\Common\Annotations\AnnotationReader;
+use \Doctrine\Common\Annotations\AnnotationReader,
+	\Doctrine\ORM\Mapping\scField;
+
 date_default_timezone_set('UTC');
 /**
  * @MappedSuperclass
@@ -14,7 +16,7 @@ class DbEntity
 	/**
 	 * Entity Manager That This Class Use To 
 	 * Doing Something To Objects
-	 * @var Doctrine EntityManager
+	 * @var \Doctrine\ORM\EntityManager
 	 */
 	protected $EM;
 	
@@ -106,7 +108,7 @@ class DbEntity
 			$reflMethod = new \ReflectionMethod(get_class($this), $methodName);
 			$MethodAnns = $reader->getMethodAnnotations($reflMethod);
 			foreach ($MethodAnns as $annots){
-				if(is_a($annots,'scField')){
+				if(is_a($annots,'\Doctrine\ORM\Mapping\scField')){
 					//if defined Annotation is scField
 					//Get Value From User
 					$fieldvalue = call_user_func($functionName,$annots->name,$ValueArray);
@@ -150,11 +152,11 @@ class DbEntity
 			//if propname is in $ExceptedProperties jump to next property
 			if($isarray) if(in_array($propname, $ExceptedProperties)) continue; 
 			//Get Method Annotation
-			$reflMethod= NUll;
+			$reflMethod= NULL;
 			$reflMethod = new \ReflectionMethod(get_class($this), $methodName);
 			$MethodAnns = $reader->getMethodAnnotations($reflMethod);
 			foreach ($MethodAnns as $annots){
-				if(is_a($annots,'scField')){
+				if(is_a($annots,'\Doctrine\ORM\Mapping\scField')){
 					//if defined Annotation is scField
 					//Get Value
 					$rtnval[$annots->name]=	call_user_func(array(&$this, 'get'.$propname));
@@ -228,8 +230,9 @@ class DbEntity
             }
 			  
             $query = $qb->getQuery();
-			$results = $query->getResult();
-
+			
+            $results = $query->getResult();
+			
 			$qb = $em->createQueryBuilder();
 			$qb->add('select', 'count(tmp.id)')
 			   ->add('from', get_class($this).' tmp');
@@ -240,11 +243,10 @@ class DbEntity
 			} else {
 			    $qb->add('where','tmp.IsDeleted =0');
 			}
-			   
+			
 			//get Total Rows
 			$dql = $qb->getQuery();
-			$tmptest= $dql->getResult();
-			
+			$tmptest = $dql->getResult();
 			$totalRows = $tmptest[0][1];
 			return array('totalRows'=>$totalRows,'results'=>$results);
 	}
