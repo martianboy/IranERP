@@ -44,6 +44,11 @@ class SiteController extends Controller
 	    }
 	}
 
+	public function actionTestDoctrine()
+	{
+		$em = Yii::app()->doctrine->getEntityManager();
+		$f = new \IRERP\Basics\Annotations\scField(array());
+	}
 	public function actionInstallDB()
 	{
 		$DBClasses = array(

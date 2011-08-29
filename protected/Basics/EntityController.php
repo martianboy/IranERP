@@ -2,7 +2,7 @@
 namespace IRERP\Basics;
 use \Yii, \ReflectionClass;
 
-abstract class EntityController extends IRController
+abstract class EntityController extends \IRController
 {
 	public function actionIndex()
 	{

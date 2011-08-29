@@ -1,5 +1,5 @@
 <?php
-namespace Doctrine\ORM\Mapping;
+namespace IRERP\Basics\Annotations;
 use Doctrine\Common\Annotations\Annotation;
 
 /** @Annotation */

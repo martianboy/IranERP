@@ -3,7 +3,7 @@
 namespace IRERP\models;
 
 use \Doctrine\Common\Annotations\AnnotationReader,
-	\Doctrine\ORM\Mapping\scField;
+	\IRERP\Basics\Annotations\scField as scField;
 
 date_default_timezone_set('UTC');
 /**
@@ -96,6 +96,7 @@ class DbEntity
 	public function CreateClassFromScUsingMethod($functionName,$ExceptedProperties=NULL,$ValueArray = NULL){
 		$reader=new AnnotationReader();
 		$methods=get_class_methods(get_class($this));
+		$f = new \IRERP\Basics\Annotations\scField(array());
 		foreach ($methods as $methodName)
 		{
 			//Check That Method is getter or setter else continue
@@ -108,7 +109,7 @@ class DbEntity
 			$reflMethod = new \ReflectionMethod(get_class($this), $methodName);
 			$MethodAnns = $reader->getMethodAnnotations($reflMethod);
 			foreach ($MethodAnns as $annots){
-				if(is_a($annots,'\Doctrine\ORM\Mapping\scField')){
+				if(is_a($annots,'\IRERP\Basics\Annotations\scField')){
 					//if defined Annotation is scField
 					//Get Value From User
 					$fieldvalue = call_user_func($functionName,$annots->name,$ValueArray);
@@ -156,7 +157,7 @@ class DbEntity
 			$reflMethod = new \ReflectionMethod(get_class($this), $methodName);
 			$MethodAnns = $reader->getMethodAnnotations($reflMethod);
 			foreach ($MethodAnns as $annots){
-				if(is_a($annots,'\Doctrine\ORM\Mapping\scField')){
+				if(is_a($annots,'\IRERP\Basics\Annotations\scField')){
 					//if defined Annotation is scField
 					//Get Value
 					$rtnval[$annots->name]=	call_user_func(array(&$this, 'get'.$propname));

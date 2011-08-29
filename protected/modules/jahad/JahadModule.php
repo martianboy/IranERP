@@ -1,6 +1,6 @@
 <?php
 
-class JahadModule extends CWebModule
+class JahadModule extends IRWebModule
 {
 	public function init()
 	{

@@ -1,7 +1,7 @@
 <?php
 namespace IRERP\modules\jahad\models;
-use \IRERP\models\DbEntity;
-use \Doctrine\ORM\Mapping\scField;
+use \IRERP\models\DbEntity,
+	\IRERP\Basics\Annotations\scField as scField;
 
 /**
  * @Entity 
