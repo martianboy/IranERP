@@ -1,5 +1,5 @@
 <?php
-class SiteController extends Controller
+class SiteController extends IRController
 {
 	/**
 	 * Declares class-based actions.
