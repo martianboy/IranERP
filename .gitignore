@@ -1,10 +1,8 @@
-MsdTools/config.php
-templates_c/*
 protected/config/main.php
 protected/config/console.php
 protected/runtime/
-assets/
-themes/clasic/views
+/assets/
+/themes/clasic/views
 *~
 *.log
 *.pydevproject
@@ -21,9 +19,3 @@ local.properties
 .settings/
 .loadpath
 .buildpath
-bootstrap.php
-DefineClasses.php
-GenerateSchema.php
-msdtest.php
-configs/
-JAHAD_UI/

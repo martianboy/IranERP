@@ -6,7 +6,6 @@
 class IR_ClassLoader extends CApplicationComponent
 {
 	function init(){
-		
 		\Yii::trace('#@! -- IRClassLoader is Initializing');
 		\Yii::registerAutoloader(array($this,'LoadIRanClasses'));
 		\Yii::trace('#@! -- IRClassLoader Initialized');

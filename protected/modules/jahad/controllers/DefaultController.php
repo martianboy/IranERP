@@ -2,7 +2,7 @@
 use IRERP\modules\jahad\models\Matter;
 use IRERP\modules\jahad\models;
 
-class DefaultController extends Controller
+class DefaultController extends IRController
 {
 	public function actionIndex()
 	{
