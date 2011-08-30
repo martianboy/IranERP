@@ -1,8 +1,9 @@
 <?php
-namespace IRERP\modules\jahad\models;
+namespace IRERP\models;
 
+use IRERP\models\DbEntity;
 /**
- * @Entity @Table(name="Menu")
+ * @Entity @Table(name="MenuItem")
  */
 class MenuItem extends DbEntity
 {

@@ -1,4 +1,21 @@
 <?php
+use \IRERP\models\MenuItem,
+	\IRERP\modules\jahad\models\TVRD,
+	\IRERP\modules\jahad\models\Matter,
+	\IRERP\modules\jahad\models\Title,
+	\IRERP\modules\jahad\models\MagazineType,
+	\IRERP\modules\jahad\models\Size,
+	\IRERP\modules\jahad\models\Year,
+	\IRERP\modules\jahad\models\MagNo,
+	\IRERP\modules\jahad\models\Auidunce,
+	\IRERP\modules\jahad\models\Nationality,
+	\IRERP\modules\jahad\models\State,
+	\IRERP\modules\jahad\models\Magazine,
+	\IRERP\modules\jahad\models\MagazineVersion,
+	\IRERP\modules\jahad\models\Human,
+	\IRERP\modules\jahad\models\Media,
+	\IRERP\modules\jahad\models\Section;
+
 class SiteController extends IRController
 {
 	/**
@@ -52,23 +69,21 @@ class SiteController extends IRController
 	public function actionInstallDB()
 	{
 		$DBClasses = array(
-			'BasicNamedClass',
-			'TVRD',
-			'Matter',
-			'Title',
-			'Magazine_Type',
-			'Size',
-			'Year',
-			'Mag_No',
-			'Auidunce',
-			'Nationality',
-			'State',
-			'Magazine',
-			'Magazine_Version',
-			'Human',
-			'Media',
-			'Section',
-			//'MenuItem'
+			'\IRERP\models\BasicNamedClass',
+			'\IRERP\models\MenuItem',
+			'\IRERP\modules\jahad\models\TVRD',
+			'\IRERP\modules\jahad\models\Matter',
+			'\IRERP\modules\jahad\models\Title',
+			'\IRERP\modules\jahad\models\MagazineType',
+			'\IRERP\modules\jahad\models\Size',
+			'\IRERP\modules\jahad\models\Year',
+			'\IRERP\modules\jahad\models\MagNo',
+			'\IRERP\modules\jahad\models\Auidunce',
+			'\IRERP\modules\jahad\models\State',
+			'\IRERP\modules\jahad\models\Magazine',
+			'\IRERP\modules\jahad\models\Human',
+			'\IRERP\modules\jahad\models\Media',
+			'\IRERP\modules\jahad\models\Section',
 		);
 		
 		$em = Yii::app()->doctrine->getEntityManager();

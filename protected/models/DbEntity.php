@@ -96,7 +96,7 @@ class DbEntity
 	public function CreateClassFromScUsingMethod($functionName,$ExceptedProperties=NULL,$ValueArray = NULL){
 		$reader=new AnnotationReader();
 		$methods=get_class_methods(get_class($this));
-		$f = new \IRERP\Basics\Annotations\scField(array());
+//		$f = new \IRERP\Basics\Annotations\scField(array());
 		foreach ($methods as $methodName)
 		{
 			//Check That Method is getter or setter else continue

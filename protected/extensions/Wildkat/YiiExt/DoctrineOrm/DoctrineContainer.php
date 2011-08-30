@@ -16,6 +16,7 @@ require_once 'vendor/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php';
 
 //use	\IRERP\Basics\Annotations\scField;
 require_once \Yii::app()->basePath . '/Basics/Annotations/scField.php';
+require_once \Yii::app()->basePath . '/Basics/Annotations/MapModelController.php';
 
 /**
  * DoctrineContainer.
@@ -498,4 +499,5 @@ class DoctrineContainer extends \CApplicationComponent
 
     }//end _getDBALConfiguration()
 
+    public function nop(){}
 }//end class

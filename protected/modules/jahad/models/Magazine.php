@@ -1,5 +1,8 @@
 <?php
 namespace IRERP\modules\jahad\models;
+
+use IRERP\models\DbEntity;
+
 /**
  * 
  * @author masoud
@@ -31,16 +34,16 @@ class Magazine extends DbEntity
 	public function setMatters($m){$this->mozu=$m;}
 	
 	/**
-	 * @OneToOne(targetEntity="Magazine_Type")
-	 * @var Magazine_Type
+	 * @OneToOne(targetEntity="MagazineType")
+	 * @var MagazineType
 	 */
 	protected $noe_majale;
 	public function getMagType(){return $this->noe_majale;}
 	public function setMagType($m){$this->noe_majale=$m;}
 	
 	/**
-	 * @OneToMany(targetEntity="Magazine_Version",mappedBy="Magazine")
-	 * @var Magazine_Version[]
+	 * @OneToMany(targetEntity="MagazineVersion",mappedBy="Magazine")
+	 * @var MagazineVersion[]
 	 */
 	protected $magver;
 	public function getVersions(){return $this->magver;}

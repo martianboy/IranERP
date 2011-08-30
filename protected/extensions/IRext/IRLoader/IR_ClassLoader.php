@@ -21,7 +21,12 @@ class IR_ClassLoader extends CApplicationComponent
 				$path =\Yii::app()->basePath;
 			 	for($i=1;$i<count($secs);$i++)
 			 		$path=$path.DIRECTORY_SEPARATOR.$secs[$i];
-			 	$path=$path.'.php';
+// 				if($secs[count($secs)-1] == '__all')
+// 				{
+					
+// 				}
+// 				else
+			 		$path=$path.'.php';
 			 	//\Yii::trace('#@! -- Try To Include '.$path);
 			 	//Check That File Exist?
 			 	if(file_exists($path)){

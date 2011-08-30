@@ -1,12 +1,14 @@
 <?php
 namespace IRERP\modules\jahad\models;
 
+use IRERP\models\DbEntity;
+
 /**
  * @Entity
  * @author masoud
  *
  */
-class Magazine_Version extends DbEntity
+class MagazineVersion extends DbEntity
 {
 	/**
 	 * @ManyToOne(targetEntity="Magazine",inversedBy="magver")

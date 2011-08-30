@@ -1,5 +1,5 @@
 <?php
-namespace IRERP\modules\jahad\models;
+namespace IRERP\models;
 use \IRERP\models\DbEntity,
 	\IRERP\Basics\Annotations\scField as scField;
 
@@ -9,13 +9,16 @@ use \IRERP\models\DbEntity,
  * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="classname", type="string")
  * @DiscriminatorMap({
- * 						"TVR"="TVRD",
- * 						"Mat"="Matter",
- * 					  	"Tit"="Title",
- * 						"MgT"="MagazineType",
- * 						"Siz"="Size",
- * 						"Yea"="Year",
- * 						"Mag"="MagNo",
+ * 						"TVR"="\IRERP\modules\jahad\models\TVRD",
+ * 						"Mat"="\IRERP\modules\jahad\models\Matter",
+ * 					  	"Tit"="\IRERP\modules\jahad\models\Title",
+ * 						"MgT"="\IRERP\modules\jahad\models\MagazineType",
+ * 						"Siz"="\IRERP\modules\jahad\models\Size",
+ * 						"Yea"="\IRERP\modules\jahad\models\Year",
+ * 						"Mag"="\IRERP\modules\jahad\models\MagNo",
+ * 						"AUD"="\IRERP\modules\jahad\models\Auidunce",
+ * 						"STA"="\IRERP\modules\jahad\models\State",
+ * 						"NAT"="\IRERP\modules\jahad\models\Nationality",
  * 						"BNC"="BasicNamedClass"
  * 					})
  */

@@ -1,5 +1,6 @@
 <?php
 namespace IRERP\modules\jahad\models;
+use IRERP\models\BasicNamedClass;
 /**
  * @Entity
  * 

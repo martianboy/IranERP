@@ -1,9 +1,58 @@
 <?php
 namespace IRERP\Basics;
-use \Yii, \ReflectionClass;
+use \Yii, \ReflectionClass,
+	\Doctrine\Common\Annotations\AnnotationReader,
+	\IRERP\Basics\Annotations\MapModelController as MapModelController;
 
 abstract class EntityController extends \IRController
 {
+	/**
+	 * 
+	 * Model class that is handled by this controller. must be set via @MapModelView annotation
+	 * @var string
+	 */
+	protected $entityClassname;
+	
+	public function getEntityClassname() { return $this->entityClassname; }
+	public function setEntityClassname($className) {
+		if (!class_exists($className))
+			new CException(Yii::t('yii', 'Entity classname {class} does not exist or could not be autoloaded', array('{class}'=>$className)),-1000);
+		
+		$this->entityClassname = $className;
+	}
+	
+	public function __construct($id, $module=NULL)
+	{
+		parent::__construct($id, $module);
+		
+		$reader = new AnnotationReader();
+		$modelMap = $reader->getClassAnnotation(new ReflectionClass(get_class($this)), '\IRERP\Basics\Annotations\MapModelController');
+		if ($modelMap !== NULL) {
+			try
+			{
+				$this->setEntityClassname($modelMap->value);
+			}
+			catch (CException $ex)
+			{
+				if ($ex->getCode() !== -1000)
+					throw $ex;
+				else
+					$this->setEntityClassname($this->getFullEntityClassname());
+			}
+		}
+		else
+			$this->setEntityClassname($this->getFullEntityClassname());
+	}
+	private function getFullEntityClassname()
+	{
+		if ($module = $this->getModule())
+		$className = 'IRERP\\modules\\' . $module->getId() . '\\' . 'models' . '\\' . str_replace('Controller', '', get_class($this));
+		else
+		$className = 'IRERP\\models\\' . str_replace('Controller', '', get_class($this));
+	
+		return $className;
+	}
+	
 	public function actionIndex()
 	{
 		$req = Yii::app()->getRequest();
@@ -23,11 +72,16 @@ abstract class EntityController extends \IRController
 			if ($accepts == 'json')
 				$this->fetchResponse();
 			else {
-				$view_vars = array(
-					'dsMaster' => $this->getId(),
-				);
-				$this->render('index', $view_vars);
+				$this->renderView();
 			}
+	}
+	
+	protected function renderView()
+	{
+		$view_vars = array(
+			'dsMaster' => $this->getId(),
+		);
+		$this->render('//entity/index', $view_vars);
 	}
 
 	/**
@@ -41,7 +95,7 @@ abstract class EntityController extends \IRController
 		if ($em == NULL)
 			$em = \Yii::app()->doctrine->getEntityManager();
 		
-		$className = $this->getFullEntityClassname();
+		$className = $this->getEntityClassname();
 		$params = $this->getActionParams();
 		$prefix = $this->getActionParam('isc_metaDataPrefix');
 		
@@ -133,7 +187,7 @@ abstract class EntityController extends \IRController
 	{
 		if ($em == NULL)
 			$em = \Yii::app()->doctrine->getEntityManager();
-		$className = $this->getFullEntityClassname();
+		$className = $this->getEntityClassname();
 		
 		try {
 			$cls=$em->getRepository($className)
@@ -158,7 +212,7 @@ abstract class EntityController extends \IRController
 	 */
 	protected function AddRecord($em=NULL)
 	{
-		$className = $this->getFullEntityClassname();
+		$className = $this->getEntityClassname();
 		$params = $this->getActionParams();
 		
 		if ($em == NULL)
@@ -187,7 +241,7 @@ abstract class EntityController extends \IRController
 		if ($em == NULL)
 			$em = \Yii::app()->doctrine->getEntityManager();
 		
-		$className = $this->getFullEntityClassname();
+		$className = $this->getEntityClassname();
 		
 		try {
 			$cls = $em->getRepository($className)
@@ -213,12 +267,6 @@ abstract class EntityController extends \IRController
 		$response['response']['data'] = $data;
 		
 		$this->ajaxRespondJSON($response);
-	}
-	
-	private function getFullEntityClassname()
-	{
-		$className = 'IRERP\\modules\\' . $this->getModule()->getId() . '\\' . 'models' . '\\' . str_replace('Controller', '', get_class($this));
-		return $className;
 	}
 	
 	private function setwhere($a)
