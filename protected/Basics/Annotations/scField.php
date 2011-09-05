@@ -1,9 +1,8 @@
 <?php
 namespace IRERP\Basics\Annotations;
-use Doctrine\Common\Annotations\Annotation;
 
 /** @Annotation */
-final class scField extends Annotation
+final class scField extends \IRAnnotation
 {
 /**
  * @var Boolean
