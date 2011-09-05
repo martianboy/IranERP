@@ -1,6 +1,7 @@
 <?php
 use \IRERP\Basics\EntityController,
-	\IRERP\Basics\Annotations\MapModelController;
+	\IRERP\Basics\Annotations\MapModelController,
+	\IRERP\models\MenuItem;
 
 /**
  * 
@@ -11,6 +12,10 @@ use \IRERP\Basics\EntityController,
  */
 class MenuController extends EntityController
 {
-	
+	public function __construct($id, $module)
+	{
+		parent::__construct($id,$module);
+		$this->viewVars['imageURLPrefix'] = Yii::app()->baseUrl . '/images';
+	}
 }
 ?>

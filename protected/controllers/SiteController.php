@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 use \IRERP\models\MenuItem,
 	\IRERP\modules\jahad\models\TVRD,
 	\IRERP\modules\jahad\models\Matter,
@@ -101,6 +101,31 @@ class SiteController extends IRController
 		$tool->updateSchema($classes);
 		
 		echo 'Everything is OK';
+	}
+
+	public function actionInsertTestData()
+	{
+		$parentMenuItem = new MenuItem();
+		$parentMenuItem->setTitle('منوی پدر');
+		$parentMenuItem->setIcon('#');
+		$parentMenuItem->setCommand('/');
+		$parentMenuItem->Save();
+		
+		$menuItem1 = new MenuItem();
+		$menuItem1->setTitle('سیستم');
+		$menuItem1->setIcon('#');
+		$menuItem1->setCommand(Yii::app()->baseUrl . '/#');
+		$menuItem1->setParent($parentMenuItem);
+		$menuItem1->Save();
+
+		$menuItem2 = new MenuItem();
+		$menuItem2->setTitle('منوها');
+		$menuItem2->setIcon('#');
+		$menuItem2->setParent($menuItem1);
+		$menuItem2->setCommand(Yii::app()->baseUrl . '/menu');
+		$menuItem2->Save();
+		
+		Yii::app()->doctrine->getEntityManager()->flush();
 	}
 	
 	/**

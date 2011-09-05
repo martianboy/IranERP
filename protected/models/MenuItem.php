@@ -1,7 +1,9 @@
 <?php
 namespace IRERP\models;
 
-use IRERP\models\DbEntity;
+use IRERP\models\DbEntity,
+	IRERP\Basics\Annotations\scField;
+
 /**
  * @Entity @Table(name="MenuItem")
  */
@@ -9,81 +11,96 @@ class MenuItem extends DbEntity
 {
 	/**
 	 * @Column(type="string",length=50)
+	 * @var string
 	 */
-	protected $MenuItemTitle;
+	protected $Title;
 	
 	/**
 	 * @Column(type="string",length="1500")
-	 * Enter description here ...
-	 * @var unknown_type
+	 * Enter Icon for MenuItem
+	 * @var string
 	 */
-	protected $MenuItemIcon;
+	protected $Icon;
 	
 	/**
-	 * @ManyToOne(targetEntity="MenuItem",inversedBy="MenuItemChildren")
+	 * @ManyToOne(targetEntity="MenuItem",inversedBy="Children")
+	 * @var MenuItem
 	 */
-	protected $MenuItemParent;
+	protected $Parent;
 	
 	/**
-	 * @OneToMany(targetEntity="MenuItem",mappedBy="MenuItemParent")
+	 * @OneToMany(targetEntity="MenuItem",mappedBy="Parent")
+	 * @var MenuItem[]
 	 */
-	protected  $MenuItemChildren;
+	protected  $Children;
 	
 	/**
 	 * @Column(type="string",length=500)
 	 */
-	protected $MenuItemCommand;
+	protected $Command;
 	
 	/**
 	 * 
 	 * BL Functions
-	 * @scField(name="MenuTitle",DoctrineField="MenuItemTitle",
+	 * @scField(name="Title",DoctrineField="Title",
 	 * 			type="string",length="100",title="عنوان منو")
 	 */
-	public function getMenuItemTitle(){return $this->MenuItemTitle;}
-	public function setMenuItemTitle($value){$this->MenuItemTitle=$value;}
+	public function getTitle(){return $this->Title;}
+	public function setTitle($value){$this->Title=$value;}
 	/**
 	 * 
-	 * @scField(name="IconPath",DoctrineField="MenuItemIcon",
+	 * @scField(name="IconPath",DoctrineField="Icon",
 	 * 			type="string",length="500",title="مسیر آیکون")
 	 */
-	public function getMenuItemIcon(){return $this->MenuItemIcon;}
-	public function setMenuItemIcon($value){$this->MenuItemIcon=$value;}
+	public function getIcon(){return $this->Icon;}
+	public function setIcon($value){$this->Icon=$value;}
 	/**
-	 * @scField(name="MenuItemCommand",DoctrineField="MenuItemCommand",type="string",length=200,title="دستور منو") 
+	 * @scField(name="Command",DoctrineField="Command",type="string",length=200,title="دستور منو") 
 	 */
-	public function getMenuItemCommand(){return $this->MenuItemCommand;}
-	public function setMenuItemCommand($value){$this->MenuItemCommand=$value;}
+	public function getCommand(){return $this->Command;}
+	public function setCommand($value){$this->Command=$value;}
 	
 	
 	/**
 	 * 
-	 * @scField(name="ParentTitle",DoctrineField="MenuItemParent.MenuItemTitle",type="string",length=100,title="منوی پدر")
+	 * @scField(name="ParentTitle",DoctrineField="Parent.Title",type="string",length=100,title="منوی پدر")
 	 */
-	public function getMenuItemParentTitle(){
-		if ($this->getMenuItemParent()==null) return '';
-		return $this->getMenuItemParent()->getMenuItemTitle();
+	public function getParentTitle(){
+		if ($this->getParent()==null) return '';
+		return $this->getParent()->getTitle();
 	}
-	public function setMenuItemParentTitle($v){}
+	public function setParentTitle($v){}
 	/**
-	 * @scField(name="MenuItemParentID",DoctrineField="MenuItemParent.id",foreignKey="id",hidden=true)
+	 * @scField(name="ParentId",DoctrineField="Parent",foreignKey="Id",hidden=true)
 	 * Enter description here ...
 	 */	
-	public function getMenuItemParentID(){
-		if ($this->getMenuItemParent() == null) return NULL;
-		return $this->getMenuItemParent()->getID();}
-	public function setMenuItemParentID($value){
+	public function getParentId(){
+		if (($parent = $this->getParent()) == null)
+			return NULL;
+		else
+			return $parent->getid();
+	}
+	public function setParentById($value){
 		//Check That there is an object with this ID
 		$parent = $this->GetByID($value);
-		if($parent!=NULL) $this->setMenuItemParent($parent);
-		else $this->setMenuItemParent(NULL);
+		if($parent!=NULL)
+			$this->setParent($parent);
+		else
+			$this->setParent(NULL);
 	}
 	
-	public function getMenuItemChildren(){return $this->MenuItemChildren;}
-	public function setMenuItemChildren($value){$this->MenuItemChildren=$value;}
+	/**
+	 * @scField(name="IsSubmenu", type="bool") 
+	 * @return bool
+	 */
+	public function getIsSubmenu(){
+		return (count($this->Children) > 0);
+	}
+	public function getChildren(){return $this->Children;}
+	public function setChildren($value){$this->Children=$value;}
 	
-	public function getMenuItemParent(){return $this->MenuItemParent;}
-	public function setMenuItemParent($value){$this->MenuItemParent=$value;}
+	public function getParent(){return $this->Parent;}
+	public function setParent($value){$this->Parent=$value;}
 	
 }
 ?>

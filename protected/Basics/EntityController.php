@@ -1,8 +1,8 @@
 <?php
 namespace IRERP\Basics;
-use \Yii, \ReflectionClass,
+use \Yii, \ReflectionClass, \CException,
 	\Doctrine\Common\Annotations\AnnotationReader,
-	\IRERP\Basics\Annotations\MapModelController as MapModelController;
+	\IRERP\Basics\Annotations\MapModelController;
 
 abstract class EntityController extends \IRController
 {
@@ -20,6 +20,11 @@ abstract class EntityController extends \IRController
 		
 		$this->entityClassname = $className;
 	}
+
+	protected $viewVars = array();
+	
+	public function getViewVars() { return $this->viewVars; }
+	
 	
 	public function __construct($id, $module=NULL)
 	{
@@ -75,19 +80,23 @@ abstract class EntityController extends \IRController
 				$this->renderView();
 			}
 	}
-	
 	protected function renderView()
 	{
-		$view_vars = array(
-			'dsMaster' => $this->getId(),
-		);
-		$this->render('//entity/index', $view_vars);
+		$this->viewVars['dsMaster'] = $this->getId();
+
+		try {
+			$this->render('index', $this->getViewVars());
+		}
+		catch (CException $ex)
+		{
+			$this->render('//entity/index', $this->getViewVars());
+		}
 	}
 
 	/**
 	 * 
 	 * Fetch objects from entity repository with SmartClient-sent criteria
-	 * @param array $IgnoredProperties
+	 * @param string[] $IgnoredProperties
 	 * @param \Doctrine\ORM\EntityManager $em
 	 */
 	protected function fetchResponse($IgnoredProperties = NULL, $em = NULL)
@@ -125,7 +134,7 @@ abstract class EntityController extends \IRController
 					$order = $params[$prefix.'sortBy'];
 					
 				$criteria = array();
-				if (isset($params[$prefix.'criteria'])) {
+				if (isset($params['criteria'])) {
 					$jsoncriteria = $params['criteria'];
 					if (!is_array($jsoncriteria))
 						$jsoncriteria = array($jsoncriteria);
@@ -153,7 +162,8 @@ abstract class EntityController extends \IRController
 					$whstr = $wh[0];
 					$whparam=$wh[1];
 				}
-					
+				//var_dump($wh); die;
+				
 				//Get Objects Form Db
 				$cls=new ReflectionClass($className);
 				$cls = $cls->newInstance();
@@ -263,15 +273,15 @@ abstract class EntityController extends \IRController
 		$response = array('response' => array('status' => $statusCode));
 		if ($params != NULL)
 			foreach($params as $key => $param)
-				$response['response'][$key] = $param;
+		$response['response'][$key] = $param;
 		$response['response']['data'] = $data;
-		
+
 		$this->ajaxRespondJSON($response);
 	}
-	
+
 	private function setwhere($a)
 	{
-	$change=array(
+		$change=array(
 		'lessThan'=>' < :p',
 		'greaterThan'=>' > :p',
 		'lessThanOrEqual'=>' <= :p',
@@ -290,47 +300,48 @@ abstract class EntityController extends \IRController
 		'isNotNull'=>' IS NOT NULL ',
 		'exact match'=>' = :p',
 		'equals'=>' = :p '
-	);
-	
-	
-	$reval=array();
-	$ret='';
-	$tmp1=0;
-	foreach ($a as &$s) 
-	{
-		$tmp1++;
-		switch ($s['operator']){
-			case 'startsWith':
-			case 'notStartsWith': $tmp=$s['value'].'%'; break;
-			case 'endsWith': 
-			case 'notEndsWith': $tmp='%'.$s['value']; break;
-			case 'iContains': 
-			case 'notContains': $tmp='%'.$s['value'].'%'; break;
-			default: $tmp=$s['value'];break;
-		}
-		if($s['operator']=='betweenInclusive')
+		);
+
+
+		$reval=array();
+		$ret='';
+		$tmp1=0;
+		foreach ($a as &$s)
 		{
-			$reval['1'.$s['fieldName'].$tmp1]=$s['value'][0];
-			$reval['2'.$s['fieldName'].$tmp1]=$s['value'][1];
+			$fieldName = \ApplicationHelpers::TranslateSCVarsToDoctrine($s['fieldName'], $this->getEntityClassname(), NULL);
+
+			$tmp1++;
+			if(!isset($s['value']))
+			$s['value'] = '';
+
+			switch ($s['operator']){
+				case 'startsWith':
+				case 'notStartsWith': $tmp=$s['value'].'%'; break;
+				case 'endsWith':
+				case 'notEndsWith': $tmp='%'.$s['value']; break;
+				case 'iContains':
+				case 'notContains': $tmp='%'.$s['value'].'%'; break;
+				default: $tmp=$s['value'];break;
+			}
+			if($s['operator']=='betweenInclusive')
+			{
+				$reval['1'.str_ireplace('.', '_', $fieldName).$tmp1]=$s['value'][0];
+				$reval['2'.str_ireplace('.', '_', $fieldName).$tmp1]=$s['value'][1];
+			}
+			else
+			{
+				$reval[str_ireplace('.', '_', $fieldName).$tmp1]=$tmp;
+			}
+			if($tmp1!=1)
+			{
+				$ret=$ret.' and tmp.'. $fieldName.str_replace('p',str_ireplace('.', '_', $fieldName).$tmp1,$change[$s['operator']]);
+			}
+			else
+			{
+				$ret='tmp.'.$fieldName.str_replace('p',str_ireplace('.', '_', $fieldName).$tmp1,$change[$s['operator']]);
+			}
 		}
-		else 
-	  {
-			$reval[$s['fieldName'].$tmp1]=$tmp;
-			
-		}	
-		if($tmp1!=1)
-		{
-	
-	
-			$ret=$ret.' and tmp.'. $s['fieldName'].str_replace('p',$s['fieldName'].$tmp1,$change[$s['operator']]);
-		}
-		else
-		{
-			
-			$ret='tmp.'.$s['fieldName'].str_replace('p',$s['fieldName'].$tmp1,$change[$s['operator']]);
-		}
-	}
-	return array($ret,$reval);
+		return array($ret,$reval);
 	}
 
 	// Uncomment the following methods and override them if needed

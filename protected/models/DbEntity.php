@@ -5,7 +5,7 @@ namespace IRERP\models;
 use \Doctrine\Common\Annotations\AnnotationReader,
 	\IRERP\Basics\Annotations\scField as scField;
 
-date_default_timezone_set('UTC');
+//date_default_timezone_set('UTC');
 /**
  * @MappedSuperclass
  * @author masoud
@@ -63,19 +63,33 @@ class DbEntity
 	 */
 	protected $ModifierUserId=-1;
 	
-	public function setEntityManager($value){$this->EM=\Yii::app()->doctrine->getEntityManager();}
-	public function getEntityManager(){return \Yii::app()->doctrine->getEntityManager();}
+	/**
+	 * 
+	 * Values of all annotations is stored in this array
+	 * @var string[]
+	 */
+	protected $annotationValues = array();
+	
+	
+	public function setEntityManager(&$value = NULL){
+		if ($value !== NULL && is_a($value, '\Doctrine\ORM\EntityManager'))
+			$this->EM = $value;
+		else
+			$this->EM=\Yii::app()->doctrine->getEntityManager();
+	}
+	public function &getEntityManager(){
+		if ($this->EM === NULL)
+			$this->setEntityManager();
+		
+		return $this->EM;
+	}
 	
 	/**
-	 *@scField(name="id",DoctrineField="id",type="integer",primaryKey="true",hidden="true") 
+	 *@scField(name="Id",DoctrineField="Id",type="integer",primaryKey="true",hidden="true") 
 	 */
 	public function getid(){return $this->id;}
 	public function setid($v){$this->id=$v;}
 	
-/*
-	public function getID(){return $this->id;}
-	protected function setID($value){$this->id=$value;}
-	*/
  	public function getVersion(){return $this->version;}
 	
 	public function getCreatorUserID(){return $this->CreatorUserId;}
@@ -94,9 +108,9 @@ class DbEntity
 	public function setIsDeleted($d){$this->IsDeleted=$d;}
 
 	public function CreateClassFromScUsingMethod($functionName,$ExceptedProperties=NULL,$ValueArray = NULL){
-		$reader=new AnnotationReader();
+		$reader = new AnnotationReader();
 		$methods=get_class_methods(get_class($this));
-//		$f = new \IRERP\Basics\Annotations\scField(array());
+
 		foreach ($methods as $methodName)
 		{
 			//Check That Method is getter or setter else continue
@@ -131,13 +145,13 @@ class DbEntity
 		return Common::parseObjectToArray($this);
 	}
 
-	protected function _Save()
+	protected function persistEntity()
 	{
 		$this->getEntityManager()->persist($this);
 	}
-	function Save()
+	public function Save()
 	{
-		$this->_Save();
+		$this->persistEntity();
 	}
 
 	public function GetClassSCPropertiesInArray($ExceptedProperties=NULL){
@@ -213,43 +227,46 @@ class DbEntity
 		   ->setMaxResults( $endRow-$startRow );
 
 		$tmp=0;
-            
-        	foreach($orderby as $fn=>$kn) 
-                if($tmp==0){
-                	$qb->orderBy('tmp.'.$fn,$kn);
-                	$tmp=1;
-                }
-                else
-                    $qb->addOrderBy('tmp.'.$fn,$kn);
 
-            if($whstr!='') {
-                $qb->add('where',$whstr.' and tmp.IsDeleted = 0 ');
-                $qb->setParameters($whparam);
-            }
-            else {
-                $qb->add('where','tmp.IsDeleted =0');
-            }
-			  
-            $query = $qb->getQuery();
-			
-            $results = $query->getResult();
-			
-			$qb = $em->createQueryBuilder();
-			$qb->add('select', 'count(tmp.id)')
-			   ->add('from', get_class($this).' tmp');
-
-			if($whstr!='') {
-			    $qb->add('where',$whstr.' and tmp.IsDeleted = 0 ');
-			    $qb->setParameters($whparam);
-			} else {
-			    $qb->add('where','tmp.IsDeleted =0');
+		foreach($orderby as $fn=>$kn)
+			if($tmp==0){
+				$qb->orderBy('tmp.'.$fn,$kn);
+				$tmp=1;
 			}
+			else
+				$qb->addOrderBy('tmp.'.$fn,$kn);
+		
+		if($whstr!='') {
+			$qb->add('where',$whstr.' and tmp.IsDeleted = 0 ');
+			$qb->setParameters($whparam);
+		}
+		else
+			$qb->add('where','tmp.IsDeleted =0');
+		
+		$query = $qb->getQuery();
+
+//		var_dump($qb->getQuery()->getSQL());
+//		var_dump($whparam);
+//		var_dump($whstr); die;
+		
+		$results = $query->getResult();
 			
-			//get Total Rows
-			$dql = $qb->getQuery();
-			$tmptest = $dql->getResult();
-			$totalRows = $tmptest[0][1];
-			return array('totalRows'=>$totalRows,'results'=>$results);
+		$qb = $em->createQueryBuilder();
+		$qb->add('select', 'count(tmp.id)')
+		   ->add('from', get_class($this).' tmp');
+
+		if($whstr!='') {
+			$qb->add('where',$whstr.' and tmp.IsDeleted = 0 ');
+			$qb->setParameters($whparam);
+		} else
+			$qb->add('where','tmp.IsDeleted =0');
+			
+		//get Total Rows
+		$dql = $qb->getQuery();
+		$tmptest = $dql->getResult();
+		$totalRows = $tmptest[0][1];
+		
+		return array('totalRows'=>$totalRows,'results'=>$results);
 	}
 }
 /***

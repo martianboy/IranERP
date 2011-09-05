@@ -16,7 +16,7 @@ isc.RestDataSource.create({
     operationBindings:[
      {operationType:"fetch", dataProtocol:"getParams"},
      {operationType:"add", dataProtocol:"postParams"},
-     {operationType:"remove", dataProtocol:"getParams", requestProperties:{httpMethod:"DELETE"}},
+     {operationType:"remove", dataProtocol:"postParams", requestProperties:{httpMethod:"DELETE"}},
      {operationType:"update", dataProtocol:"postParams", requestProperties:{httpMethod:"PUT"}}
     ],
     {/literal}

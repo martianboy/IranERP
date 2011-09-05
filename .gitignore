@@ -1,6 +1,7 @@
 protected/config/main.php
 protected/config/console.php
 protected/runtime/
+protected/data/
 /assets/
 /themes/clasic/views
 *~
