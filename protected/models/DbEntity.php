@@ -133,6 +133,7 @@ class DbEntity
 			}
 		}
 	}
+	
 	public function GetByID($id)
 	{
 		return $this->getEntityManager()
