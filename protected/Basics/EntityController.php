@@ -144,6 +144,31 @@ abstract class EntityController extends \IRController
 							$criteria[]=get_object_vars($j);
 					}
 				}
+				//For PickListMenu Filter
+				$componentid = $params[$prefix.'componentId'];
+				if(strpos($componentid,'PickListMenu')>0){
+					//Filter for PickListMenu
+					$reader = new AnnotationReader();
+					$methods=get_class_methods($className);
+					foreach ($methods as $methodName)
+					{
+					//Check That Method is getter or setter else continue
+					if(!(substr($methodName, 0,3)=='get' ||	substr($methodName,0,3)=='set')	) continue;
+					$propname = substr($methodName, 3,strlen($methodName)-3);
+					$reflMethod = new \ReflectionMethod($className, $methodName);
+					$MethodAnns = $reader->getMethodAnnotations($reflMethod);
+					foreach ($MethodAnns as $annots){
+						if(is_a($annots,'\IRERP\Basics\Annotations\scField')){
+							//Check That Is Defined annots in filter
+							if(isset($params[$annots->name]))
+								$criteria[]=array('fieldName'=>$annots->name,'operator'=>'iContains','value'=>$params[$annots->name]);
+								
+						}
+					}
+					}
+					
+				}
+				
 				if($order != null) {
 					if(!is_array($order))
 						$order = array($order);
@@ -154,7 +179,6 @@ abstract class EntityController extends \IRController
 						else
 							$orderBy[$fieldname]='ASC';
 				}
-		
 				$wh = $this->setwhere($criteria);
 				$whstr='';
 				$whparam =null;
@@ -309,7 +333,6 @@ abstract class EntityController extends \IRController
 		foreach ($a as &$s)
 		{
 			$fieldName = \ApplicationHelpers::TranslateSCVarsToDoctrine($s['fieldName'], $this->getEntityClassname(), NULL);
-
 			$tmp1++;
 			if(!isset($s['value']))
 			$s['value'] = '';

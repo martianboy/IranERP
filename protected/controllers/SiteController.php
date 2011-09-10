@@ -1,4 +1,5 @@
 ﻿<?php
+use IRERP\modules\jahad\models\Nationality;
 use \IRERP\models\MenuItem,
 	\IRERP\modules\jahad\models\TVRD,
 	\IRERP\modules\jahad\models\Matter,
@@ -8,7 +9,7 @@ use \IRERP\models\MenuItem,
 	\IRERP\modules\jahad\models\Year,
 	\IRERP\modules\jahad\models\MagNo,
 	\IRERP\modules\jahad\models\Auidunce,
-	\IRERP\modules\jahad\models\Nationality,
+	\IRERP\modules\jahad\models\Nationality AS USA,
 	\IRERP\modules\jahad\models\State,
 	\IRERP\modules\jahad\models\Magazine,
 	\IRERP\modules\jahad\models\MagazineVersion,
@@ -36,6 +37,7 @@ class SiteController extends IRController
 			),
 		);
 	}
+
 
 	/**
 	 * This is the default 'index' action that is invoked
@@ -194,6 +196,18 @@ class SiteController extends IRController
 		{
 			print_r($ex);
 			//throw $ex;
+		}
+	}
+	
+	public function actionNatTest()
+	{
+		for($i=0;$i<1000;$i++){
+		$n = new Nationality();
+		$n->setName('Nati'.$i);
+		$n->setDescription('Nati'.$i);
+		$n->Save();
+		$n->getEntityManager()->flush();
+		echo $i.'<br/>';
 		}
 	}
 }

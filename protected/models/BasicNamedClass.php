@@ -52,12 +52,12 @@ class BasicNamedClass extends DbEntity
 	public function getID(){return $this->id;}
 	public function setID($newid){$this->id=$newid;}
 	/**
-	 * @scField(name="Name",type="string",title="نام")
+	 * @scField(name="Name",type="string",title="نام",DoctrineField="Name")
 	 */
 	public function getName(){return $this->Name;}
 	public function setName($newName){$this->Name=$newName;}
 	/**
-	 * @scField(name="Description",type="string",title="شرح")
+	 * @scField(name="Description",type="string",title="شرح",DoctrineField="Description")
 	 */
 	public function getDescription(){return $this->Description;}
 	public function setDescription($newDesc){$this->Description=$newDesc;}
