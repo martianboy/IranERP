@@ -85,7 +85,7 @@ class DbEntity
 	}
 	
 	/**
-	 *@scField(name="Id",DoctrineField="Id",type="integer",primaryKey="true",hidden="true") 
+	 *@scField(name="id",DoctrineField="id",type="integer",primaryKey="true",hidden="true") 
 	 */
 	public function getid(){return $this->id;}
 	public function setid($v){$this->id=$v;}

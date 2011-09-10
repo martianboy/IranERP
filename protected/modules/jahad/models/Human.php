@@ -2,6 +2,7 @@
 namespace IRERP\modules\jahad\models;
 
 use IRERP\models\DbEntity;
+use IRERP\Basics\Annotations\scField;
 
 /**
  * @Entity @Table(name="Human")
@@ -73,6 +74,10 @@ class Human extends DbEntity
 	 * @Column(type="string",length=50,nullable=true)
 	 */
 	protected $phoneno;
+	/**
+	 * 
+	 * @scField(type="string",title="شماره تلفن",DoctrineField="phoneno",name="PhoneNo")
+	 */
 	public function getPhoneNo(){return $this->phoneno;}
 	public function setPhoneNo($p){$this->phoneno=$p;}
 	
