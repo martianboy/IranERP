@@ -145,7 +145,10 @@ abstract class EntityController extends \IRController
 					}
 				}
 				//For PickListMenu Filter
-				$componentid = $params[$prefix.'componentId'];
+				if(array_key_exists($prefix.'componentId',$params))
+					$componentid = $params[$prefix.'componentId'];
+				else 
+					$componentid='';
 				if(strpos($componentid,'PickListMenu')>0){
 					//Filter for PickListMenu
 					$reader = new AnnotationReader();
