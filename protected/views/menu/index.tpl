@@ -4,9 +4,9 @@ isc.RestDataSource.create({
     ID:"menuItemsDS",
     fields:
         [
-            {name:"id",primaryKey:"true",type:"integer", hidden:"true"},
-            {name:"Title",type:"string",title:"عنوان"},
+            {name:"Id",primaryKey:"true",type:"integer", hidden:"true"},
             {name:"IconPath",type:"string",title:"شمایل", length:1500, type:'image', imageURLPrefix:"{/literal}{$imageURLPrefix}{literal}"},
+            {name:"Title",type:"string",title:"عنوان"},
             {name:"Command",type:"string",title:"فرمان",length:500, hidden:"true"},
             {name:"ParentId", type:"integer", title:"منوی پدر", hidden:"true"},
         ],
@@ -25,25 +25,27 @@ isc.RestDataSource.create({
 });
 
 {literal}
-var initialCrit = {ParentId:'null'};
-var crit = {
-    criteria:{ fieldName:"ParentId", operator:"equals", value:"9"}
+var mainMenuCriteria = {
+    criteria:{ fieldName:"ParentId", operator:"isNull", value:""}
 };
+var submenusCritera = {
+    criteria:{ fieldName:"ParentId", operator:"equals", value:""}
+}
 
 window.gholirec = null;
 
 isc.TileGrid.create({
-    autoDraw:true,
-    ID:"MenuItems",
-    tileWidth:150,
-    tileHeight:150,
-    height:400,
-    width:"100%",
-    showAllRecords:true,
-    dataSource:"menuItemsDS",
-    autoFetchData:true,
-    animateTileChange:true,
-    initialCriteria:crit,
+    autoDraw: true,
+    ID: "MenuItems",
+    tileWidth: 150,
+    tileHeight: 150,
+    height: 400,
+    width: "100%",
+    showAllRecords: true,
+    dataSource: "menuItemsDS",
+    autoFetchData: true,
+    animateTileChange: true,
+    initialCriteria: mainMenuCriteria,
     recordDoubleClick: function(viewer, tile, record) {
     	if (record.IsSubmenu) {
 	    	crit.criteria.value = record.Id;
@@ -51,7 +53,6 @@ isc.TileGrid.create({
         }
     },
 });
-//MenuItems.fetchData(crit);
 
 {/literal}
 </script>

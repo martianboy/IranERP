@@ -1,24 +1,27 @@
 <?php
 
-namespace IRERP\models;
+namespace IRERP\Basics\Models;
 
 use \Doctrine\Common\Annotations\AnnotationReader,
-	\IRERP\Basics\Annotations\scField as scField;
+	 \IRERP\Basics\Annotations\scField,
+	 \CModel;
 
+//This shoud be defined inside php.ini file, not here
 //date_default_timezone_set('UTC');
+
 /**
  * @MappedSuperclass
  * @author masoud
  *
  */
-class DbEntity
+class IRDataModel extends CModel
 {
 	/**
 	 * Entity Manager That This Class Use To 
 	 * Doing Something To Objects
 	 * @var \Doctrine\ORM\EntityManager
 	 */
-	protected $EM;
+	protected $entityManager;
 	
 	/**
 	 * @Id @generatedValue(strategy="AUTO") @Column(type="integer")
@@ -36,13 +39,13 @@ class DbEntity
 	 * @Column(type="datetime")
 	 * @var DateTime
 	 */
-	protected $CreatedDate ;
+	protected $dateCreated;
 	
 	/**
 	 * @Column(type="datetime")
 	 * @var DateTime
 	 */
-	Protected $LastModifyDate ;
+	Protected $dateLastModified;
 	
 	/**
 	 * @Column(type="boolean")
@@ -55,13 +58,13 @@ class DbEntity
 	 * @Column(type="integer")
 	 * @var integer
 	 */
-	protected $CreatorUserId=-1;
+	protected $creatorUserId=-1;
 	
 	/**
 	 * @Column(type="integer")
 	 * @var integer
 	 */
-	protected $ModifierUserId=-1;
+	protected $modifierUserId=-1;
 	
 	/**
 	 * 
@@ -73,15 +76,15 @@ class DbEntity
 	
 	public function setEntityManager(&$value = NULL){
 		if ($value !== NULL && is_a($value, '\Doctrine\ORM\EntityManager'))
-			$this->EM = $value;
+			$this->entityManager = $value;
 		else
-			$this->EM=\Yii::app()->doctrine->getEntityManager();
+			$this->entityManager=\Yii::app()->doctrine->getEntityManager();
 	}
 	public function &getEntityManager(){
-		if ($this->EM === NULL)
+		if ($this->entityManager === NULL)
 			$this->setEntityManager();
 		
-		return $this->EM;
+		return $this->entityManager;
 	}
 	
 	/**
@@ -92,17 +95,17 @@ class DbEntity
 	
  	public function getVersion(){return $this->version;}
 	
-	public function getCreatorUserID(){return $this->CreatorUserId;}
-	public function setCreatorUserID($uid){$this->CreatorUserId=$uid;}
+	public function getCreatorUserID(){return $this->creatorUserId;}
+	public function setCreatorUserID($uid){$this->creatorUserId=$uid;}
 	
-	public function getModifierUserID(){return $this->ModifierUserId;}
-	public function setModifierUserID($uid){$this->ModifierUserId=$uid;}
+	public function getModifierUserID(){return $this->modifierUserId;}
+	public function setModifierUserID($uid){$this->modifierUserId=$uid;}
 	
-	public function getCreateDate(){return $this->CreatedDate;}
-	public function setCreateDate($d){$this->CreatedDate=$d;}
+	public function getCreateDate(){return $this->dateCreated;}
+	public function setCreateDate($d){$this->dateCreated=$d;}
 	
-	public function getLastModifyDate(){return $this->LastModifyDate;}
-	public function setLastModifyDate($d){$this->LastModifyDate=$d;}
+	public function getdateLastModified(){return $this->dateLastModified;}
+	public function setdateLastModified($d){$this->dateLastModified=$d;}
 	
 	public function getIsDeleted(){return $this->IsDeleted;}
 	public function setIsDeleted($d){$this->IsDeleted=$d;}
@@ -212,13 +215,35 @@ class DbEntity
 
 	public function __construct()
 	{
-		$this->LastModifyDate=new \DateTime();
-		$this->CreatedDate=new \DateTime();
-		$this->EM = \Yii::app()->doctrine->getEntityManager();
+		$this->dateLastModified=new \DateTime();
+		$this->dateCreated=new \DateTime();
+		$this->EntityManager = Yii::app()->doctrine->getEntityManager();
 	}
 
+	public function findAll($parameters)
+	{
+		$tableAlias = 'tmp';
+		
+		$queryBuilder = $this->EntityManager->createQueryBuilder();
+		$queryBuilder->add('select', $tableAlias)
+					 ->add('from', get_class($this));
+		
+		if(isset($parameters['startRow']))
+		{
+			$queryBuilder->setFirstResult($parameters['startRow']);
+			if(isset($parameters['endRow']))
+				$queryBuilder->setMaxResults($parameters['endRow'] - $parameters['startRow']);
+		}
+		
+		if(isset($parameters['orderBy']))
+			foreach ($parameters['orderBy'] as $key => $value)
+				$queryBuilder->addOrderBy($tableAlias.'.'.$key,$value);
+		
+		
+	}
+	
 	public function fetchObjects($startRow,$endRow,$whstr,$whparam,$orderby){
-		$em = $this->EM;
+		$em = $this->getEntityManager();
 		
 		$qb = $em->createQueryBuilder();
 		$qb->add('select', 'tmp')

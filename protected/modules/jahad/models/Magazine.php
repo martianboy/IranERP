@@ -1,14 +1,14 @@
 <?php
 namespace IRERP\modules\jahad\models;
 
-use IRERP\models\DbEntity;
+use IRERP\Basics\Models\IRDataModel;
 
 /**
  * 
  * @author masoud
  *@Entity
  */
-class Magazine extends DbEntity
+class Magazine extends IRDataModel
 {
 	/**
 	 * @Id @generatedValue(strategy="AUTO") @Column(type="integer")

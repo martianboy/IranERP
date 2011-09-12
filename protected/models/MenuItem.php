@@ -1,13 +1,13 @@
 <?php
 namespace IRERP\models;
 
-use IRERP\models\DbEntity,
+use IRERP\Basics\Models\IRDataModel,
 	IRERP\Basics\Annotations\scField;
 
 /**
  * @Entity @Table(name="MenuItem")
  */
-class MenuItem extends DbEntity
+class MenuItem extends IRDataModel
 {
 	/**
 	 * @Column(type="string",length=50)
@@ -32,7 +32,7 @@ class MenuItem extends DbEntity
 	 * @OneToMany(targetEntity="MenuItem",mappedBy="Parent")
 	 * @var MenuItem[]
 	 */
-	protected  $Children;
+	protected $Children;
 	
 	/**
 	 * @Column(type="string",length=500)

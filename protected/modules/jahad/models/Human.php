@@ -1,12 +1,12 @@
 <?php
 namespace IRERP\modules\jahad\models;
 
-use IRERP\models\DbEntity;
+use IRERP\Basics\Models\IRDataModel;
 
 /**
  * @Entity @Table(name="Human")
  */
-class Human extends DbEntity
+class Human extends IRDataModel
 {
 	
 	/**

@@ -1,7 +1,6 @@
 <?php
-namespace IRERP\models;
-use \IRERP\models\DbEntity,
-	\IRERP\Basics\Annotations\scField as scField;
+namespace IRERP\Basics\Models;
+use \IRERP\Basics\Annotations\scField;
 
 /**
  * @Entity 
@@ -23,7 +22,7 @@ use \IRERP\models\DbEntity,
  * 					})
  */
 
-class BasicNamedClass extends DbEntity
+class BasicNamedClass extends IRDataModel
 {
 
 	 /**

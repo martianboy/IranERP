@@ -238,7 +238,6 @@ abstract class EntityController extends \IRController
 		} catch(Exception $e) {
 			throw $e;
 			//$this->SmartClientRespond(array("Name"=>array("errorMessage"=>$e->getMessage())), NULL, '-1');
-			
 		}
 	}
 	
@@ -282,24 +281,24 @@ abstract class EntityController extends \IRController
 	private function setwhere($a)
 	{
 		$change=array(
-		'lessThan'=>' < :p',
-		'greaterThan'=>' > :p',
-		'lessThanOrEqual'=>' <= :p',
-		'greaterThanOrEqual'=>' >= :p',
-		'betweenInclusive'=>' between :1p and :2p',
-		'notEqual'=>' != :p',
-		'startsWith'=>' like :p',
-		'endsWith'=>' like :p',
-		'notStartsWith'=>' not like :p',
-		'notEndsWith'=>' not like :p',
-		'iContains'=>' like :p',
-		'notContains'=>' not like :p',
-		'inSet'=>' in :p',
-		'notInSet'=>' not in :p',
-		'isNull'=>' IS NULL',
-		'isNotNull'=>' IS NOT NULL ',
-		'exact match'=>' = :p',
-		'equals'=>' = :p '
+			'lessThan'=>' < :p',
+			'greaterThan'=>' > :p',
+			'lessThanOrEqual'=>' <= :p',
+			'greaterThanOrEqual'=>' >= :p',
+			'betweenInclusive'=>' between :1p and :2p',
+			'notEqual'=>' != :p',
+			'startsWith'=>' like :p',
+			'endsWith'=>' like :p',
+			'notStartsWith'=>' not like :p',
+			'notEndsWith'=>' not like :p',
+			'iContains'=>' like :p',
+			'notContains'=>' not like :p',
+			'inSet'=>' in :p',
+			'notInSet'=>' not in :p',
+			'isNull'=>' IS NULL',
+			'isNotNull'=>' IS NOT NULL ',
+			'exact match'=>' = :p',
+			'equals'=>' = :p '
 		);
 
 
@@ -328,10 +327,11 @@ abstract class EntityController extends \IRController
 				$reval['1'.str_ireplace('.', '_', $fieldName).$tmp1]=$s['value'][0];
 				$reval['2'.str_ireplace('.', '_', $fieldName).$tmp1]=$s['value'][1];
 			}
+			elseif(($s['operator'] == 'isNull') || ($s['operator'] == 'isNotNull'))
+				$reval = array();
 			else
-			{
 				$reval[str_ireplace('.', '_', $fieldName).$tmp1]=$tmp;
-			}
+			
 			if($tmp1!=1)
 			{
 				$ret=$ret.' and tmp.'. $fieldName.str_replace('p',str_ireplace('.', '_', $fieldName).$tmp1,$change[$s['operator']]);

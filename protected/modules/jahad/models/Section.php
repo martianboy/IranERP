@@ -1,13 +1,13 @@
 <?php
 namespace IRERP\modules\jahad\models;
-use IRERP\models\DbEntity;
+use IRERP\Basics\Models\IRDataModel;
 
 /**
  * @Entity
  * @author masoud
  *
  */
-class Section extends DbEntity
+class Section extends IRDataModel
 {
 	/**
  	 * @ManyToOne(targetEntity="Media",inversedBy="bakhshha")
@@ -19,7 +19,7 @@ class Section extends DbEntity
 	 * @Id @generatedValue(strategy="AUTO") @Column(type="integer")
 	 * @var integer
 	 */
-protected $id;
+	protected $id;
 		/**
 		 * @Column(type="string")
 		 * @var string

@@ -12,8 +12,4 @@ use IRERP\models\BasicNamedClass;
 class Auidunce extends BasicNamedClass
 {
 }
-
-
-
-
 ?>
