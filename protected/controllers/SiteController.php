@@ -1,16 +1,19 @@
 ﻿<?php
+use IRERP\modules\jahad\models\Magazine;
+use IRERP\modules\jahad\models\Matter;
+use IRERP\modules\jahad\models\Nationality;
 use \IRERP\models\MenuItem,
 	\IRERP\modules\jahad\models\TVRD,
-	\IRERP\modules\jahad\models\Matter,
+	\IRERP\modules\jahad\models\Matter as mats,
 	\IRERP\modules\jahad\models\Title,
 	\IRERP\modules\jahad\models\MagazineType,
 	\IRERP\modules\jahad\models\Size,
 	\IRERP\modules\jahad\models\Year,
 	\IRERP\modules\jahad\models\MagNo,
 	\IRERP\modules\jahad\models\Auidunce,
-	\IRERP\modules\jahad\models\Nationality,
+	\IRERP\modules\jahad\models\Nationality AS USA,
 	\IRERP\modules\jahad\models\State,
-	\IRERP\modules\jahad\models\Magazine,
+	\IRERP\modules\jahad\models\Magazine as cddc,
 	\IRERP\modules\jahad\models\MagazineVersion,
 	\IRERP\modules\jahad\models\Human,
 	\IRERP\modules\jahad\models\Media,
@@ -36,6 +39,7 @@ class SiteController extends IRController
 			),
 		);
 	}
+
 
 	/**
 	 * This is the default 'index' action that is invoked
@@ -196,4 +200,77 @@ class SiteController extends IRController
 			//throw $ex;
 		}
 	}
+	
+	public function actionNatTest()
+	{
+		for($i=0;$i<1000;$i++){
+		$n = new Nationality();
+		$n->setName('Nati'.$i);
+		$n->setDescription('Nati'.$i);
+		$n->Save();
+		$n->getEntityManager()->flush();
+		echo $i.'<br/>';
+		}
+	}
+	
+	public function actionMatTest()
+	{
+		$m = new Matter();
+		$m1 = $m->GetByID(2);
+		$m2=$m->GetByID(3);
+		$m3=$m->GetByID(4);
+		
+		$mag= new Magazine();
+		$mag = $mag->GetByID(1);
+		$mag->AddMatter($m1);
+		$mag->AddMatter($m2);
+		$mag->Save();
+		$mag->getEntityManager()->flush();
+		echo count($mag->getMatters());
+	}
+	public function actionGeMats()
+	{
+		$m = new Matter();
+		$a = new Magazine();
+		$em = $m->getEntityManager();
+		$qb= $em->createQueryBuilder();
+		$qb	->select('tmp1.Name')
+    		->from(get_class($a),' tmp')
+    		->leftJoin('tmp.mozu','tmp1');
+    		
+		/*$qb	->select('tmp')
+    		->from(get_class($a),' tmp');*/
+    		
+    	$query = $qb->getQuery();
+    	$tp = $query->getDQL();
+    	
+    		print_r($tp);
+    	$tp= $query->execute();
+    	print_r($tp);
+    		return;
+		
+		
+		/*$q = \Doctrine_Query::create()
+    		->select('tmp1')
+    		->from(get_class($a).' tmp')
+    		->leftJoin('tmp.mozu tmp1');
+*/
+		$results = $q->execute(array(), Doctrine_Core::HYDRATE_ARRAY);
+		print_r($results);
+		/*$qb = $em->createQueryBuilder();
+		$qb->add('select', 'tmp')
+		   ->add('from', get_class($this).' tmp')
+		   ->setFirstResult( $startRow )
+		   ->setMaxResults( $endRow-$startRow );
+
+		$tmp=0;
+		
+		
+		print_r($m);
+		*/
+	}
+		
+		
+		
+	
 }

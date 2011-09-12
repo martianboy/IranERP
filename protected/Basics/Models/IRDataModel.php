@@ -88,7 +88,7 @@ class IRDataModel extends CModel
 	}
 	
 	/**
-	 *@scField(name="Id",DoctrineField="Id",type="integer",primaryKey="true",hidden="true") 
+	 *@scField(name="id",DoctrineField="id",type="integer",primaryKey="true",hidden="true") 
 	 */
 	public function getid(){return $this->id;}
 	public function setid($v){$this->id=$v;}
@@ -136,6 +136,7 @@ class IRDataModel extends CModel
 			}
 		}
 	}
+	
 	public function GetByID($id)
 	{
 		return $this->getEntityManager()

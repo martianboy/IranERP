@@ -2,10 +2,39 @@
 var dsMasterName = "{$dsMaster}"; 
 var frmMasterName = "frm{$dsMaster}";
 var MasterGridName = "{$dsMaster}Grid";
-
 {literal}
 isc.RestDataSource.create({
     ID:dsMasterName,
+    fields:
+        [
+            {hidden:"true",name:"id",primaryKey:"true",type:"integer"},
+            {type:"string",title:"نام",name:"FirstName"},
+            {type:"string",title:"نام خانوادگی",name:"LastName"},
+            {type:"string",title:"کدملی",name:"NationalCode"},
+            {type:"string",title:"نام پدر",	name:"FatherName"},
+            {type:"string",title:"ملیت",name:"NationalityTitle"},
+            {type:"integer",hidden:true,name:"NationalityID"},
+            {type:"string",title:"کدپستی",name:"PostalCode"},
+            {type:"string",title:"شماره تلفن",name:"PhoneNo"}
+
+            ],
+    dataFormat:"json",
+    operationBindings:[
+     {operationType:"fetch", dataProtocol:"getParams"},
+     {operationType:"add", dataProtocol:"postParams"},
+     {operationType:"remove", dataProtocol:"postParams", requestProperties:{httpMethod:"DELETE"}},
+     {operationType:"update", dataProtocol:"postParams", requestProperties:{httpMethod:"PUT"}}
+    ],
+    {/literal}
+    fetchDataURL :"{$this->baseUrl}/{$this->uniqueId}/",
+    addDataURL   :"{$this->baseUrl}/{$this->uniqueId}/",
+    updateDataURL:"{$this->baseUrl}/{$this->uniqueId}/",
+    removeDataURL:"{$this->baseUrl}/{$this->uniqueId}/"
+            });
+            
+{literal}
+isc.RestDataSource.create({
+    ID:"Nationality",
     fields:
         [
             {hidden:"true",name:"id",primaryKey:"true",type:"integer"},
@@ -20,10 +49,10 @@ isc.RestDataSource.create({
      {operationType:"update", dataProtocol:"postParams", requestProperties:{httpMethod:"PUT"}}
     ],
     {/literal}
-    fetchDataURL :"{$this->baseUrl}/{$this->uniqueId}/",
-    addDataURL   :"{$this->baseUrl}/{$this->uniqueId}/",
-    updateDataURL:"{$this->baseUrl}/{$this->uniqueId}/",
-    removeDataURL:"{$this->baseUrl}/{$this->uniqueId}/"
+    fetchDataURL :"{$this->baseUrl}/jahad/nationality/",
+    addDataURL   :"{$this->baseUrl}/jahad/nationality/",
+    updateDataURL:"{$this->baseUrl}/jahad/nationality/",
+    removeDataURL:"{$this->baseUrl}/jahad/nationality/"
             });
 {literal}
 isc.ListGrid.create({
@@ -49,7 +78,28 @@ isc.DynamicForm.create({
     dataSource:dsMasterName,
     numCols:2,
     useAllDataSourceFields:true,
-    defaultLayoutAlign: "center"
+    defaultLayoutAlign: "center",
+    fields:
+        [
+            {name:"id"},
+            {name:"FirstName"},
+            {name:"LastName"},
+            {name:"PhoneNo"},
+            {name:"PostalCode"},
+            {name:"NationalCode"},
+            {name:"FatherName"},
+            {name:"NationalityTitle",hidden:true},
+            {name:"NationalityID",hidden:false,title:"ملیت",
+            	 editorType: "SelectItem", 
+                 optionDataSource: "Nationality", 
+                 displayField:"Name", valueField:"id",
+                 pickListProperties: {showFilterEditor:true},
+                 pickListFields:[
+                     {name:"Name"},
+                     {name:"Description"}
+                 ]
+                 }
+        ]
     
 });
 
@@ -72,12 +122,12 @@ isc.ToolStripButton.create({ID:"btnDelete_Master",title:"حذف",  icon: "Images
 isc.ToolStripButton.create({ID:"btnCancel_Master",title:"انصراف",  icon: "Images.php?Color=Orange&IconType=Icons&ActionType=Cancel",click:function(){DisableForm(frmMaster);btnNew_Master.enable();btnEdit_Master.enable();btnSave_Master.disable();btnDelete_Master.enable();}});
 
 isc.ToolStrip.create({
-    width: "300", 
+    width: "100%", 
     height:24, 
     ID:"ToolstripMaster",
-    members: [btnNew_Master,   "separator",
-              btnEdit_Master,  "separator",
-              btnSave_Master,  "separator", 
+    members: [btnNew_Master, "separator",
+              btnEdit_Master, "separator",
+              btnSave_Master,"separator", 
               btnDelete_Master,"separator", 
               btnCancel_Master]
 });
@@ -93,13 +143,13 @@ isc.HLayout.create({
                   defaultLayoutAlign: "right",
                   showResizeBar:true,
                   Height:"100%",
-                  width:"30%",
+                  width:"*",
                   members:[ToolstripMaster, 
                            frmMaster
                            ]
               }),
              isc.VLayout.create({
-                        width: "*",
+                        width: "70%",
                         members: [MasterGrid ]
                          })
               ]
