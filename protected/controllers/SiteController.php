@@ -73,7 +73,7 @@ class SiteController extends IRController
 	public function actionInstallDB()
 	{
 		$DBClasses = array(
-			'\IRERP\models\BasicNamedClass',
+			'\IRERP\Basics\Models\BasicNamedClass',
 			'\IRERP\models\MenuItem',
 			'\IRERP\modules\jahad\models\TVRD',
 			'\IRERP\modules\jahad\models\Matter',

@@ -12,7 +12,7 @@ class Media extends IRDataModel{
 	 * @Id @generatedValue(strategy="AUTO") @Column(type="integer")
 	 * @var integer
 	 */
-protected $id;
+	protected $id;
 
 	/**
 	 * @OneToOne(targetEntity="Title")
@@ -47,49 +47,37 @@ protected $id;
 	public function getSathe_Mokhatab(){return $this->sathe_mokhatab;}
 	public function setSathe_Mokhatab($ti){$this->sathe_mokhatab=$ti;}
 	
-		/**
-		 * @ManyToMany(targetEntity="State")
-		 * @var state[]
-		 */
+	/**
+	 * @ManyToMany(targetEntity="State")
+	 * @var state[]
+	 */
 	protected $ostan;
 	public function getOstan(){return $this->ostan;}
 	public function setOstan($ti){$this->ostan=$ti;}
 		
-		/**
-		 * @Column(type="integer")
-		 * @var integer
-		 */
+	/**
+	 * @Column(type="integer")
+	 * @var integer
+	 */
 	
 	protected $tedad_barnameh;
 	public function getTedad_Barnameh(){return $this->tedad_barnameh;}
 	public function setTedad_Barnameh($ti){$this->tedad_barnameh=$ti;}
 		
-			/**
-			 * @Column(type="string")
-			 * @var string
-			 */
+	/**
+	 * @Column(type="string")
+	 * @var string
+	 */
 	protected $shomareh;
 	public function getShomareh(){return $this->shomareh;}
 	public function setShomareh($ti){$this->shomareh=$ti;}
 	
-		/**
-		 * @OneToMany(targetEntity="Section",mappedBy="Media")
-		 * @var Section[]
-		 */
+	/**
+	 * @OneToMany(targetEntity="Section",mappedBy="Media")
+	 * @var Section[]
+	 */
 	protected $bakhshha;
 	public function getBakhshha(){return $this->bakhshha;}
 	public function setBakhshha($ti){$this->bakhshha=$ti;}
-		
-	
 }
 ?>
-
-
-
-
-
-
-
-
-
-

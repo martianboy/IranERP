@@ -2,7 +2,7 @@
 namespace IRERP\models;
 
 use IRERP\Basics\Models\IRDataModel,
-	IRERP\Basics\Annotations\scField;
+	 IRERP\Basics\Annotations\scField;
 
 /**
  * @Entity @Table(name="MenuItem")

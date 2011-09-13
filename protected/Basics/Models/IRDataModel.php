@@ -1,10 +1,9 @@
 <?php
-
 namespace IRERP\Basics\Models;
 
 use \Doctrine\Common\Annotations\AnnotationReader,
 	 \IRERP\Basics\Annotations\scField,
-	 \CModel;
+	 \CModel, \Yii;
 
 //This shoud be defined inside php.ini file, not here
 //date_default_timezone_set('UTC');
@@ -16,6 +15,8 @@ use \Doctrine\Common\Annotations\AnnotationReader,
  */
 class IRDataModel extends CModel
 {
+	private static $_names=array();
+
 	/**
 	 * Entity Manager That This Class Use To 
 	 * Doing Something To Objects
@@ -293,6 +294,31 @@ class IRDataModel extends CModel
 		$totalRows = $tmptest[0][1];
 		
 		return array('totalRows'=>$totalRows,'results'=>$results);
+	}
+	
+	/**
+	* Returns the list of attribute names.
+	* By default, this method returns all public properties of the class.
+	* You may override this method to change the default.
+	* @return array list of attribute names. Defaults to all public properties of the class.
+	*/
+	public function attributeNames()
+	{
+		$className=get_class($this);
+		if(!isset(self::$_names[$className]))
+		{
+			$class=new ReflectionClass(get_class($this));
+			$names=array();
+			foreach($class->getProperties() as $property)
+			{
+				$name=$property->getName();
+				if($property->isPublic() && !$property->isStatic())
+				$names[]=$name;
+			}
+			return self::$_names[$className]=$names;
+		}
+		else
+		return self::$_names[$className];
 	}
 }
 /***
