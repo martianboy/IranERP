@@ -1,4 +1,3 @@
-<script type="text/javascript">
 var dsMasterName = "{$dsMaster}"; 
 var frmMasterName = "frm{$dsMaster}";
 var MasterGridName = "{$dsMaster}Grid";
@@ -193,5 +192,4 @@ function ShowDialog(Title,Message,Yes,No,afterclose)
         
     });
 }
-</script>
 {/literal}

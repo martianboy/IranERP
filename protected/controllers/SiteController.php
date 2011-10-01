@@ -2,6 +2,7 @@
 use IRERP\modules\jahad\models\Magazine;
 use IRERP\modules\jahad\models\Matter;
 use IRERP\modules\jahad\models\Nationality;
+use IRERP\Basics\SmartClient\SmartClientController;
 use \IRERP\models\MenuItem,
 	\IRERP\modules\jahad\models\TVRD,
 	\IRERP\modules\jahad\models\Matter as mats,
@@ -19,7 +20,7 @@ use \IRERP\models\MenuItem,
 	\IRERP\modules\jahad\models\Media,
 	\IRERP\modules\jahad\models\Section;
 
-class SiteController extends IRController
+class SiteController extends SmartClientController
 {
 	/**
 	 * Declares class-based actions.
@@ -48,9 +49,27 @@ class SiteController extends IRController
 	public function actionIndex()
 	{
 		// renders the view file 'protected/views/site/index.tpl'
-		$this->render('index');
+		$this->renderAppFrame();
 	}
 
+	public function renderAppFrame($return=false)
+	{
+		if($this->beforeRender('index'))
+		{
+			if(($layoutFile=$this->getLayoutFile('//layouts/main-mdi'))!==false)
+				$output=$this->renderFile($layoutFile,NULL,true);
+	
+			$this->afterRender('index',$output);
+	
+			$output=$this->processOutput($output);
+	
+			if($return)
+				return $output;
+			else
+				echo $output;
+		}
+	}
+	
 	/**
 	 * This is the action to handle external exceptions.
 	 */
@@ -211,6 +230,13 @@ class SiteController extends IRController
 		$n->getEntityManager()->flush();
 		echo $i.'<br/>';
 		}
+	}
+	
+	public function actionjQueryUITest()
+	{
+    	if ($this->beforeRender('//presentation/1')) {
+  			$this->renderPartial('//presentation/1');
+	    }
 	}
 	
 	public function actionMatTest()

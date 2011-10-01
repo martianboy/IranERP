@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html dir='{$this->direction}'>
+<html>
 <head>
     <meta charset="utf-8">
     <title>{$this->pageTitle}</title>
@@ -8,6 +8,8 @@
 {/foreach}
 </head>
 <body>
+<script>
 {$content}
+</script>
 </body>
 </html>

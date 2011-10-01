@@ -17,5 +17,16 @@ class MenuController extends EntityController
 		parent::__construct($id,$module);
 		$this->viewVars['imageURLPrefix'] = Yii::app()->baseUrl . '/images/';
 	}
+	
+	public function actionAdmin()
+	{
+		if ($this->getIsGetRequest())
+			$this->renderView('//entity/index');
+	}
+
+	public function actionMenuData()
+	{
+				
+	}
 }
 ?>

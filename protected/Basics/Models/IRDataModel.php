@@ -132,7 +132,13 @@ class IRDataModel extends CModel
 					//Get Value From User
 					$fieldvalue = call_user_func($functionName,$annots->name,$ValueArray);
 					//Try To Set To Class 
-					call_user_func(array(&$this, 'set'.$propname),$fieldvalue);
+					try {
+						$this->$propname = $fieldvalue;
+					}
+					catch (\Exception $ex)
+					{
+						call_user_func(array(&$this, 'set'.$propname),$fieldvalue);
+					}
 				}
 			}
 		}
