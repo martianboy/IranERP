@@ -3,8 +3,9 @@ namespace IRERP\Basics\Models;
 
 use \Doctrine\Common\Annotations\AnnotationReader,
 	 \IRERP\Basics\Annotations\scField,
+	\IRERP\Basics,
 	 \CModel, \Yii;
-
+use \IRERP\Basics\JoinTb;
 //This shoud be defined inside php.ini file, not here
 //date_default_timezone_set('UTC');
 
@@ -89,7 +90,7 @@ class IRDataModel extends CModel
 	}
 	
 	
-	public function AddToMember($MemberName,DbEntity $Value){
+	public function AddToMember($MemberName,IRDataModel $Value){
 		$_1nPropName = NULL;
 		$_1nPropName=\ApplicationHelpers::GetPropertyInTargetFor1nRelation($this, $MemberName, $Value);
 		if(isset($_1nPropName)){
@@ -110,7 +111,7 @@ class IRDataModel extends CModel
 	public function RemoveFromMember_ENUM($MemberName,$Value){
 		$this->getClassMember($MemberName)->removeElement($Value);
 	}
-	public function RemoveFromMember_Complete($MemberName,DbEntity $Value){
+	public function RemoveFromMember_Complete($MemberName,IRDataModel $Value){
 		$this->getClassMember($MemberName)->removeElement($Value);
 		$Value->setIsDeleted(true);
 		$Value->Save();
@@ -266,12 +267,12 @@ class IRDataModel extends CModel
 	}*/
 public function __construct($em=NULL)
 	{
-		$this->LastModifyDate=new \DateTime();
-		$this->CreatedDate=new \DateTime();
+		$this->dateLastModified=new \DateTime();
+		$this->dateCreated=new \DateTime();
 		if(isset($em))
-			$this->EM=$em;
+			$this->entityManager=$em;
 		else 
-			$this->EM = \Yii::app()->doctrine->getEntityManager();
+			$this->entityManager = \Yii::app()->doctrine->getEntityManager();
 	}
 
 	public function findAll($parameters)
@@ -313,7 +314,7 @@ public function __construct($em=NULL)
  * 																['Value'=>Value]['function'=>function($reterivedClass)]))
  */
 	public function fetchObjects($startRow=0,$endRow=100,$whstr='',$whparam=NULL,$orderby=array(),JoinTb  $joinedTable=NULL){
-		$em = $this->EM;
+		$em = $this->entityManager;
 		
 		$qb = $em->createQueryBuilder();
 		if(!isset($joinedTable)){

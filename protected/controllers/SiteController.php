@@ -88,6 +88,7 @@ class SiteController extends IRController
 			'\IRERP\modules\jahad\models\Human',
 			'\IRERP\modules\jahad\models\Media',
 			'\IRERP\modules\jahad\models\Section',
+			'\IRERP\modules\jahad\models\MagazineVersion',
 		);
 		
 		$em = Yii::app()->doctrine->getEntityManager();

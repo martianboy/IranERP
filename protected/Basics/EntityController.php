@@ -1,8 +1,8 @@
 <?php
 namespace IRERP\Basics;
-use IRERP\models\DbEntity;
 
-use \Yii, \ReflectionClass, \CException,
+
+use \Yii, \ReflectionClass, \CException,\IRERP\Basics,
 	\Doctrine\Common\Annotations\AnnotationReader,
 	\IRERP\Basics\Annotations\MapModelController;
 

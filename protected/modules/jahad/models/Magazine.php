@@ -1,8 +1,10 @@
 <?php
 namespace IRERP\modules\jahad\models;
 
+use IRERP\models\DbEntity;
+use IRERP\modules\jahad\models;
+use IRERP\Basics\Annotations\scField;
 use IRERP\Basics\Models\IRDataModel;
-
 /**
  * 
  * @author masoud
@@ -10,8 +12,9 @@ use IRERP\Basics\Models\IRDataModel;
  */
 class Magazine extends IRDataModel
 {
+
 	/**
-	 * @OneToOne(targetEntity="Title")
+	 * @ManyToOne(targetEntity="Title")
 	 * @var Title
 	 */
 	protected $onvan;
@@ -21,7 +24,7 @@ class Magazine extends IRDataModel
 	/**
 	 * @scField(type="string",name="TitleName",title="عنوان",DoctrineField="onvan.Name")
 	 */
-	public function getTitleName(){return $this->onvan->getName();}
+	public function getTitleName(){if(isset($this->onvan))return $this->onvan->getName();}
 	public function setTitleName($v){}
 	
 	/**
@@ -34,7 +37,8 @@ class Magazine extends IRDataModel
 		$this->onvan=$tit;
 	}
 	
-	/** 
+	/**
+	 * 
 	 * @ManyToMany(targetEntity="Matter")
 	 * @var Matter[]
 	 */
@@ -43,7 +47,7 @@ class Magazine extends IRDataModel
 	public function setMatters($m){$this->mozu=$m;}
 	
 	/**
-	 * @OneToOne(targetEntity="MagazineType")
+	 * @ManyToOne(targetEntity="MagazineType")
 	 * @var MagazineType
 	 */
 	protected $noe_majale;
@@ -71,12 +75,6 @@ class Magazine extends IRDataModel
 	public function getVersions(){return $this->magver;}
 	public function setVersions($vers){$this->magver=$vers;}
 	
-	
-	public function AddMatter($m)
-	{
-		$this->mozu[]=$m;
-		
-	}	
 }
 
 ?>
