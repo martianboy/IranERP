@@ -75,6 +75,49 @@ class IRDataModel extends CModel
 	protected $annotationValues = array();
 	
 	
+	protected function getClassMember($MemberName){
+		$tmp=new \ReflectionProperty($this,$MemberName);
+		$tmp->setAccessible(true);
+		return $tmp->getValue($this);
+	}
+	
+	protected function setClassMember($MemberName,$Value,$Obj=NULL){
+		$tmp=new \ReflectionProperty($this,$MemberName);
+		$tmp->setAccessible(true);
+		if(!isset($Obj)) $Obj=$this; 
+		$tmp->setValue($Obj, $Value);
+	}
+	
+	
+	public function AddToMember($MemberName,DbEntity $Value){
+		$_1nPropName = NULL;
+		$_1nPropName=\ApplicationHelpers::GetPropertyInTargetFor1nRelation($this, $MemberName, $Value);
+		if(isset($_1nPropName)){
+			$Value->setClassMember($_1nPropName, $this,$Value);
+			$this->getClassMember($MemberName)->add($Value);
+			$Value->Save();
+		}else {
+
+		$this->getClassMember($MemberName)->add($Value);
+		$this->Save();
+		}
+		//Check For Relation Betweeen $Value Class And Member Class 
+		//if Relation is n-1 And There Is 
+	}
+	public function AddToMemberENUM($MemberName,$Value){
+		$this->getClassMember($MemberName)->add($Value);
+	}
+	public function RemoveFromMember_ENUM($MemberName,$Value){
+		$this->getClassMember($MemberName)->removeElement($Value);
+	}
+	public function RemoveFromMember_Complete($MemberName,DbEntity $Value){
+		$this->getClassMember($MemberName)->removeElement($Value);
+		$Value->setIsDeleted(true);
+		$Value->Save();
+		$this->Save();
+		
+	}
+	
 	public function setEntityManager(&$value = NULL){
 		if ($value !== NULL && is_a($value, '\Doctrine\ORM\EntityManager'))
 			$this->entityManager = $value;
@@ -215,11 +258,20 @@ class IRDataModel extends CModel
 		return $this->parseObjectToArray();
 	}
 
-	public function __construct()
+/*	public function __construct()
 	{
 		$this->dateLastModified=new \DateTime();
 		$this->dateCreated=new \DateTime();
 		$this->EntityManager = Yii::app()->doctrine->getEntityManager();
+	}*/
+public function __construct($em=NULL)
+	{
+		$this->LastModifyDate=new \DateTime();
+		$this->CreatedDate=new \DateTime();
+		if(isset($em))
+			$this->EM=$em;
+		else 
+			$this->EM = \Yii::app()->doctrine->getEntityManager();
 	}
 
 	public function findAll($parameters)
@@ -244,14 +296,55 @@ class IRDataModel extends CModel
 		
 	}
 	
-	public function fetchObjects($startRow,$endRow,$whstr,$whparam,$orderby){
-		$em = $this->getEntityManager();
+/**
+ * 
+ * Enter description here ...
+ * @param integer $startRow
+ * @param integer $endRow
+ * @param string $whstr
+ * @param array $whparam
+ * @param array $orderby
+ * @param array $joinedTable
+ * 			> array structure array('Class'=>TargetClassName,
+ * 									'Prop'=>TargetProperty,
+ * 									'whstr'=>WhereString,
+ * 									'whparam'=>array,
+ * 									'HelpField'=>array('Type'=>['Value' or 'function'],
+ * 																['Value'=>Value]['function'=>function($reterivedClass)]))
+ */
+	public function fetchObjects($startRow=0,$endRow=100,$whstr='',$whparam=NULL,$orderby=array(),JoinTb  $joinedTable=NULL){
+		$em = $this->EM;
 		
 		$qb = $em->createQueryBuilder();
+		if(!isset($joinedTable)){
 		$qb->add('select', 'tmp')
 		   ->add('from', get_class($this).' tmp')
 		   ->setFirstResult( $startRow )
 		   ->setMaxResults( $endRow-$startRow );
+		}else {
+			$subquery= $em->createQueryBuilder();
+			$subquery
+			->select('TBIDS.id')
+			->from($joinedTable->getClass(),'tmp1')
+			->innerJoin('tmp1.'.$joinedTable->getProp(), 'TBIDS')
+			;
+			$jointbwhstr = $joinedTable->getWhereString();
+			$jointbwhparam = $joinedTable->getWhereParam();
+			
+			if(isset($jointbwhstr)) {
+				$subquery->add('where',$joinedTable->getWhereString());
+				if(isset($jointbwhparam)) 
+					$subquery->setParameters($joinedTable->getWhereParam());
+					
+			$qb->add('select', 'tmp')
+		   ->add('from', get_class($this).' tmp')
+		   ->setFirstResult( $startRow )
+		   ->setMaxResults( $endRow-$startRow );
+		   
+		   $qb->add('where','tmp.id in ('.$subquery->getDQL().')');
+		   $qb->setParameters($subquery->getParameters());
+			}
+		}
 
 		$tmp=0;
 
@@ -262,37 +355,142 @@ class IRDataModel extends CModel
 			}
 			else
 				$qb->addOrderBy('tmp.'.$fn,$kn);
-		
-		if($whstr!='') {
-			$qb->add('where',$whstr.' and tmp.IsDeleted = 0 ');
-			$qb->setParameters($whparam);
-		}
-		else
-			$qb->add('where','tmp.IsDeleted =0');
+				
+		if(isset($joinedTable))
+		{
+			if($whstr!=''){
+				$qb->andWhere($whstr.' and tmp.IsDeleted = 0 ');
+				if(isset($whparam)) $qb->setParameters($whparam);
+			}
+			else 
+			{
+				$qb->andWhere('tmp.IsDeleted = 0');
+			}
+		}else 
+			if($whstr!='') {
+				$qb->add('where',$whstr.' and tmp.IsDeleted = 0 ');
+				 if(isset($whparam))$qb->setParameters($whparam);
+			}
+			else
+				$qb->add('where','tmp.IsDeleted =0');
 		
 		$query = $qb->getQuery();
+		
 
 //		var_dump($qb->getQuery()->getSQL());
 //		var_dump($whparam);
 //		var_dump($whstr); die;
+		$jointbhelpfieldtype =NULL;
+		if(isset($joinedTable))		$jointbhelpfieldtype = $joinedTable->getHelpFieldType();
 		
 		$results = $query->getResult();
-			
-		$qb = $em->createQueryBuilder();
-		$qb->add('select', 'count(tmp.id)')
-		   ->add('from', get_class($this).' tmp');
+		if(isset($joinedTable))
+			if(isset($jointbhelpfieldtype))
+				foreach($results as $r){
+					switch ($joinedTable->getHelpFieldType()){
+						case 'Value':
+							$r->HelpField=$joinedTable->getHelpField();
+							break;
+						case 'function':
+							/**
+							 * 
+							 *TODO: Complete this section for
+							 *Make instance of function and call it 
+							 *HelpField=function($r);
+							 */
+							break;
+							
+						
+					}
+						
+				}
 
+				
+		/*		
+		$qb = $em->createQueryBuilder();
+		if(!isset($joinedTable)){
+		$qb->add('select', 'count(tmp.id)')
+		   ->add('from', get_class($this).' tmp');	
+		}else {
+			$qb	->select('count(tmp.id)')
+    		->from($joinedTable['Class'],' tmp1')
+    		->innerJoin('tmp1.'.$joinedTable['Prop'],'tmp');
+		}
+		
+		if(isset($joinedTable))
+		{
+			if($whstr!=''){
+				$qb->andWhere($whstr.' and tmp.IsDeleted = 0 ');
+				if(isset($whparam)) $qb->setParameters($whparam);
+			}
+			else 
+			{
+				$qb->andWhere('tmp.IsDeleted = 0');
+			}
+		}else 
+			if($whstr!='') {
+				$qb->add('where',$whstr.' and tmp.IsDeleted = 0 ');
+				 if(isset($whparam))$qb->setParameters($whparam);
+			}
+			else
+				$qb->add('where','tmp.IsDeleted =0');
+		*/
+		
+/*
 		if($whstr!='') {
 			$qb->add('where',$whstr.' and tmp.IsDeleted = 0 ');
 			$qb->setParameters($whparam);
 		} else
 			$qb->add('where','tmp.IsDeleted =0');
-			
+	*/		
+				
 		//get Total Rows
-		$dql = $qb->getQuery();
+		$qb1 = $em->createQueryBuilder();
+	if(!isset($joinedTable)){
+		$qb1->add('select', 'count(tmp.id)')
+		   ->add('from', get_class($this).' tmp');
+		}else {
+			$subquery= $em->createQueryBuilder();
+			$subquery
+			->select('TBIDS.id')
+			->from($joinedTable->getClass(),'tmp1')
+			->innerJoin('tmp1.'.$joinedTable->getProp(), 'TBIDS')
+			;
+			$jointbwhstr = $joinedTable->getWhereString();
+			$jointbwhparam = $joinedTable->getWhereParam();
+			
+			if(isset($jointbwhstr)) {
+				$subquery->add('where',$joinedTable->getWhereString());
+				if(isset($jointbwhparam)) 
+					$subquery->setParameters($joinedTable->getWhereParam());
+					
+			$qb1->add('select', 'count(tmp.id)')
+		   ->add('from', get_class($this).' tmp');
+		   
+		   $qb1->add('where','tmp.id in ('.$subquery->getDQL().')');
+		   $qb1->setParameters($subquery->getParameters());
+			}
+		}
+	if(isset($joinedTable))
+		{
+			if($whstr!=''){
+				$qb1->andWhere($whstr.' and tmp.IsDeleted = 0 ');
+				if(isset($whparam)) $qb1->setParameters($whparam);
+			}
+			else 
+			{
+				$qb1->andWhere('tmp.IsDeleted = 0');
+			}
+		}else 
+			if($whstr!='') {
+				$qb1->add('where',$whstr.' and tmp.IsDeleted = 0 ');
+				 if(isset($whparam))$qb1->setParameters($whparam);
+			}
+			else
+				$qb1->add('where','tmp.IsDeleted =0');
+		$dql = $qb1->getQuery();
 		$tmptest = $dql->getResult();
 		$totalRows = $tmptest[0][1];
-		
 		return array('totalRows'=>$totalRows,'results'=>$results);
 	}
 	

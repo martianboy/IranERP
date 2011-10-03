@@ -1,5 +1,7 @@
 <?php
 namespace IRERP\Basics;
+use IRERP\models\DbEntity;
+
 use \Yii, \ReflectionClass, \CException,
 	\Doctrine\Common\Annotations\AnnotationReader,
 	\IRERP\Basics\Annotations\MapModelController;
@@ -58,7 +60,117 @@ abstract class EntityController extends \IRController
 		return $className;
 	}
 	
-	public function actionIndex()
+	public function actionGeneralSimpleJoinENUM(){
+		$totalurl = \Yii::app()->getRequest()->getUrl();
+		$questionmark=strpos($totalurl, '?');
+		if($questionmark==NULL) $questionmark = strlen($totalurl);
+		$totalurl= substr($totalurl, 0,$questionmark);
+		
+		$currentcontrollerAddress = \Yii::app()->getRequest()->getBaseUrl().'/'.$this->getUniqueId();
+		$aUrl = split('/', $totalurl);
+		$aController= split('/', $currentcontrollerAddress);
+		
+		$jdsindex=count($aController);
+		$typ = $aUrl[$jdsindex];
+		if($typ!='jdsenum') return;
+		
+		$ParentClassName = $aUrl[$jdsindex+1];
+		$ChildClassName = $this->getEntityClassname(); //get_class(new Matter());
+		$PropertyName = $aUrl[$jdsindex+2];// $this->getActionParam('propname');
+		$ParentClassName=urldecode(str_replace('_', '%', $ParentClassName));
+		$PropertyName=urldecode(str_replace('_', '%', $PropertyName));
+	
+		
+		$JoinDS = new JoinTb();
+		$JoinDS->setClass($ParentClassName);
+		$JoinDS->setProp($PropertyName);
+		$JoinDS->setWhereString('tmp1.id = :tmp1id');
+		$JoinDS->setWhereParam(array('tmp1id'=>$this->getActionParam('HelpField')));
+		$JoinDS->setPropClass($ChildClassName);
+		$JoinDS->setHelpFieldType('Value');
+		$JoinDS->setHelpField($this->getActionParam('HelpField'));
+		
+		/**
+		 * 
+		 */
+		$req = Yii::app()->getRequest();
+		$actionParams = $this->getActionParams();
+		$accepts = isset($actionParams['isc_dataFormat']) ? $actionParams['isc_dataFormat'] : 'html';
+		
+		/*if ($req->getIsPutRequest())
+			$this->UpdateRecord();
+		else */if ($req->getIsDeleteRequest())
+			$this->sjRemoveRecordENUM($JoinDS);
+		else if ($req->getIsPostRequest()) {
+			$this->sjAddRecordENUM($JoinDS);
+		}
+		else	// Is a GET request
+			if ($accepts == 'json')
+				$this->fetchResponse($JoinDS);
+			else {
+				//No Need For JoinTb
+				//Join Model dont need to view 
+		//		$this->renderView();
+			}
+//		$this->actionIndex($JoinDS);
+	}
+	public function actionGeneralSimpleJoin()
+	{
+		$totalurl = \Yii::app()->getRequest()->getUrl();
+		$questionmark=strpos($totalurl, '?');
+		if($questionmark==NULL) $questionmark = strlen($totalurl);
+		$totalurl= substr($totalurl, 0,$questionmark);
+		
+		$currentcontrollerAddress = \Yii::app()->getRequest()->getBaseUrl().'/'.$this->getUniqueId();
+		$aUrl = split('/', $totalurl);
+		$aController= split('/', $currentcontrollerAddress);
+		
+		$jdsindex=count($aController);
+		$typ = $aUrl[$jdsindex];
+		if($typ!='jds') return;
+		
+		$ParentClassName = $aUrl[$jdsindex+1];
+		$ChildClassName = $this->getEntityClassname(); //get_class(new Matter());
+		$PropertyName = $aUrl[$jdsindex+2];// $this->getActionParam('propname');
+		$ParentClassName=urldecode(str_replace('_', '%', $ParentClassName));
+		$PropertyName=urldecode(str_replace('_', '%', $PropertyName));
+	
+		
+		$JoinDS = new JoinTb();
+		$JoinDS->setClass($ParentClassName);
+		$JoinDS->setProp($PropertyName);
+		$JoinDS->setWhereString('tmp1.id = :tmp1id');
+		$JoinDS->setWhereParam(array('tmp1id'=>$this->getActionParam('HelpField')));
+		$JoinDS->setPropClass($ChildClassName);
+		$JoinDS->setHelpFieldType('Value');
+		$JoinDS->setHelpField($this->getActionParam('HelpField'));
+		
+		/**
+		 * 
+		 */
+		$req = Yii::app()->getRequest();
+		$actionParams = $this->getActionParams();
+		$accepts = isset($actionParams['isc_dataFormat']) ? $actionParams['isc_dataFormat'] : 'html';
+		
+		if ($req->getIsPutRequest())
+			$this->UpdateRecord();
+		else if ($req->getIsDeleteRequest())
+			$this->sjRemoveRecord($JoinDS);
+		else if ($req->getIsPostRequest()) {
+			$this->sjAddRecord($JoinDS);
+		}
+		else	// Is a GET request
+			if ($accepts == 'json')
+				$this->fetchResponse($JoinDS);
+			else {
+				//No Need For JoinTb
+				//Join Model dont need to view 
+		//		$this->renderView();
+			}
+//		$this->actionIndex($JoinDS);
+	}
+	
+	public function actionIndex(JoinTb $JoinDS=NULL)
 	{
 		$req = Yii::app()->getRequest();
 		$actionParams = $this->getActionParams();
@@ -75,7 +187,7 @@ abstract class EntityController extends \IRController
 		}
 		else	// Is a GET request
 			if ($accepts == 'json')
-				$this->fetchResponse();
+				$this->fetchResponse($JoinDS);
 			else {
 				$this->renderView();
 			}
@@ -92,6 +204,8 @@ abstract class EntityController extends \IRController
 			$this->render('//entity/index', $this->getViewVars());
 		}
 	}
+	
+	
 
 	/**
 	 * 
@@ -99,7 +213,7 @@ abstract class EntityController extends \IRController
 	 * @param string[] $IgnoredProperties
 	 * @param \Doctrine\ORM\EntityManager $em
 	 */
-	protected function fetchResponse($IgnoredProperties = NULL, $em = NULL)
+	protected function fetchResponse(JoinTb $JoinDS=NULL,$IgnoredProperties = NULL, $em = NULL)
 	{
 		if ($em == NULL)
 			$em = \Yii::app()->doctrine->getEntityManager();
@@ -178,9 +292,9 @@ abstract class EntityController extends \IRController
 					
 					foreach($order as $fieldname)
 						if(substr($fieldname,0,1)=='-')
-							$orderBy[substr($fieldname,1,strlen($fieldname)-1)]='DESC';
+							$orderBy[\ApplicationHelpers::TranslateSCVarsToDoctrine(substr($fieldname,1,strlen($fieldname)-1), $this->getEntityClassname())]='DESC';
 						else
-							$orderBy[$fieldname]='ASC';
+							$orderBy[\ApplicationHelpers::TranslateSCVarsToDoctrine($fieldname, $this->getEntityClassname())  ]='ASC';
 				}
 				$wh = $this->setwhere($criteria);
 				$whstr='';
@@ -194,7 +308,8 @@ abstract class EntityController extends \IRController
 				//Get Objects Form Db
 				$cls=new ReflectionClass($className);
 				$cls = $cls->newInstance();
-				$rtn=$cls->fetchObjects($startRow,$endRow,$whstr,$whparam,$orderBy);
+				$rtn=$cls->fetchObjects($startRow,$endRow,$whstr,$whparam,$orderBy,$JoinDS);
+				
 				$results=$rtn['results'];
 				$totalRows=$rtn['totalRows'];
 				
@@ -214,7 +329,6 @@ abstract class EntityController extends \IRController
 			print_r($e);
 		}
 	}
-	
 	/**
 	 * 
 	 * Updates selected record from SmartClient form data
@@ -240,6 +354,106 @@ abstract class EntityController extends \IRController
 			$this->SmartClientRespond(array("Name"=>array("errorMessage"=>$e->getMessage())), NULL, '-4');
 		}
 	}
+
+	/**
+	 * 
+	 * Simple Join Model With ENUM
+	 * IN ENUM Mode
+	 * Client Send id of child classs to server 
+	 * to add it to parent class that parent's id is in HelpField
+	 * All things do with ids
+	 * @param JoinTb $joinTable
+	 * @param unknown_type $em
+	 */
+	protected function sjAddRecordENUM(JoinTb $joinTable,$em=NULL){
+		$params = $this->getActionParams();
+		if ($em == NULL)
+			$em = Yii::app()->doctrine->getEntityManager();
+		//Check That HelpField and id is set or noy
+		$parentid=NULL;
+		$childid = NULL;
+		if(isset($params['HelpField'])) $parentid=$params['HelpField'];
+		if(isset($params['id'])) $childid=$params['id'];
+		if($parentid==NULL || $childid==NULL) {
+			//Send Error Message To Client
+			$this->SmartClientRespond(
+								NULL,
+								array('errors'=>
+								array("errorMessage"=>"داده های لازم برای عملیات کافی نیستند")
+								)
+								, 
+								 '-1');
+			
+			
+		}
+		//Load Parent Class
+		$pcls = $joinTable->getClassInstance($em);
+		$pcls=$pcls->GetByID($parentid);
+		$ccls = $joinTable->getPropClassInstance($em);
+		$ccls=$ccls->GetByID($childid);
+		$pcls->AddToMemberENUM($joinTable->getProp(),$ccls);
+		$em->flush();
+		$ccls->setHelpField($pcls->getid());
+		$this->SmartClientRespond($ccls->GetClassSCPropertiesInArray());
+		
+	}
+	/**
+	 * 
+	 * Simple Join Model Update Data
+	 * @param JoinTb $joinTable
+	 * @param unknown_type $em
+	 */
+	protected function sjAddRecord(JoinTb $joinTable,$em=NULL)
+	{
+		$className = $this->getEntityClassname();
+		$params = $this->getActionParams();
+		if ($em == NULL)
+			$em = Yii::app()->doctrine->getEntityManager();
+		
+		try{
+			
+			$cls = $joinTable->getClassInstance($em);
+			$pcls = $joinTable->getPropClassInstance($em);
+			
+
+			//$cls is DbEntity And Parent Class That Must Load Using HelpField
+			$cls =$cls->GetByID($joinTable->getHelpField());
+			//Check That id defined
+			$id=NULL;
+			$id = $this->getActionParam('id');
+			if(isset($id)) 
+			 	if ($id!='') 
+			 		$pcls=$pcls->GetByID($id);
+			//if there  is no id
+			$id = $pcls->getid();
+			if(!isset($id))
+			if(!($id>0))
+			 		$pcls->CreateClassFromScUsingMethod(array($this, 'getActionParam'));
+			
+			/*			 		
+			if(!(isset($pcls->getid())))
+			   if(!($pcls->getid()>0))
+			
+			*/
+			//Call Add function To Add pcls to Cls
+			//call_user_method('add'.$joinTable->getProp(), $cls,$pcls);
+			$cls->AddToMember($joinTable->getProp(),$pcls);
+			$pcls->setHelpField($cls->getid());
+			$em->flush();
+			
+			
+			/*$cls->CreateClassFromScUsingMethod(array($this, 'getActionParam'));
+			$cls->Save();
+			$em->flush();*/
+			$this->SmartClientRespond($pcls->GetClassSCPropertiesInArray());
+		} catch(Exception $e) {
+			throw $e;
+			//$this->SmartClientRespond(array("Name"=>array("errorMessage"=>$e->getMessage())), NULL, '-1');
+			
+		}
+		
+	}
+	
 	
 	/**
 	 * 
@@ -265,6 +479,7 @@ abstract class EntityController extends \IRController
 		} catch(Exception $e) {
 			throw $e;
 			//$this->SmartClientRespond(array("Name"=>array("errorMessage"=>$e->getMessage())), NULL, '-1');
+			
 		}
 	}
 	
@@ -294,13 +509,102 @@ abstract class EntityController extends \IRController
 		}
 	}
 	
+	/**
+	 * 
+	 * Remove Connection From Child Class (id) And ParentClass(Helpid)
+	 * @param JoinTb $joinTable
+	 * @param unknown_type $em
+	 */
+	protected function sjRemoveRecordENUM(JoinTb $joinTable,$em=NULL){
+		if ($em == NULL)
+			$em = \Yii::app()->doctrine->getEntityManager();
+		$pcls = $joinTable->getClassInstance($em);
+		$pid = NULL;
+		switch ($joinTable->getHelpFieldType()){
+				case 'Value':
+					$pid=$joinTable->getHelpField();
+					break;
+			}
+		$cid = NULL;
+		$cid=$this->getActionParam('id');
+		if(!(isset($pid) && isset($cid))) {
+						$this->SmartClientRespond(
+								NULL,
+								array('errors'=>
+								array("errorMessage"=>"داده های لازم برای عملیات کافی نیستند")
+								)
+								, 
+								 '-1');
+		}
+		$pcls=$pcls->GetByID($pid);
+		$ccls=$joinTable->getPropClassInstance($em);
+		$ccls=$ccls->GetByID($cid);
+		$pcls->RemoveFromMember_ENUM($joinTable->getProp(),$ccls);
+		$em->flush();
+		$ccls->setHelpField($pcls->getid());
+		$this->SmartClientRespond($ccls->GetClassSCPropertiesInArray());
+	}
+	
+	/**
+	 * 
+	 * Removes record by ID
+	 * @param \Doctrine\ORM\EntityManager $em
+	 */
+	protected function sjRemoveRecord(JoinTb $joinTable,$em = NULL) {
+		if ($em == NULL)
+			$em = \Yii::app()->doctrine->getEntityManager();
+		
+		$className = $this->getEntityClassname();
+		
+		try {
+			$pid=NULL;
+			switch ($joinTable->getHelpFieldType()){
+				case 'Value':
+					$pid=$joinTable->getHelpField();
+					break;
+			}
+			$cid=NULL;
+			$cid = $this->getActionParam('id');
+			//Check That there is $pid and id
+			if(isset($pid) && isset($cid))
+			{
+				
+			$client = $em->getRepository($joinTable->getPropClass())->find($cid);
+			$cls = $em->getRepository($joinTable->getClass())->find($pid);
+			//call_user_method('remove'.$joinTable->getProp(), $cls,$client);
+			//$cls->Save($em);
+			$cls->RemoveFromMember_Complete($joinTable->getProp(),$client);
+			$em->flush();
+			$client->setHelpField($cls->getid());
+			$this->SmartClientRespond($client->GetClassSCPropertiesInArray());
+			}else {
+				//Send Error To Client
+				$this->SmartClientRespond(
+								NULL,
+								array('errors'=>
+								array("errorMessage"=>"داده های لازم برای عملیات کافی نیستند")
+								)
+								, 
+								 '-1');
+				return;
+			}
+			
+//			$cls->setIsDeleted(true);
+	
+	
+		} catch(Exception $e) {
+			$this->SmartClientRespond(array("Name"=>array("errorMessage"=>$e->getMessage())), NULL, '-2');
+		}
+	}
+	
+	
 	protected function SmartClientRespond($data = NULL, $params = NULL, $statusCode = '0')
 	{
 		$response = array('response' => array('status' => $statusCode));
 		if ($params != NULL)
 			foreach($params as $key => $param)
 		$response['response'][$key] = $param;
-		$response['response']['data'] = $data;
+		if(isset($data)) $response['response']['data'] = $data;
 
 		$this->ajaxRespondJSON($response);
 	}
@@ -308,24 +612,24 @@ abstract class EntityController extends \IRController
 	private function setwhere($a)
 	{
 		$change=array(
-			'lessThan'=>' < :p',
-			'greaterThan'=>' > :p',
-			'lessThanOrEqual'=>' <= :p',
-			'greaterThanOrEqual'=>' >= :p',
-			'betweenInclusive'=>' between :1p and :2p',
-			'notEqual'=>' != :p',
-			'startsWith'=>' like :p',
-			'endsWith'=>' like :p',
-			'notStartsWith'=>' not like :p',
-			'notEndsWith'=>' not like :p',
-			'iContains'=>' like :p',
-			'notContains'=>' not like :p',
-			'inSet'=>' in :p',
-			'notInSet'=>' not in :p',
-			'isNull'=>' IS NULL',
-			'isNotNull'=>' IS NOT NULL ',
-			'exact match'=>' = :p',
-			'equals'=>' = :p '
+		'lessThan'=>' < :p',
+		'greaterThan'=>' > :p',
+		'lessThanOrEqual'=>' <= :p',
+		'greaterThanOrEqual'=>' >= :p',
+		'betweenInclusive'=>' between :1p and :2p',
+		'notEqual'=>' != :p',
+		'startsWith'=>' like :p',
+		'endsWith'=>' like :p',
+		'notStartsWith'=>' not like :p',
+		'notEndsWith'=>' not like :p',
+		'iContains'=>' like :p',
+		'notContains'=>' not like :p',
+		'inSet'=>' in :p',
+		'notInSet'=>' not in :p',
+		'isNull'=>' IS NULL',
+		'isNotNull'=>' IS NOT NULL ',
+		'exact match'=>' = :p',
+		'equals'=>' = :p '
 		);
 
 
@@ -353,11 +657,10 @@ abstract class EntityController extends \IRController
 				$reval['1'.str_ireplace('.', '_', $fieldName).$tmp1]=$s['value'][0];
 				$reval['2'.str_ireplace('.', '_', $fieldName).$tmp1]=$s['value'][1];
 			}
-			elseif(($s['operator'] == 'isNull') || ($s['operator'] == 'isNotNull'))
-				$reval = array();
 			else
+			{
 				$reval[str_ireplace('.', '_', $fieldName).$tmp1]=$tmp;
-			
+			}
 			if($tmp1!=1)
 			{
 				$ret=$ret.' and tmp.'. $fieldName.str_replace('p',str_ireplace('.', '_', $fieldName).$tmp1,$change[$s['operator']]);
