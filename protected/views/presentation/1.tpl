@@ -18,14 +18,30 @@
 
     <script type="text/javascript">
     	$(function() {
-        	var ali = $("#AppMenuButton").button({
+/*        	var ali = $("#AppMenuButton").button({
 			    icons: {
 				    primary: "ui-icon-triangle-1-s"
 			    }
 		    }).next().menu({
 			    select: function(event, ui) {
-			        
-				    $(this).hide();
+			        if (ui.item.children("a[aria-haspopup='true']").length == 0)
+    				    $(this).hide();
+    				
+    				tabsList = $tabs.children("ul").first();
+    				menuAnchor = ui.item.children("a[role='menuitem']").first();
+    				
+    				//$tabs.append('<div id="' + menuAnchor.attr("href") + '"></div>');
+    				$tabs.append('<div id="Matter"></div>');
+    				// Add a new tab and its frame
+    				addedTab = '<li><a class="tabref" href="#Matter" rel="/jahad/matter">' + menuAnchor.text() + '</a></li>';
+    				tabsList.append(addedTab);
+    				$tabs.tabs('refresh','');
+    				
+    				$("a.tabref").click(function() {
+                        loadTabFrame($(this).attr("href"),$(this).attr("rel"));
+                    });
+    				
+//    				alert(ui.item.children("a[role='menuitem']").first().text());
 			    }
 		    });
 		    ali.popup();
@@ -38,20 +54,20 @@
 				    primary: "ui-icon-triangle-1-s"
 			    }
 		    }).next().menu({
-			    select: function(event, ui) {
-			        alert(event);
-				    $(this).hide();
-			    }
+//			    select: function(event, ui) {
+			        //alert(event);
+				    //$(this).hide();
+//			    }
 		    }).popup();
 
             $("#Profile").button();
             
-		    $("#Logout").button({
+		    $("#LogOutAnchor").button({
 		        text: false,
 		        icons: { primary: "ui-icon-power"}
 		    });
 		    
-		    /***** Tabs ***************/
+		    /***** Tabs ***************
 		    var $tabs = $("#tabs").tabs();
         	var activeTab;
         	var openTabs = [];
@@ -78,7 +94,109 @@
                 }
                 return false;
             }
+            */
+            IRERP = {
+                menuBarItems : [],
+                mainTabsElement : '',
+                dashboardTabClass: 'tabDashboard',
+                
+                mainTabs: null,
+                openTabs: [],
+                
+                /****** App Functions ********/
+                initUI: function() {
+                    this._initMenuBar();
+                    this._initTabs();
+                },
+                loadApplication: function() {
+                    this.menuBarItems = ["#AppMenuButton", "#Alerts", "#Help", "#Profile", "#LogOutAnchor"];
+                    this.mainTabsElement = "#tabs";
+                    
+                    this.initUI();
+                    this.loadDashboardTab();
+                    
+                },
+                loadDashboardTab: function() {
+                    hasDashboardTab = ($(this.mainTabsElement + " li a." + this.dashboardTabClass).length > 0);
+                    
+                    if (!hasDashboardTab) {
+                        this._loadTab('/dashboard', "tab-frame-dashboard", "میز کار", "tabDashboard");
+                        $(this.mainTabsElement).tabs('option', 'active', 0);
+                    }
+                },
+                
+                /****** UI Utils *************/
+                _initMenuBar: function() {
+                    $(this.menuBarItems.join(',')).each(function(index, Element) {
+                        if (Element.nodeName == "A")
+                            $(Element).button();
+                        else if (Element.nodeName == "BUTTON")
+                            $(Element).button({
+                            	icons: {
+                				    primary: "ui-icon-triangle-1-s"
+                			    }
+                            }).next().menu({
+                                select: IRERP.menuItemSelectHandler
+                            }).popup();
+                    });
+                },
+                _initTabs: function() {
+                    this.mainTabs = $(this.mainTabsElement).tabs();
+                },
+                _loadTab: function(url, frameId, title, className) {
+                    if (typeof className == "undefined")
+                        className = "tabRef";
+                        
+                    htmlNewTabFrame = [];
+                    htmlNewTabFrame.push("<div id='" + frameId + "'>");
+                    htmlNewTabFrame.push('<div class="tabIframeWrapper">');
+                    htmlNewTabFrame.push('<iframe class="iframetab" src="' + url + '">Load Failed?</iframe>');
+                    htmlNewTabFrame.push("</div>");
+                    htmlNewTabFrame.push("</div>");
+                    
+                    $(this.mainTabsElement).append(htmlNewTabFrame.join(''));
 
+                    htmlNewTabItem = "<li><a id='" + frameId.replace('tab-frame-','tab-item-') + "' href='#" + frameId + "' class='" + className + "' ref='" + url + "'><span>" + title + "</span></a></li>";
+                    $(this.mainTabsElement).children("ul").first().append(htmlNewTabItem);
+                    $(this.mainTabsElement).tabs('refresh', '');
+                },
+                _hasTab: function(id) {
+                    return ($(this.mainTabsElement).children('#' + id).length > 0);
+                },
+                _getIndexForId: function (searchId){
+                    var index = -1 //if function returns -1, then tab wasn't found
+                    
+                    console.log(searchId);
+                    $(this.mainTabsElement).children(".ui-tabs-panel").each(function(i, elem){
+                        console.log($(elem).attr("id"));
+                        if (searchId == $(elem).attr("id")){
+                            //index = $("#tabcontainer .tab").index(this);
+                            index = i;
+                        }
+                    });
+                    
+                    return index
+                },
+                /****** Event Handlers ******/
+                menuItemSelectHandler: function(event, ui) {
+			        if (ui.item.children("a[aria-haspopup='true']").length == 0)
+			        {
+    				    $(this).hide();
+    				    
+    				    anchor = ui.item.children("a").first();
+    				    href = anchor.attr('href').replace('/#!', '');
+    				    id = anchor.attr('id');
+    				    title = anchor.text();
+    				    
+    				    if (!IRERP._hasTab('tab-frame-' + id))
+        				    IRERP._loadTab(href, 'tab-frame-' + id, title);
+        				
+        				$(IRERP.mainTabsElement).tabs('option', 'active', IRERP._getIndexForId('tab-frame-'+id));
+    				}
+                }
+            };
+            
+            IRERP.loadApplication();
     	});
     </script>
     
@@ -91,10 +209,9 @@
     	}
     	.iframetab {
             width:100%;
-            height:auto;
+            height:400px;
             border:0px;
             margin:0px;
-            background:url("data/iframeno.png");
             position:relative;
             top:-13px;
         }
@@ -134,33 +251,27 @@
 		    <button id="AppMenuButton">منو</button>
 		    <ul>
 			    <li>
-			        <a href="#">منو آیتم ۱</a>
+			        <a href="javascript:void(0)">سیستم</a>
 			        <ul>
-			            <li><a href="#">سلام</a></li>
-			            <li><a href="#">علیک سلام</a></li>
+			            <li><a href="/#!/menu" id="mniSystemMenus">منوهای سیستم</a></li>
 			        </ul>
 			    </li>
-			    <li><a href="#">منو آیتم ۲</a></li>
-			    <li><a href="#">منو آیتم ۳</a></li>
-			    <li><a href="#">منو آیتم ۴</a></li>
+			    <li><a href="/#!/jahad/human" id="mniJahadHuman">منو آیتم ۲</a></li>
+			    <li><a href="/#!/jahad/magazine" id="mniJahadMagazine">منو آیتم ۳</a></li>
 		    </ul>
 
-		    <button id="Alerts">هشدارها <span id="AlertsCount" style="color: red;">(۴)</span></button>
+		    <a href="/#!/system/alerts" id="Alerts">هشدارها <span id="AlertsCount" style="color: red;">(۴)</span></a>
 
             <button id="Help">راهنما</button>
             <ul>
-                <li><a href="#">درباره</a>
-			        <ul>
-			            <li><a href="#">سلام</a></li>
-			            <li><a href="#">علیک سلام</a></li>
-			        </ul>
+                <li>
+                    <a href="/#!/site/about" id="mniHelpAbout">درباره</a>
 			    </li>
             </ul>
             
-		    <button id="Profile">عباس مشایخ</button>
+		    <a id="Profile" href="/#!/profile">عباس مشایخ</a>
 		    
-
-	        <button id="Logout">خروج</button>
+		    <a id="LogOutAnchor" href="/#!/logout">خروج</a>
 	        
 	        <img src="" alt="" id="CorpLogo">
 	        <img src="" alt="" id="IRERPLogo">
@@ -168,14 +279,7 @@
 	    
 	    <div id="tabs">
 	        <ul>
-	            <li><a href="#Dashboard"><span>میز کار</span></a></li>
-	            <li><a class="tabref" href="#Accounting" rel="/menu">حساب‌داری</a></li>
 	        </ul>
-	        <div id="Dashboard">
-	            <p>تست تست تست</p>
-	        </div>
-	        <div id="Accounting">
-	        </div>
 	    </div>
 	</div>
 </body>

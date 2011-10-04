@@ -49,7 +49,7 @@ class SiteController extends SmartClientController
 	public function actionIndex()
 	{
 		// renders the view file 'protected/views/site/index.tpl'
-		$this->renderAppFrame();
+		$this->actionjQueryUITest();
 	}
 
 	public function renderAppFrame($return=false)

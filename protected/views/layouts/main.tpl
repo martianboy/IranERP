@@ -8,8 +8,6 @@
 {/foreach}
 </head>
 <body>
-<script>
 {$content}
-</script>
 </body>
 </html>
