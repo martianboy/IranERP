@@ -320,6 +320,7 @@ isc.DynamicForm.create({
     dataSource:dsMasterName,
     numCols:2,
     encoding:"multipart",
+    target:"frame1",
     {/literal}
         
     action:"{$this->baseUrl}/",
@@ -905,4 +906,6 @@ isc.SectionStack.create({
 
 
 </script>
+<iframe id="frame1" name="frame1" src=""  style='width:500px;height:150px;border:1'></iframe>
+
 {/literal}
