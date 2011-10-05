@@ -48,7 +48,7 @@ class SiteController extends IRController
 	public function actionIndex()
 	{
 		// renders the view file 'protected/views/site/index.tpl'
-		print_r($_POST);
+		print_r($_POST['Magazineid']);
 		$this->render('index');
 	}
 

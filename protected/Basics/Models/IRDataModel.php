@@ -75,6 +75,10 @@ class IRDataModel extends CModel
 	 */
 	protected $annotationValues = array();
 	
+	protected $HelpField='';
+	public function setHelpField($v){$this->HelpField=$v;}
+	public function getHelpField(){return $this->HelpField;}
+	
 	
 	protected function getClassMember($MemberName){
 		$tmp=new \ReflectionProperty($this,$MemberName);

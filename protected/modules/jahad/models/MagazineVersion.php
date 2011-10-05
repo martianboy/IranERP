@@ -2,9 +2,9 @@
 
 namespace IRERP\modules\jahad\models;
 
-use IRERP\models\DbEntity;
-use IRERP\Basics\Annotations\scField;
 use IRERP\Basics\Models\IRDataModel;
+use IRERP\Basics\Annotations\scField;
+
 /**
  * @Entity
  * @author masoud

@@ -339,7 +339,9 @@ isc.DynamicForm.create({
          {name:"Magazineid",hidden:false,editorType:"SelectItem",
                  optionDataSource:'Magazine',displayField:"TitleName",valueField:"id",
                  pickListProperties:{showFilterEditor:true},pickListFields:[{name:"TitleName"},{name:"MagTypeName"}]
-                 }
+                 },
+                 {name:"FILE",editorType:"UploadItem"},
+                 {name:"id",hidden:true},
              
   
         ]
