@@ -243,5 +243,25 @@ function ShowDialog(Title,Message,Yes,No,afterclose)
         
     });
 }
+
+function ShowUploadDialog(Title,Message,Yes,No,afterclose)
+{
+    isc.Window.create({
+        ID:"dlgQuest",
+        height:400,
+        width:300,
+        canDragResize: true,
+        isModal:true,
+        align:"right",
+        autoCenter:true,
+        src:{/literal}"{$this->baseUrl}/upload"{literal},
+        items:[
+               isc.Button.create({})
+              
+               ]
+        
+    });
+}
+
 </script>
 {/literal}

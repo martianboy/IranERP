@@ -5,6 +5,7 @@ use \IRERP\Basics\Upload\FileUploader;
 class  UploadController extends IRController
 {
 
+	public $layout='//layouts/upload';
 	public function actionIndex()
 {
 	$this->render('index');

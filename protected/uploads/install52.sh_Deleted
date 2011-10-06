@@ -1,0 +1,335 @@
+#!/bin/bash
+#
+# $Id: install52.sh 16058 2008-04-29 00:50:30Z jdi $
+# Copyright (c) 2003-2008 Untangle, Inc.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License, version 2,
+# as published by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but
+# AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
+# NONINFRINGEMENT.  See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+###############################################################################
+# This script installs Untangle Server version 5.2 (durango) onto a
+# pre-existing Debian/Ubuntu system.
+#
+# This script is currently in a pre-released status, and has only been tested
+# on Ubuntu Hardy 8.04, Ubuntu Gutsy 7.10 and Debian Etch 4.0.
+#
+###############################################################################
+#
+# For the impatient (automatic yes to all installation questions)
+# ---------------------------------------------------------------
+# Run this script with:
+#     sudo bash install52.sh -y
+#
+# Or run without the -y and answer 'yes' when the script asks.
+#
+###############################################################################
+# Distribution Notes
+# ------------------
+#
+# All:
+#   If you do not have a desktop loaded, this script will provide a minimal
+#   one for you.
+#
+#   You can run this script more than once if necessary, all install actions
+#   are idempotent.
+#
+#   Since distribution kernels are sometimes updated, the Untangle kernel may
+#   not be the first entry in the Grub menu. If so you'll need to adjust the
+#   'default' line in /boot/grub/menu.lst so that the Untangle kernel is the
+#   one booted.
+# 
+# Hardy:
+#   Virtual machine (VMWare guest) only: Ubuntu bug #172821 causes screen resolution
+#   to be limited to 800x600.  You can still manually raise the resolution, or you
+#   can edit the 'Monitor' section of /etc/X11/xorg.conf, adding:
+#     HorizSync   31.5 - 50.0
+#     VertRefresh 50.0 - 60.0
+#
+# Gutsy/Etch:
+#   There is an upstream bug that prevents full pre-configuration of X11, so
+#   you will need to answer the X resolution question even if you run this
+#   script with -y
+#
+# Etch:
+#   You must have the 'non-free' distribution in your /etc/apt/sources.list, for example:
+#   deb http://mirrors.kernel.org/debian/ etch main contrib non-free
+#
+
+doHelp() {
+  echo "$0 [-y] [-v] [-d] [-h]"
+  echo "  -y: don't ask questions, just do it"
+  echo "  -v: install for virtual machine (also default for VMWare guest)"
+  echo "  -d: download only: after modifying sources.list, just download packages without installing"
+  echo "  -h: print this message"
+}
+
+DOEXTERNAL=
+VMINSTALL=
+ACCEPT=
+DOWNLOADONLY=
+while getopts "hyvde" opt; do
+  case $opt in
+    h) doHelp;exit 0;;
+    y) ACCEPT=true;;
+    v) VMINSTALL=true;;
+    d) DOWNLOADONLY=true;;
+    e) DOEXTERNAL=true;;        # Only used for internal Untangle testing 
+  esac
+done
+
+###############################################################################
+# Checks Section:
+if [ "$USER" != "root" ]; then
+    echo "You must use sudo to run the Untangle installation script"
+    exit 1
+fi
+
+# We no longer do this check as alpaca creates a ghost eth1 if it doesn't exist.
+# TWOINTERFACES=true
+# ifconfig eth0 > /dev/null 2>&1 || TWOINTERFACES=false
+# ifconfig eth1 > /dev/null 2>&1 || TWOINTERFACES=false
+# if [ "$TWOINTERFACES" != true ]; then
+#     echo "You must have at least two network interfaces (eth0 and eth1) to run Untangle"
+#     exit 1
+# fi
+
+###############################################################################
+
+ACTIVATION_KEY_FILE=/usr/share/untangle/activation.key
+if [ -f "$ACTIVATION_KEY_FILE" ]; then
+    echo "Untangle is already installed"
+    exit 1
+fi
+
+APTOPTIONS=
+if [ "$ACCEPT" = true ]; then
+    APTOPTIONS="--yes"
+fi
+
+# Install script dependencies if necessary
+echo "Updating apt..." 
+apt-get update > /dev/null 2>&1 || true
+apt-get install $APTOPTIONS ca-certificates net-tools mawk perl curl grep tar pciutils
+
+# Set VMInstall flag if detected or requested
+if ( lspci | grep -qi VMWare ) then
+    echo "Virtual machine detected."
+    VMINSTALL=true
+fi
+
+# Choose particular Debian/Ubuntu, repository and sources.list location
+ETC_ISSUE=/etc/issue
+SOURCES_LIST_OLD=/etc/apt/sources.list
+SOURCES_LIST_NEW=/${SOURCES_LIST_OLD}.d/untangle.list
+grep -q Debian $ETC_ISSUE && i=3 || i=2
+case `head -1 $ETC_ISSUE | awk "{ print \\$$i }"` in
+  3.1) REPOSITORY=sarge SOURCES_LIST=${SOURCES_LIST_OLD} ;;
+  4.0) REPOSITORY=etch SOURCES_LIST=${SOURCES_LIST_NEW} ;;
+  lenny/sid) REPOSITORY=sid SOURCES_LIST=${SOURCES_LIST_NEW} ;;
+  7.10*) REPOSITORY=gutsy SOURCES_LIST=${SOURCES_LIST_NEW} ;;
+  8.04*|hardy) REPOSITORY=hardy SOURCES_LIST=${SOURCES_LIST_NEW} ;;
+  *) echo "Unsupported system type."; exit 1;;
+esac
+
+ARCHIVE_DIR=/tmp/activate-`mktemp XXXXX`
+TMP_ARCHIVE=$ARCHIVE_DIR/activation.tar
+rm -rf $ARCHIVE_DIR
+mkdir $ARCHIVE_DIR
+
+ACTIVATION_URL_TEMPLATE="https://activation.untangle.com/cgi-bin/get-license-key2.rb?license_key=%s&internal_ip=%s"
+ACTIVATION_KEY_FILE_TMP=${ACTIVATION_KEY_FILE}.tmp
+if [ ! -f "$ACTIVATION_KEY_FILE_TMP" ]; then
+    echo "Fetching server identification key..."
+    if [ "$DOEXTERNAL" = true ]; then
+        EXTIP= `( /sbin/ifconfig br.eth0 2>/dev/null || /sbin/ifconfig eth0 2>/dev/null ||  echo "inet addr:0.0.0.0 " ) | perl -nle 'print $1 if (m/inet addr:(.*?)\s/)'`
+    else
+        EXITIP="0.0.0.0"
+    fi
+    if curl --fail -o $TMP_ARCHIVE `printf ${ACTIVATION_URL_TEMPLATE} "" $EXTIP`; then
+        echo "success."
+    else
+        echo "failed.  Check network connectivity."
+        exit 1;
+    fi
+    tar -C $ARCHIVE_DIR -xf $TMP_ARCHIVE
+    mkdir -p /usr/share/untangle
+    cp $ARCHIVE_DIR/usr/share/untangle/activation.key $ACTIVATION_KEY_FILE_TMP
+fi
+
+KEY=`cat $ACTIVATION_KEY_FILE_TMP`
+KEY_TEMPLATE=XXX_REG_KEY_XXX
+if [ -f "$SOURCES_LIST" ] && grep -q "$KEY" $SOURCES_LIST ; then # already taken care of
+    true
+else # dump the right source in the right place :)
+    echo "Installing sources list"
+    touch $SOURCES_LIST # so that we don't fail next line because of noclobber
+    sed "s/$KEY_TEMPLATE/$KEY/" >> $SOURCES_LIST <<EOF
+deb http://${KEY_TEMPLATE}:metavize@updates.untangle.com/public/${REPOSITORY} stable main premium upstream
+deb http://${KEY_TEMPLATE}:metavize@updates.untangle.com/public/${REPOSITORY} durango main premium upstream
+EOF
+    echo "Updating apt..." 
+    apt-get update > /dev/null 2>&1 || true
+fi
+
+echo "Installing Untangle archive key"
+apt-get install --yes --force-yes untangle-keyring
+echo "Updating apt..." 
+apt-get update > /dev/null 2>&1 || true
+
+BASEPACKS="sun-java6-jre untangle-net-alpaca"
+
+# Determining whether a virtual package is installed is tedious.
+HAVEMTA=`apt-cache showpkg mail-transport-agent | awk 'BEGIN{found=0}  {if (found) print $1 } /Reverse Provide/{found=1}' | xargs -i{} dpkg -l {} 2>| /dev/null | grep -q ii && echo "true"`
+if [ "$HAVEMTA" != true ]; then
+    BASEPACKS="$BASEPACKS exim4-daemon-light"
+fi
+
+HAVEXSERVER=`dpkg -l xserver-xorg 2>/dev/null | grep -q ii && echo "true"`
+if [ "$HAVEXSERVER" != true ]; then
+    BASEPACKS="$BASEPACKS acpi desktop-base gnome-mount xfce4-terminal"
+    if [ "$DOWNLOADONLY" != true ]; then
+        debconf-set-selections <<EOF
+xserver-xorg xserver-xorg/autodetect_monitor boolean true
+xserver-xorg xserver-xorg/config/monitor/lcd boolean true
+xserver-xorg xserver-xorg/config/monitor/selection-method select medium
+EOF
+# Doesn't seem to do anything:
+#  xserver-xorg xserver-xorg/config/monitor/mode-list select 1024x768 @ 60 Hz 
+#  xserver-xorg xserver-xorg/config/display/modes multiselect 1024x768, 800x600
+# Tried this to help hardy, but it didn't do anything:
+#  xserver-xorg xserver-xorg/config/monitor/horiz-sync select 31.5 - 50.0
+#  xserver-xorg xserver-xorg/config/monitor/vert-refresh select 50.0 - 60.0
+        if [ "$VMINSTALL" = true ]; then
+            debconf-set-selections <<EOF
+xserver-xorg xserver-xorg/config/device/driver select vmware
+xserver-xorg xserver-xorg/config/display/default_depth select 16
+EOF
+        else
+            debconf-set-selections <<EOF
+xserver-xorg xserver-xorg/config/display/default_depth select 24
+EOF
+        fi
+    fi
+fi
+
+# AMD64 needs ia32 version of java, for javaws
+if [ `uname -m` = 'x86_64' ]; then
+    BASEPACKS="$BASEPACKS ia32-sun-java6-bin"
+fi
+
+if [ "$DOWNLOADONLY" != true ]; then
+    HAVEDDCLIENT=`dpkg -l ddclient 2>/dev/null | grep -q ii && echo "true"`
+    if [ "$HAVEDDCLIENT" != true ]; then
+        debconf-set-selections <<EOF
+ddclient ddclient/service string
+ddclient ddclient/protocol string
+ddclient ddclient/names string
+ddclient ddclient/username string
+ddclient ddclient/password string
+ddclient ddclient/interface string
+EOF
+    fi
+    HAVESLAPD=`dpkg -l slapd 2>/dev/null | grep -q ii && echo "true"`
+    if [ "$HAVESLAPD" != true ]; then
+        debconf-set-selections <<EOF
+slapd slapd/no_configuration boolean true
+EOF
+    fi
+    if [ "$ACCEPT" = true ]; then
+        if ! grep -q "shared/accepted-sun-dlj-v1-1" /var/cache/debconf/config.dat; then
+            cat >> /var/cache/debconf/config.dat <<EOF
+Name: shared/accepted-sun-dlj-v1-1
+Template: shared/accepted-sun-dlj-v1-1
+Value: true
+Owners:
+Flags: seen
+EOF
+        fi
+    fi
+else
+    # Download only
+    APTOPTIONS="$APTOPTIONS --download-only"
+fi
+
+if [ "$REPOSITORY" = "hardy" ]; then
+    # Need pre 2.0 version of rails
+    BASEPACKS="$BASEPACKS libpam-foreground rails=1.2.4-1ubuntu1.1"
+fi
+
+# Since we conflict with the network-manager, we need to note the fact that we're
+# removing it so we cn restart any networking we shut down.
+HAVENM=`dpkg -l network-manager 2>/dev/null | grep -q ii && echo "true"`
+if [ "$HAVENM" = true -a "$DOWNLOADONLY" != true ]; then
+    DHCPINTERFACES=`ps ax | grep 'dhclien[t]' | awk '{ print $NF }'`
+fi
+
+if [ "$VMINSTALL" = true ] && apt-get -s install linux-virtual-untangle > /dev/null 2>&1 ; then
+    echo "Installing Untangle Server for virtualized hardware"
+    apt-get -s install open-vm-tools-gui > /dev/null 2>&1 && BASEPACKS="$BASEPACKS open-vm-tools-gui"
+    apt-get install $APTOPTIONS linux-virtual-untangle $BASEPACKS untangle-gateway-light
+else
+    dpkg -l linux-restricted-modules-common 2>/dev/null | grep -q ii && BASEPACKS="$BASEPACKS linux-restricted-modules-untangle"
+    echo "Installing Untangle Server"
+    apt-get install $APTOPTIONS linux-untangle $BASEPACKS untangle-gateway-light
+fi
+
+if [ $? -ne 0 ]; then
+    echo "Package install failed"
+    exit 1
+fi
+
+if [ "$DOWNLOADONLY" = true ]; then
+    echo "sources.list updated, untangle keyring installed, and all packages downloaded"
+    echo "run script again (without -d) to begin install"
+    exit 0
+fi
+
+# Java 5 needs /usr/bin/mozilla
+HAVEJAVA6=`dpkg -l sun-java6-jre 2>/dev/null | grep -q ii && echo "true"`
+if [ "$HAVEJAVA6" != "true" ]; then
+    if [ ! -f /usr/bin/mozilla ]; then
+        if [ -x /usr/bin/firefox ]; then
+            ln -s /usr/bin/firefox /usr/bin/mozilla
+        elif  [ -x /usr/bin/iceweasel ]; then
+            ln -s /usr/bin/iceweasel /usr/bin/mozilla
+        elif  [ -x /usr/bin/opera ]; then
+            ln -s /usr/bin/opera /usr/bin/mozilla
+        fi
+    fi
+fi
+
+# Need to hold rails at < 2.0
+if [ "$REPOSITORY" = "hardy" ]; then
+    echo "rails hold" | dpkg --set-selections
+fi
+
+if [ "$HAVENM" = true ]; then
+    # Need to restart the dynamic interfaces so we see them up in load-configuration below.
+    for i in "$DHCPINTERFACES"; do
+	echo "bringing back interface $i"
+	/sbin/dhclient -lf /var/lib/dhcp3/dhclient.${i}.leases -pf /var/run/dhclient.${i}.pid $i
+    done
+fi
+
+if [ -f /usr/share/untangle-net-alpaca/scripts/load-configuration ]; then
+    echo "Loading existing networking configuration"
+    /usr/share/untangle-net-alpaca/scripts/load-configuration
+fi
+
+echo "*****************************************************"
+echo "Untangle Server successfully installed."
+echo
+echo "You need to reboot into the Untangle kernel, log in,"
+echo "and run 'untangle-client' to launch the setup wizard."
+echo "*****************************************************"
+echo

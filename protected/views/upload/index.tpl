@@ -1,11 +1,9 @@
    {literal}
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<link href="css/fileuploader.css" rel="stylesheet" type="text/css">	
-    <style>    	
-		body {font-size:13px; font-family:arial, sans-serif; width:700px; margin:100px auto;}
-    </style>	
-
-<div align="center">
+	<link href={/literal}"{$this->baseUrl}/css/fileuploader.css"{literal} rel="stylesheet" type="text/css">	
+   
+<div>
+<!-- 
 	<div align="center">
 	برای بارگذاری پرونده خود روی دکمه زیر کلیک کرده و پرونده 
 	مورد نظر خود را انتخاب کنید و سپس منتظر بمانید.
@@ -14,7 +12,8 @@
 	<br/>
 	<div align="center">
 	برای حذف مورد ارسال شده دکمه حذف را فشار دهید
-	</div>		
+	</div>
+	 -->		
 	<div id="file-uploader-demo1" align="center">		
 		<noscript>			
 			<p>Please enable JavaScript to use file uploader.</p>
@@ -24,8 +23,8 @@
 	</div>
     <div align="center" id="files" ></div>
     </div>
-    <script src="js/fileuploader.js" type="text/javascript"></script>
-    <script src="js/jquery-1.6.4.min.js" type="text/javascript"></script>
+    <script src={/literal}"{$this->baseUrl}/js/fileuploader.js"{literal} type="text/javascript"></script>
+    <script src={/literal}"{$this->baseUrl}/js/jquery-1.6.4.min.js"{literal} type="text/javascript"></script>
     <script>
     	var IsFileUploaded=false;
     	var FileNameInServer='';
