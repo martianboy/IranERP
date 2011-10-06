@@ -18,7 +18,6 @@ width:100px;
 	margin:0px auto; /* Right and left margin widths set to "auto" */
 	text-align:left; /* Counteract to IE5/Win Hack */
 	padding:15px;
-	background-color:#eee;
 	}
 </style>
 {/literal}
