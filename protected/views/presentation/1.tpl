@@ -15,6 +15,8 @@
     <script type="text/javascript" src="{$this->baseUrl}/js/jquery/ui/jquery.ui.button.js"></script>
     <script type="text/javascript" src="{$this->baseUrl}/js/jquery/ui/jquery.ui.popup.js"></script>
     <script type="text/javascript" src="{$this->baseUrl}/js/jquery/ui/jquery.ui.tabs.js"></script>
+<!--    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script> -->
+    <script type="text/javascript" src="{$this->baseUrl}/js/ui.tabs.closable/ui.tabs.closable.js"></script>
 
     <script type="text/javascript">
     	$(function() {
@@ -141,12 +143,14 @@
                     });
                 },
                 _initTabs: function() {
-                    this.mainTabs = $(this.mainTabsElement).tabs();
+                    this.mainTabs = $(this.mainTabsElement).tabs({
+                      closable: true
+                    });
                 },
                 _loadTab: function(url, frameId, title, className) {
                     if (typeof className == "undefined")
                         className = "tabRef";
-                        
+                    
                     htmlNewTabFrame = [];
                     htmlNewTabFrame.push("<div id='" + frameId + "'>");
                     htmlNewTabFrame.push('<div class="tabIframeWrapper">');
@@ -156,10 +160,24 @@
                     
                     $(this.mainTabsElement).append(htmlNewTabFrame.join(''));
 
-                    htmlNewTabItem = "<li><a id='" + frameId.replace('tab-frame-','tab-item-') + "' href='#" + frameId + "' class='" + className + "' ref='" + url + "'><span>" + title + "</span></a></li>";
+                    var closetab = '<a href="javascript:void(0);" class="close">&times;</a>';
+                    var htmlNewTabItem = "<li><a id='" + frameId.replace('tab-frame-','tab-item-') + "' href='#" + frameId + "' class='" + className + "' ref='" + url + "'><span>" + title + "</span>" + closetab + "</a></li>";
                     $(this.mainTabsElement).children("ul").first().append(htmlNewTabItem);
                     $(this.mainTabsElement).tabs('refresh', '');
+                    
+                    $(".close").click(function() {
+                        tabId = $(this).prev().attr("id");
+                        console.log("tabId: " + tabId);
+                        IRERP._removeTab(tabId);
+                    });
                 },
+                
+                _removeTab: function(tabId) {
+                    $('#' + tabId).parent().remove();
+                    $('#' + tabId.replace('tab-item-','tab-frame-')).remove();
+                    $(this.mainTabsElement).tabs('refresh', '');
+                },
+                
                 _hasTab: function(id) {
                     return ($(this.mainTabsElement).children('#' + id).length > 0);
                 },
@@ -168,14 +186,13 @@
                     
                     console.log(searchId);
                     $(this.mainTabsElement).children(".ui-tabs-panel").each(function(i, elem){
-                        console.log($(elem).attr("id"));
                         if (searchId == $(elem).attr("id")){
                             //index = $("#tabcontainer .tab").index(this);
                             index = i;
                         }
                     });
                     
-                    return index
+                    return index;
                 },
                 /****** Event Handlers ******/
                 menuItemSelectHandler: function(event, ui) {
@@ -229,6 +246,30 @@
             float: right;
         }
         
+        .ui-tabs .ui-tabs-nav li a {
+            float: right;
+        }
+        
+        .ui-tabs .ui-tabs-nav li a.tabRef:first-child {
+            padding-left: 0.25em;
+        }
+        
+        .ui-tabs .ui-tabs-nav li a.close {
+            display: none;
+        }
+        .ui-tabs .ui-tabs-nav li a.tabRef + a.close {
+            display: block;
+            padding: 0.25em 0.25em 0.25em 0.25em;
+            margin: 0.5em 0.25em 0.25em 0.5em;
+            border-radius: 0.2em;
+            cursor: pointer;
+            font-size: smaller;
+            font-weight: bolder;
+        }
+        .ui-tabs a.close:hover {
+            background-color: #ddd;
+        }
+        
         .ui-button-text-icon-secondary .ui-button-icon-secondary, .ui-button-text-icons .ui-button-icon-secondary, .ui-button-icons-only .ui-button-icon-secondary {
             left: 0.5em;
             right: auto;
@@ -253,25 +294,25 @@
 			    <li>
 			        <a href="javascript:void(0)">سیستم</a>
 			        <ul>
-			            <li><a href="/#!/menu" id="mniSystemMenus">منوهای سیستم</a></li>
+			            <li><a href="{$this->baseUrl}/#!/menu" id="mniSystemMenus">منوهای سیستم</a></li>
 			        </ul>
 			    </li>
-			    <li><a href="/#!/jahad/human" id="mniJahadHuman">منو آیتم ۲</a></li>
-			    <li><a href="/#!/jahad/magazine" id="mniJahadMagazine">منو آیتم ۳</a></li>
+			    <li><a href="{$this->baseUrl}/#!/jahad/human" id="mniJahadHuman">منو آیتم ۲</a></li>
+			    <li><a href="{$this->baseUrl}/#!/jahad/magazine" id="mniJahadMagazine">منو آیتم ۳</a></li>
 		    </ul>
 
-		    <a href="/#!/system/alerts" id="Alerts">هشدارها <span id="AlertsCount" style="color: red;">(۴)</span></a>
+		    <a href="{$this->baseUrl}/#!/system/alerts" id="Alerts">هشدارها <span id="AlertsCount" style="color: red;">(۴)</span></a>
 
             <button id="Help">راهنما</button>
             <ul>
                 <li>
-                    <a href="/#!/site/about" id="mniHelpAbout">درباره</a>
+                    <a href="{$this->baseUrl}/#!/site/about" id="mniHelpAbout">درباره</a>
 			    </li>
             </ul>
             
-		    <a id="Profile" href="/#!/profile">عباس مشایخ</a>
+		    <a id="Profile" href="{$this->baseUrl}/#!/profile">عباس مشایخ</a>
 		    
-		    <a id="LogOutAnchor" href="/#!/logout">خروج</a>
+		    <a id="LogOutAnchor" href="{$this->baseUrl}/#!/logout">خروج</a>
 	        
 	        <img src="" alt="" id="CorpLogo">
 	        <img src="" alt="" id="IRERPLogo">
