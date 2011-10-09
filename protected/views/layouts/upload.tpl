@@ -14,7 +14,7 @@ body {
 	}
 	
 #Content {
-width:100px;
+width:200px;
 	margin:0px auto; /* Right and left margin widths set to "auto" */
 	text-align:left; /* Counteract to IE5/Win Hack */
 	padding:15px;

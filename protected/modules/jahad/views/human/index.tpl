@@ -87,7 +87,10 @@ isc.DynamicForm.create({
             {name:"PhoneNo"},
             {name:"PostalCode"},
             {name:"NationalCode"},
-            {name:"FatherName"},
+            {name:"FatherName",disabled:true,click:function(a,b){
+                ShowUploadDialog(null,window.AfterUploadFile,a,b);
+
+                }},
             {name:"NationalityTitle",hidden:true},
             {name:"NationalityID",hidden:false,title:"ملیت",
             	 editorType: "SelectItem", 
@@ -243,28 +246,54 @@ function ShowDialog(Title,Message,Yes,No,afterclose)
         
     });
 }
-
-function ShowUploadDialog(Title,Message,Yes,No,afterclose)
+function AfterUploadFile(filename,DynForm,Field)
 {
-    isc.Window.create({
-        ID:"dlgQuest",
+Field.setValue(filename);
+}
+function ShowUploadDialog(obj,afterclose)
+{
+    isc.HTMLPane.create({
+        ID:"myPane",
+        //contentsURL:"{/literal}{$this->baseUrl}/upload/{literal}",
+        //contentsType:"page",
+        height: "100%",
+        width: "100%",
+        scrollbarSize:0
+    });
+    var iframeid='jjjli12d';
+    myPane.setContents( "<iframe scrolling=\"no\" width=\"100%\" height=\"100%\" id=\'"+iframeid+"\' src=\'{/literal}{$this->baseUrl}/upload/{literal}\' style=\"width:100%;height:100%;border:none;\"/>" );
+    var args=[];
+	   for(var i=2; i < arguments.length; i++)
+	    {
+	        args.push(arguments[i]);
+	    }
+     isc.Window.create({
+        ID:"dlgUploadFile",
+        ARGS:args,
+        obj:obj,
         height:200,
         width:300,
         canDragResize: true,
         isModal:true,
         align:"right",
         autoCenter:true,
-        
+        title:"بارگذاری پرونده",
         items:[
-               isc.Button.create({})
+               isc.Button.create({title:'پرونده مورد تایید است',click:function(){
+            	   dlgUploadFile.hide();
+            	   if(afterclose!=null) try{
+                	   //Get File Name
+                	   
+                	   filename=document.getElementById(iframeid).contentWindow.getFileName();
+                	   dlgUploadFile.ARGS.splice(0,0,filename);
+                	   
+                	   afterclose.apply(dlgUploadFile.obj,
+                        	   dlgUploadFile.ARGS);
+
+                	   }catch(err){}
+                   }})
                ,
-               isc.HTMLPane.create({
-                   ID:"myPane",
-                   contentsURL:"{/literal}{$this->baseUrl}/upload/{literal}",
-                   contentsType:"page",
-                   scrollbarSize:0
-               })
-              
+    			myPane
                ]
         
     });
@@ -272,3 +301,8 @@ function ShowUploadDialog(Title,Message,Yes,No,afterclose)
 
 </script>
 {/literal}
+
+
+
+
+
