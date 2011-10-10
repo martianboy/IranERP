@@ -1,12 +1,21 @@
 <?php
 namespace IRERP\Basics;
+/*<<<<<<< HEAD
 
 
 use \Yii, \ReflectionClass, \CException,\IRERP\Basics,
 	\Doctrine\Common\Annotations\AnnotationReader,
 	\IRERP\Basics\Annotations\MapModelController;
+=======
+>>>>>>> presentation
+*/
+use IRERP\Basics\SmartClient\DataSourceHelper,
+    IRERP\Basics\SmartClient\SmartClientController;
+use \Doctrine\Common\Annotations\AnnotationReader,
+    \IRERP\Basics\Annotations\MapModelController;
+use \Yii, \ReflectionClass, \CException;
 
-abstract class EntityController extends \IRController
+abstract class EntityController extends SmartClientController
 {
 	/**
 	 * 
@@ -53,9 +62,9 @@ abstract class EntityController extends \IRController
 	private function getFullEntityClassname()
 	{
 		if ($module = $this->getModule())
-		$className = 'IRERP\\modules\\' . $module->getId() . '\\' . 'models' . '\\' . str_replace('Controller', '', get_class($this));
+			$className = 'IRERP\\modules\\' . $module->getId() . '\\' . 'models' . '\\' . str_replace('Controller', '', get_class($this));
 		else
-		$className = 'IRERP\\models\\' . str_replace('Controller', '', get_class($this));
+			$className = 'IRERP\\models\\' . str_replace('Controller', '', get_class($this));
 	
 		return $className;
 	}
@@ -182,22 +191,26 @@ abstract class EntityController extends \IRController
 			$this->UpdateRecord();
 		else if ($req->getIsDeleteRequest())
 			$this->RemoveRecord();
-		else if ($req->getIsPostRequest()) {
+		else if ($req->getIsPostRequest())
 			$this->AddRecord();
-		}
 		else	// Is a GET request
 			if ($accepts == 'json')
+//<<<<<<< HEAD
 				$this->fetchResponse($JoinDS);
+//=======
+//				$this->FetchRecords();
+//>>>>>>> presentation
 			else {
 				$this->renderView();
 			}
 	}
-	protected function renderView()
+	protected function renderView($view = 'index')
 	{
 		$this->viewVars['dsMaster'] = $this->getId();
+		$this->viewVars['dataSources'] = array();
 
 		try {
-			$this->render('index', $this->getViewVars());
+			$this->render($view, $this->getViewVars());
 		}
 		catch (CException $ex)
 		{
@@ -212,11 +225,15 @@ abstract class EntityController extends \IRController
 	 * Fetch objects from entity repository with SmartClient-sent criteria
 	 * @param string[] $IgnoredProperties
 	 * @param \Doctrine\ORM\EntityManager $em
+	 * @return array('data','params')
 	 */
+//<<<<<<< HEAD
 	protected function fetchResponse(JoinTb $JoinDS=NULL,$IgnoredProperties = NULL, $em = NULL)
+//=======
+//	protected function FetchRecords($IgnoredProperties = NULL)
+//>>>>>>> presentation
 	{
-		if ($em == NULL)
-			$em = \Yii::app()->doctrine->getEntityManager();
+		$em = Yii::app()->doctrine->getEntityManager();
 		
 		$className = $this->getEntityClassname();
 		$params = $this->getActionParams();
@@ -232,12 +249,23 @@ abstract class EntityController extends \IRController
 		
 		$totalRows = '0';
 		
-		try {
-			if (isset($params['id'])) {
+		try
+		{
+			$result = array();
+			
+			if (isset($params['id']))
+			{
 				$id = $params["id"];
 				$cls=$em->getRepository($className)
 						->find($id);
-				RestDataSource::AddResponse(array($cls->GetClassSCPropertiesInArray()));
+				
+				$result = array(
+					'data' => $cls->GetClassSCPropertiesInArray(),
+					'params' => array(
+						'id' => $params['id'],
+						'totalRows' => '1',
+					),
+				);
 			}
 			else
 			{
@@ -248,11 +276,13 @@ abstract class EntityController extends \IRController
 					$order = $params[$prefix.'sortBy'];
 					
 				$criteria = array();
-				if (isset($params['criteria'])) {
+				if (isset($params['criteria']))
+				{
 					$jsoncriteria = $params['criteria'];
 					if (!is_array($jsoncriteria))
 						$jsoncriteria = array($jsoncriteria);
-					foreach($jsoncriteria as $v) {
+					foreach($jsoncriteria as $v)
+					{
 						$j = json_decode($v);
 						if ($j != null)
 							$criteria[]=get_object_vars($j);
@@ -263,27 +293,26 @@ abstract class EntityController extends \IRController
 					$componentid = $params[$prefix.'componentId'];
 				else 
 					$componentid='';
+				
 				if(strpos($componentid,'PickListMenu')>0){
 					//Filter for PickListMenu
 					$reader = new AnnotationReader();
 					$methods=get_class_methods($className);
 					foreach ($methods as $methodName)
 					{
-					//Check That Method is getter or setter else continue
-					if(!(substr($methodName, 0,3)=='get' ||	substr($methodName,0,3)=='set')	) continue;
-					$propname = substr($methodName, 3,strlen($methodName)-3);
-					$reflMethod = new \ReflectionMethod($className, $methodName);
-					$MethodAnns = $reader->getMethodAnnotations($reflMethod);
-					foreach ($MethodAnns as $annots){
-						if(is_a($annots,'\IRERP\Basics\Annotations\scField')){
-							//Check That Is Defined annots in filter
-							if(isset($params[$annots->name]))
-								$criteria[]=array('fieldName'=>$annots->name,'operator'=>'iContains','value'=>$params[$annots->name]);
-								
-						}
+						//Check That Method is getter or setter else continue
+						if(!(substr($methodName, 0,3)=='get' ||	substr($methodName,0,3)=='set')	)
+							continue;
+						
+						$propname = substr($methodName, 3,strlen($methodName)-3);
+						$reflMethod = new \ReflectionMethod($className, $methodName);
+						$MethodAnns = $reader->getMethodAnnotations($reflMethod);
+						foreach ($MethodAnns as $annots)
+							if(is_a($annots,'\IRERP\Basics\Annotations\scField'))
+								//Check That Is Defined annots in filter
+								if(isset($params[$annots->name]))
+									$criteria[]=array('fieldName'=>$annots->name,'operator'=>'iContains','value'=>$params[$annots->name]);
 					}
-					}
-					
 				}
 				
 				if($order != null) {
@@ -296,7 +325,7 @@ abstract class EntityController extends \IRController
 						else
 							$orderBy[\ApplicationHelpers::TranslateSCVarsToDoctrine($fieldname, $this->getEntityClassname())  ]='ASC';
 				}
-				$wh = $this->setwhere($criteria);
+				$wh = $this->ConstructWhereString($criteria);
 				$whstr='';
 				$whparam =null;
 				if (count($criteria)>0){
@@ -318,13 +347,18 @@ abstract class EntityController extends \IRController
 				foreach($results as $item)
 					$resarr[]=$item->GetClassSCPropertiesInArray($IgnoredProperties);
 				
-				$this->SmartClientRespond($resarr, array(
-					"startRow"=>$startRow,
-					"endRow"=>$endRow,
-					"totalRows"=>$totalRows,
-				));
+				$result = array(
+					'data' => $resarr,
+					'params' => array(
+						"startRow"=>$startRow,
+						"endRow"=>$endRow,
+						"totalRows"=>$totalRows,
+					),
+				);
 				//$this->SmartClientRespond($startRow,$endRow,$totalRows,$resarr);
 			}
+			
+			return $result;
 		} catch(Exception $e) {
 			print_r($e);
 		}
@@ -332,12 +366,11 @@ abstract class EntityController extends \IRController
 	/**
 	 * 
 	 * Updates selected record from SmartClient form data
-	 * @param \Doctrine\ORM\EntityManager $em
 	 */
-	protected function UpdateRecord($em=NULL)
+	protected function UpdateRecord()
 	{
-		if ($em == NULL)
-			$em = \Yii::app()->doctrine->getEntityManager();
+		$em = \Yii::app()->doctrine->getEntityManager();
+		
 		$className = $this->getEntityClassname();
 		
 		try {
@@ -609,9 +642,15 @@ abstract class EntityController extends \IRController
 		$this->ajaxRespondJSON($response);
 	}
 
-	private function setwhere($a)
+	/**
+	*
+	* Converts SmartClient datasource fetch criteria into SQL SELECT where string
+	* @param object[] $criteria
+	*/
+	public function ConstructWhereString($criteria)
 	{
 		$change=array(
+/*<<<<<<< HEAD
 		'lessThan'=>' < :p',
 		'greaterThan'=>' > :p',
 		'lessThanOrEqual'=>' <= :p',
@@ -630,19 +669,38 @@ abstract class EntityController extends \IRController
 		'isNotNull'=>' IS NOT NULL ',
 		'exact match'=>' = :p',
 		'equals'=>' = :p '
+=======*/
+				'lessThan'=>' < :p',
+				'greaterThan'=>' > :p',
+				'lessThanOrEqual'=>' <= :p',
+				'greaterThanOrEqual'=>' >= :p',
+				'betweenInclusive'=>' between :1p and :2p',
+				'notEqual'=>' != :p',
+				'startsWith'=>' like :p',
+				'endsWith'=>' like :p',
+				'notStartsWith'=>' not like :p',
+				'notEndsWith'=>' not like :p',
+				'iContains'=>' like :p',
+				'notContains'=>' not like :p',
+				'inSet'=>' in :p',
+				'notInSet'=>' not in :p',
+				'isNull'=>' IS NULL',
+				'isNotNull'=>' IS NOT NULL ',
+				'exact match'=>' = :p',
+				'equals'=>' = :p '
+//>>>>>>> presentation
 		);
-
-
+	
 		$reval=array();
 		$ret='';
 		$tmp1=0;
-		foreach ($a as &$s)
+		foreach ($criteria as &$s)
 		{
 			$fieldName = \ApplicationHelpers::TranslateSCVarsToDoctrine($s['fieldName'], $this->getEntityClassname(), NULL);
 			$tmp1++;
 			if(!isset($s['value']))
-			$s['value'] = '';
-
+				$s['value'] = '';
+	
 			switch ($s['operator']){
 				case 'startsWith':
 				case 'notStartsWith': $tmp=$s['value'].'%'; break;
@@ -660,7 +718,11 @@ abstract class EntityController extends \IRController
 			else
 			{
 				$reval[str_ireplace('.', '_', $fieldName).$tmp1]=$tmp;
+//<<<<<<< HEAD
 			}
+//=======
+	
+//>>>>>>> presentation
 			if($tmp1!=1)
 			{
 				$ret=$ret.' and tmp.'. $fieldName.str_replace('p',str_ireplace('.', '_', $fieldName).$tmp1,$change[$s['operator']]);
@@ -672,7 +734,6 @@ abstract class EntityController extends \IRController
 		}
 		return array($ret,$reval);
 	}
-
 	// Uncomment the following methods and override them if needed
 	/*
 	public function filters()
