@@ -18,6 +18,7 @@ class MainLayoutHelpers extends CComponent
 		$resources[] = '<script type="text/javascript" src='.$isomorphicDir.'system/modules/ISC_RichTextEditor.js?isc_version=SC_SNAPSHOT-2011-01-06.js></script>';
 		$resources[] = '<script type="text/javascript" src='.$isomorphicDir.'system/modules/ISC_DataBinding.js?isc_version=SC_SNAPSHOT-2011-01-06.js></script>';
 		$resources[] = '<script type="text/javascript" src='.$isomorphicDir.'skins/Graphite/load_skin.js></script>';
+		$resources[] = '<script type="text/javascript" src='.$BasicPath.'/js/GeneralFuncs.js></script>';
 		/*$resources[] ='<script>';
 		$resources[] ='isc.currentSkin = isc.params.skin;';
 		$resources[] ='if (isc.currentSkin == null) isc.currentSkin = "Enterprise";';
