@@ -109,12 +109,6 @@ isc.DynamicForm.create({
 var dsMaster = eval(dsMasterName);
 var frmMaster = eval(frmMasterName);
 var MasterGrid = eval(MasterGridName);
-var iconpath="/IranERP/Download/sys/Icons/Orange/";
-var icon_new=iconpath+"Health.png";
-var icon_Save=iconpath+"Save.png";
-var icon_Edit=iconpath+"Pen.png";
-var icon_Delete=iconpath+"Trash.png";
-var icon_Cancel=iconpath+"Cancel.png";
 
 DisableForm(frmMaster);
 isc.ToolStripButton.create({ID:"btnNew_Master",title:"جدید",  icon:icon_new,click:function(){EnableForm(frmMaster);btnSave_Master.enable();btnNew_Master.disable();btnEdit_Master.disable();btnDelete_Master.disable();frmMaster.editNewRecord();}});

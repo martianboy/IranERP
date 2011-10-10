@@ -1,4 +1,62 @@
 
+//Variables
+var iconpath=baseurl+"Download/sys/Icons/Orange/";
+var icon_new=iconpath+"Health.png";
+var icon_Save=iconpath+"Save.png";
+var icon_Edit=iconpath+"Pen.png";
+var icon_Delete=iconpath+"Trash.png";
+var icon_Cancel=iconpath+"Cancel.png";
+
+
+// Variable For Complicated Pages
+var DetailForms= Array(); // All Detail Forms
+var DetailGrids= Array(); // All Detail Grids
+var DetailDss=Array();	// All Detail DataSources
+
+function ChangesDetailMasterId(Masterid)
+{
+	for(var i=0;DetailForms.length>i;i++){
+		DetailForms[i].HelpField=Masterid;
+		DetailGrids[i].initialCriteria={HelpField : Masterid};
+	}
+	for(var i=0;DetailForms.length>i;i++){
+		//DetailForms[i].HelpField=Masterid;
+		DetailGrids[i].fetchData({HelpField:Masterid});
+	}
+
+}
+
+function SaveForm(frm)
+{
+if(frm.isNewRecord()) frm.saveData(); else eval(frm.dataSource).updateData(frm.getValues());	
+}
+function SaveFormDetail(frm)
+{
+	var Datas=frm.getValues();
+	
+	if(frm.isNewRecord()) 
+	{
+		Datas.HelpField=frm.HelpField;
+		eval(frm.dataSource).addData(Datas);
+	} 
+	else 
+		eval(frm.dataSource).updateData(Datas);
+}
+
+function DeleteForm(ans,frmid,gridid)
+{
+	var frm = eval(frmid); 
+	var grid= eval(gridid);
+	
+    if(ans=='YES'){
+        var record = grid.getSelectedRecord();
+        if (record == null) return ;
+        grid.removeData(record);
+        frm.clearValues();
+       }
+}
+
+
 function SaveMaster()
 {
     if(frmMaster.isNewRecord ())

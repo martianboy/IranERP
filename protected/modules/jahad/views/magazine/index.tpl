@@ -3,143 +3,11 @@ var dsMasterName = "{$dsMaster}";
 var frmMasterName = "frm{$dsMaster}";
 var MasterGridName = "{$dsMaster}Grid";
 {literal}
-var DetailForms= Array();
-var DetailGrids= Array();
-var DetailDss=Array();	
-
-function ChangesDetailMasterId(Masterid)
-{
-	for(var i=0;DetailForms.length>i;i++){
-		DetailForms[i].HelpField=Masterid;
-		DetailGrids[i].initialCriteria={HelpField : Masterid};
-	}
-	for(var i=0;DetailForms.length>i;i++){
-		//DetailForms[i].HelpField=Masterid;
-		DetailGrids[i].fetchData({HelpField:Masterid});
-	}
-
-}
-
 function TitleClick(DataSourceAddress)
 {
 alert(DataSourceAddress);
 }
-function SaveForm(frm)
-{
-if(frm.isNewRecord()) frm.saveData(); else eval(frm.dataSource).updateData(frm.getValues());	
-}
-function SaveFormDetail(frm)
-{
-	var Datas=frm.getValues();
-	
-	if(frm.isNewRecord()) 
-	{
-		Datas.HelpField=frm.HelpField;
-		eval(frm.dataSource).addData(Datas);
-	} 
-	else 
-		eval(frm.dataSource).updateData(Datas);
-}
-
-function DeleteForm(ans,frmid,gridid)
-{
-	var frm = eval(frmid); 
-	var grid= eval(gridid);
-	
-    if(ans=='YES'){
-        var record = grid.getSelectedRecord();
-        if (record == null) return ;
-        grid.removeData(record);
-        frm.clearValues();
-       }
-}
-
-function SaveMaster()
-{
-    if(frmMaster.isNewRecord ())
-    frmMaster.saveData();
-    else
-    {
-        
-        dsMaster.updateData(frmMaster.getValues());
-        //MasterGrid.selection.selectSingle(0);
-    }
-}
-function DeleteMaster(ans)
-{
-    if(ans=='YES'){
-     var record = MasterGrid.getSelectedRecord();
-     if (record == null) return ;
-     MasterGrid.removeData(record);
-     frmMaster.clearValues();
-    }
-}
-
-function EnableForm(frm)
-{
-for(var i=0;i<frm.getFields().length;i++) frm.getFields()[i].enable();
-}
-function DisableForm(frm)
-{
-for(var i=0;i<frm.getFields().length;i++) frm.getFields()[i].disable();
-}
-
-function ShowDialog(Title,Message,Yes,No,afterclose,frmid,gridid)
-{
-    isc.Window.create({
-        ID:"dlgQuest",
-        height:100,
-        width:300,
-        canDragResize: true,
-        autoCenter:true,
-        isModal:true,
-        autoSize:true,
-        align:"right",
-        headerControls : [ "closeButton",
-                            "minimizeButton", isc.Label.create({
-                                            height: "100%",
-                                            width: "100%",
-                                            contents: Title,
-                                            align:"center"
-                                        })
-                            
-                     ],
-        items:[
-                    isc.VLayout.create({
-                        defaultLayoutAlign: "center",
-                        width: "100%",
-                        height: "100%",
-                        layoutMargin: 6,
-                        membersMargin: 6,
-                        border: "1px",
-                        align: "center",  // As promised!
-                        members: [
-                            isc.Label.create({
-                                height: "100%",
-                                width: "100%",
-                                contents: Message,
-                                align:"center"
-                            }),
-                           isc.HLayout.create({
-                                layoutMargin: 6,
-                                membersMargin: 6,
-                                border: "1px",
-                                defaultLayoutAlign:"center",
-                                members:[
-                                            isc.Label.create({width:"*"}),
-                                            isc.Button.create({title:Yes,click:function(){dlgQuest.hide();eval(afterclose+'("YES",'+frmid+','+gridid+')');}}),
-                                            isc.Button.create({title:No,click:function(){dlgQuest.hide();eval(afterclose+'("NO",'+frmid+','+gridid+')');}}),
-                                            isc.Label.create({width:"*"})
-                                            ]
-
-                          })
-                        ]
-                    })
-                ]
-        
-    });
-}
-
+ 
 isc.RestDataSource.create({
     ID:dsMasterName,
     fields:
@@ -412,62 +280,13 @@ isc.ListGrid.create({
 	                }
 	    	    ]
 	});
+ 
 
-	var detailDs1 = eval(detailDs1Name);
-	var detailForm1 = eval(detailForm1Name);
-	var detailGrid1 = eval(detailGrid1Name);
-
-	DetailForms[DetailForms.length]=detailForm1;
-	DetailGrids[DetailGrids.length]=detailGrid1;
-	DetailDss[DetailDss.length]=detailDs1;
-	
-	DisableForm(detailForm1);
-	isc.ToolStripButton.create({ID:"btnNew_detail1",title:"جدید",  icon: "",click:function(){EnableForm(detailForm1);btnSave_detail1.enable();btnNew_detail1.disable();btnEdit_detail1.disable();btnDelete_detail1.disable();detailForm1.editNewRecord();}});
-	isc.ToolStripButton.create({ID:"btnSave_detail1",title:"ذخیره",  icon: "",disabled:true,click:function(){DisableForm(detailForm1);SaveFormDetail(detailForm1);btnSave_detail1.disable();btnNew_detail1.enable();btnEdit_detail1.enable();btnDelete_detail1.enable();}});
-	isc.ToolStripButton.create({ID:"btnEdit_detail1",title:"ویرایش",  icon: "",click:function(){EnableForm(detailForm1);btnSave_detail1.enable();btnNew_detail1.disable();btnEdit_detail1.disable();btnDelete_detail1.disable();}});
-	isc.ToolStripButton.create({ID:"btnDelete_detail1",title:"حذف",  icon: "",click:function(){
-	    ShowDialog(
-	            'اخطار حذف',
-	            'آیا از حذف مورد انتخاب شده اطمینان دارید؟',
-	            'بله',
-	            'خیر',
-	            'DeleteForm',detailForm1Name,detailGrid1Name
-	            );
-	}});
-	isc.ToolStripButton.create({ID:"btnCancel_detail1",title:"انصراف",  icon: "",click:function(){DisableForm(detailForm1);btnNew_detail1.enable();btnEdit_detail1.enable();btnSave_detail1.disable();btnDelete_detail1.enable();}});
-
-	isc.ToolStrip.create({
-	    width: "100%", 
-	    height:24, 
-	    ID:"Toolstripdetail1",
-	    members: [btnNew_detail1, "separator",
-	              btnEdit_detail1, "separator",
-	              btnSave_detail1,"separator", 
-	              btnDelete_detail1,"separator", 
-	              btnCancel_detail1]
-	});
-	isc.HLayout.create({
-	    ID:"detail1Frame",
-	    width: "100%",
-	    height: "100%",
-	    defaultLayoutAlign: "right",
-	    members: [
-	              isc.VLayout.create({
-	                  defaultLayoutAlign: "right",
-	                  showResizeBar:true,
-	                  Height:"100%",
-	                  width:"*",
-	                  members:[Toolstripdetail1, 
-	                           detailForm1
-	                           ]
-	              }),
-	             isc.VLayout.create({
-	                        width: "70%",
-	                        members: [detailGrid1 ]
-	                         })
-	              ]
-	  });
-	 
+	{/literal}
+	{$this->GetInitDetail(1)}
+	{$this->GetDetailToolbar(1)}
+	{$this->GetDetailLayout(1)}
+	{literal}
 
  /*****************************************************/
 
@@ -565,86 +384,11 @@ isc.ListGrid.create({
 	    	    ]
 	});
 
-	var detailDs2 = eval(detailDs2Name);
-	var detailForm2= eval(detailForm2Name);
-	var detailGrid2 = eval(detailGrid2Name);
-
-	DetailForms[DetailForms.length]=detailForm2;
-	DetailGrids[DetailGrids.length]=detailGrid2;
-	DetailDss[DetailDss.length]=detailDs2;
-	
-	DisableForm(detailForm2);
-	isc.ToolStripButton.create({ID:"btnNew_detail2",title:"جدید",  icon: "",
-		click:function(){
-			EnableForm(detailForm2);
-			btnSave_detail2.enable();
-			btnNew_detail2.disable();
-			btnEdit_detail2.disable();
-			btnDelete_detail2.disable();
-			detailForm2.editNewRecord();}});
-	isc.ToolStripButton.create({ID:"btnSave_detail2",title:"ذخیره",  icon: "",disabled:true,
-		click:function(){
-			DisableForm(detailForm2);
-			SaveFormDetail(detailForm2);
-			btnSave_detail2.disable();
-			btnNew_detail2.enable();
-			btnEdit_detail2.enable();
-			btnDelete_detail2.enable();}});
-	isc.ToolStripButton.create({ID:"btnEdit_detail2",title:"ویرایش",  icon: ""
-		,click:function(){
-			EnableForm(detailForm2);
-			btnSave_detail2.enable();
-			btnNew_detail2.disable();
-			btnEdit_detail2.disable();
-			btnDelete_detail2.disable();}});
-	isc.ToolStripButton.create({ID:"btnDelete_detail2",title:"حذف",  icon: "",click:function(){
-	    ShowDialog(
-	            'اخطار حذف',
-	            'آیا از حذف مورد انتخاب شده اطمینان دارید؟',
-	            'بله',
-	            'خیر',
-	            'DeleteForm',detailForm2Name,detailGrid2Name
-	            );
-	}});
-	isc.ToolStripButton.create({ID:"btnCancel_detail2",title:"انصراف",  icon: "",
-		click:function(){
-			DisableForm(detailForm2);
-			btnNew_detail2.enable();
-			btnEdit_detail2.enable();
-			btnSave_detail2.disable();
-			btnDelete_detail2.enable();}});
-
-	isc.ToolStrip.create({
-	    width: "100%", 
-	    height:24, 
-	    ID:"Toolstripdetail2",
-	    members: [btnNew_detail2, "separator",
-	              btnEdit_detail2, "separator",
-	              btnSave_detail2,"separator", 
-	              btnDelete_detail2,"separator", 
-	              btnCancel_detail2]
-	});
-	isc.HLayout.create({
-	    ID:"detail2Frame",
-	    width: "100%",
-	    height: "100%",
-	    defaultLayoutAlign: "right",
-	    members: [
-	              isc.VLayout.create({
-	                  defaultLayoutAlign: "right",
-	                  showResizeBar:true,
-	                  Height:"100%",
-	                  width:"*",
-	                  members:[Toolstripdetail2, 
-	                           detailForm2
-	                           ]
-	              }),
-	             isc.VLayout.create({
-	                        width: "70%",
-	                        members: [detailGrid2 ]
-	                         })
-	              ]
-	  });
+	{/literal}
+	{$this->GetInitDetail(2)}
+	{$this->GetDetailToolbar(2)}
+	{$this->GetDetailLayout(2)}
+	{literal}
 	 
 
  /*****************************************************/
