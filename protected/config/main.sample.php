@@ -13,8 +13,9 @@ return array(
 	// preloading 'log' and 'irclassloader' components
 	'preload'=>array(
 		'log',
-		'irclassloader',
+		'ir_ClassLoader',
 	),
+	
 
 	// autoloading model and component classes
 	'import'=>array(
@@ -81,12 +82,19 @@ return array(
             ),
         ),
 		// uncomment the following to enable URLs in path-format
-		'urlManager'=>array(
+			'urlManager'=>array(
 			'urlFormat'=>'path',
 			'rules'=>array(
+        		'<controller:Download>/<Save:Save>/<filename:.*>'=>'Download/SaveToClient',
+        		'<controller:Download>/<filename:.*>'=>'Download',
 				'<controller:\w+>/<id:\d+>'=>'<controller>/view',
 				'<controller:\w+>/<action:\w+>/<id:\d+>'=>'<controller>/<action>',
 				'<controller:\w+>/<action:\w+>'=>'<controller>/<action>',
+        		'<module:\w+>/<controller:\w+>/<jds:jds>/<parentclass:\w+>/<propname:\w+>'=>'<module>/<controller>/GeneralSimpleJoin',
+        		'<module:\w+>/<controller:\w+>/<jds:jds>/<parentclass:\w+>/<propname:\w+>/<params:\w+>'=>'<module>/<controller>/GeneralSimpleJoin',
+        		'<module:\w+>/<controller:\w+>/<jdsenum:jdsenum>/<parentclass:\w+>/<propname:\w+>'=>'<module>/<controller>/GeneralSimpleJoinENUM',
+        		
+        
 			),
 		),
 		/*
