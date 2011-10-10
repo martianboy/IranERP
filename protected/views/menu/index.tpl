@@ -1,4 +1,3 @@
-<script type="text/javascript">
 {literal}
 isc.RestDataSource.create({
     ID:"menuItemsDS",
@@ -55,4 +54,3 @@ isc.TileGrid.create({
 });
 
 {/literal}
-</script>
