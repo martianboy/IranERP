@@ -77,6 +77,9 @@ class IRDataModel extends CModel
 	
 	protected $HelpField='';
 	public function setHelpField($v){$this->HelpField=$v;}
+   /**
+	 *@scField(name="HelpField") 
+	 */
 	public function getHelpField(){return $this->HelpField;}
 	
 	
@@ -237,6 +240,8 @@ class IRDataModel extends CModel
 				}
 			}
 		}
+
+		
 		return $rtnval;
 	}
 
