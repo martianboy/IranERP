@@ -151,7 +151,7 @@ class IRController extends CController
                            ]
               }),
              isc.VLayout.create({
-                        width: \"70%\",
+                        width: \"65%\",
                         members: [MasterGrid ]
                          })
               ]
@@ -271,7 +271,7 @@ class IRController extends CController
 		$rtnval.="	members:[Toolstripdetail$DetailNumber,detailForm$DetailNumber";
 		$rtnval.="]}),";
 		$rtnval.="isc.VLayout.create({";
-		$rtnval.=" width: \"70%\",";
+		$rtnval.=" width: \"65%\",";
 		$rtnval.="members: [detailGrid$DetailNumber ]";
 		$rtnval.="	                         })	              ]	  });		";
 		return $rtnval;
