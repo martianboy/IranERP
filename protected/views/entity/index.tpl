@@ -1,3 +1,4 @@
+<script type="text/javascript">
 var dsMasterName = "{$dsMaster}"; 
 var frmMasterName = "frm{$dsMaster}";
 var MasterGridName = "{$dsMaster}Grid";
@@ -104,92 +105,5 @@ isc.HLayout.create({
               ]
   });
 
-
-
-
-function SaveMaster()
-{
-    if(frmMaster.isNewRecord ())
-    frmMaster.saveData();
-    else
-    {
-        
-        dsMaster.updateData(frmMaster.getValues());
-        //MasterGrid.selection.selectSingle(0);
-    }
-}
-function DeleteMaster(ans)
-{
-    if(ans=='YES'){
-     var record = MasterGrid.getSelectedRecord();
-     if (record == null) return ;
-     MasterGrid.removeData(record);
-     frmMaster.clearValues();
-    }
-}
-
-function EnableForm(frm)
-{
-for(var i=0;i<frm.getFields().length;i++) frm.getFields()[i].enable();
-}
-function DisableForm(frm)
-{
-for(var i=0;i<frm.getFields().length;i++) frm.getFields()[i].disable();
-}
-
-function ShowDialog(Title,Message,Yes,No,afterclose)
-{
-    isc.Window.create({
-        ID:"dlgQuest",
-        height:100,
-        width:300,
-        canDragResize: true,
-        autoCenter:true,
-        isModal:true,
-        autoSize:true,
-        align:"right",
-        headerControls : [ "closeButton",
-                            "minimizeButton", isc.Label.create({
-                                            height: "100%",
-                                            width: "100%",
-                                            contents: Title,
-                                            align:"center"
-                                        })
-                            
-                     ],
-        items:[
-                    isc.VLayout.create({
-                        defaultLayoutAlign: "center",
-                        width: "100%",
-                        height: "100%",
-                        layoutMargin: 6,
-                        membersMargin: 6,
-                        border: "1px",
-                        align: "center",  // As promised!
-                        members: [
-                            isc.Label.create({
-                                height: "100%",
-                                width: "100%",
-                                contents: Message,
-                                align:"center"
-                            }),
-                           isc.HLayout.create({
-                                layoutMargin: 6,
-                                membersMargin: 6,
-                                border: "1px",
-                                defaultLayoutAlign:"center",
-                                members:[
-                                            isc.Label.create({width:"*"}),
-                                            isc.Button.create({title:Yes,click:function(){dlgQuest.hide();eval(afterclose+'("YES")');}}),
-                                            isc.Button.create({title:No,click:function(){dlgQuest.hide();eval(afterclose+'("NO")');}}),
-                                            isc.Label.create({width:"*"})
-                                            ]
-
-                          })
-                        ]
-                    })
-                ]
-        
-    });
-}
+</script>
 {/literal}
