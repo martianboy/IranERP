@@ -6,7 +6,9 @@ class MainLayoutHelpers extends CComponent
 		$resources = array();
 		$BasicPath = Yii::app()->baseUrl;
 		$isomorphicDir=$BasicPath.'/isomorphic/';
-		
+		$url = 'http://'.Yii::app()->request->getServerName();
+		$url .='/IranERP/';
+		$resources[] = '<script type="text/javascript">var baseurl="'.$url.'";</script>';
 		$resources[] = '<script type="text/javascript">var isomorphicDir="'.$isomorphicDir.'";</script>';
 		$resources[] = '<script type="text/javascript" src='.$isomorphicDir.'system/modules/ISC_History.js?isc_version=SC_SNAPSHOT-2011-01-06.js></script>';
 		$resources[] = '<script type="text/javascript" src='.$isomorphicDir.'system/development/ISC_FileLoader.js?isc_version=SC_SNAPSHOT-2011-01-06.js></script>';
@@ -19,6 +21,7 @@ class MainLayoutHelpers extends CComponent
 		$resources[] = '<script type="text/javascript" src='.$isomorphicDir.'system/modules/ISC_DataBinding.js?isc_version=SC_SNAPSHOT-2011-01-06.js></script>';
 		$resources[] = '<script type="text/javascript" src='.$isomorphicDir.'skins/Graphite/load_skin.js></script>';
 		$resources[] = '<script type="text/javascript" src='.$BasicPath.'/js/GeneralFuncs.js></script>';
+		
 		/*$resources[] ='<script>';
 		$resources[] ='isc.currentSkin = isc.params.skin;';
 		$resources[] ='if (isc.currentSkin == null) isc.currentSkin = "Enterprise";';

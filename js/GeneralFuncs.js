@@ -1,3 +1,4 @@
+
 function SaveMaster()
 {
     if(frmMaster.isNewRecord ())
@@ -89,6 +90,8 @@ Field.setValue(filename);
 }
 function ShowUploadDialog(obj,afterclose)
 {
+	alert(baseurl);
+	alert(window.baseurl);
     isc.HTMLPane.create({
         ID:"myPane",
         height: "100%",
@@ -96,7 +99,10 @@ function ShowUploadDialog(obj,afterclose)
         scrollbarSize:0
     });
     var iframeid='jjjli12d';
-    myPane.setContents( "<iframe scrolling=\"no\" width=\"100%\" height=\"100%\" id=\'"+iframeid+"\' src=\'IranERP/upload/\' style=\"width:100%;height:100%;border:none;\"/>" );
+    var content= "<iframe scrolling=\"no\" width=\"100%\" height=\"100%\" id=\'"+iframeid+"\' ";
+    content += "src=\'"+baseurl+"/upload/\' style=\"width:100%;height:100%;border:none;\"/>";
+    
+    myPane.setContents(content);
     var args=[];
 	   for(var i=2; i < arguments.length; i++)
 	    {
