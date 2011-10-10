@@ -108,11 +108,18 @@ isc.DynamicForm.create({
 var dsMaster = eval(dsMasterName);
 var frmMaster = eval(frmMasterName);
 var MasterGrid = eval(MasterGridName);
+var iconpath="/IranERP/Download/sys/Icons/Orange/";
+var icon_new=iconpath+"Health.png";
+var icon_Save=iconpath+"Save.png";
+var icon_Edit=iconpath+"Pen.png";
+var icon_Delete=iconpath+"Trash.png";
+var icon_Cancel=iconpath+"Cancel.png";
+
 DisableForm(frmMaster);
-isc.ToolStripButton.create({ID:"btnNew_Master",title:"جدید",  icon: "Images.php?Color=Orange&IconType=Icons&ActionType=Health",click:function(){EnableForm(frmMaster);btnSave_Master.enable();btnNew_Master.disable();btnEdit_Master.disable();btnDelete_Master.disable();frmMaster.editNewRecord();}});
-isc.ToolStripButton.create({ID:"btnSave_Master",title:"ذخیره",  icon: "Images.php?Color=Orange&IconType=Icons&ActionType=Save",disabled:true,click:function(){DisableForm(frmMaster);SaveMaster();btnSave_Master.disable();btnNew_Master.enable();btnEdit_Master.enable();btnDelete_Master.enable();}});
-isc.ToolStripButton.create({ID:"btnEdit_Master",title:"ویرایش",  icon: "Images.php?Color=Orange&IconType=Icons&ActionType=Pen",click:function(){EnableForm(frmMaster);btnSave_Master.enable();btnNew_Master.disable();btnEdit_Master.disable();btnDelete_Master.disable();}});
-isc.ToolStripButton.create({ID:"btnDelete_Master",title:"حذف",  icon: "Images.php?Color=Orange&IconType=Icons&ActionType=Trash",click:function(){
+isc.ToolStripButton.create({ID:"btnNew_Master",title:"جدید",  icon:icon_new,click:function(){EnableForm(frmMaster);btnSave_Master.enable();btnNew_Master.disable();btnEdit_Master.disable();btnDelete_Master.disable();frmMaster.editNewRecord();}});
+isc.ToolStripButton.create({ID:"btnSave_Master",title:"ذخیره",  icon: icon_Save,disabled:true,click:function(){DisableForm(frmMaster);SaveMaster();btnSave_Master.disable();btnNew_Master.enable();btnEdit_Master.enable();btnDelete_Master.enable();}});
+isc.ToolStripButton.create({ID:"btnEdit_Master",title:"ویرایش",  icon: icon_Edit,click:function(){EnableForm(frmMaster);btnSave_Master.enable();btnNew_Master.disable();btnEdit_Master.disable();btnDelete_Master.disable();}});
+isc.ToolStripButton.create({ID:"btnDelete_Master",title:"حذف",  icon: icon_Delete,click:function(){
     ShowDialog(
             'اخطار حذف',
             'آیا از حذف مورد انتخاب شده اطمینان دارید؟',
@@ -121,7 +128,7 @@ isc.ToolStripButton.create({ID:"btnDelete_Master",title:"حذف",  icon: "Images
             'DeleteMaster'
             );
 }});
-isc.ToolStripButton.create({ID:"btnCancel_Master",title:"انصراف",  icon: "Images.php?Color=Orange&IconType=Icons&ActionType=Cancel",click:function(){DisableForm(frmMaster);btnNew_Master.enable();btnEdit_Master.enable();btnSave_Master.disable();btnDelete_Master.enable();}});
+isc.ToolStripButton.create({ID:"btnCancel_Master",title:"انصراف",  icon: icon_Cancel,click:function(){DisableForm(frmMaster);btnNew_Master.enable();btnEdit_Master.enable();btnSave_Master.disable();btnDelete_Master.enable();}});
 
 isc.ToolStrip.create({
     width: "100%", 
@@ -160,143 +167,6 @@ isc.HLayout.create({
 
 
 
-function SaveMaster()
-{
-    if(frmMaster.isNewRecord ())
-    frmMaster.saveData();
-    else
-    {
-        
-        dsMaster.updateData(frmMaster.getValues());
-        //MasterGrid.selection.selectSingle(0);
-    }
-}
-function DeleteMaster(ans)
-{
-    if(ans=='YES'){
-     var record = MasterGrid.getSelectedRecord();
-     if (record == null) return ;
-     MasterGrid.removeData(record);
-     frmMaster.clearValues();
-    }
-}
-
-function EnableForm(frm)
-{
-for(var i=0;i<frm.getFields().length;i++) frm.getFields()[i].enable();
-}
-function DisableForm(frm)
-{
-for(var i=0;i<frm.getFields().length;i++) frm.getFields()[i].disable();
-}
-
-function ShowDialog(Title,Message,Yes,No,afterclose)
-{
-    isc.Window.create({
-        ID:"dlgQuest",
-        height:100,
-        width:300,
-        canDragResize: true,
-        autoCenter:true,
-        isModal:true,
-        autoSize:true,
-        align:"right",
-        headerControls : [ "closeButton",
-                            "minimizeButton", isc.Label.create({
-                                            height: "100%",
-                                            width: "100%",
-                                            contents: Title,
-                                            align:"center"
-                                        })
-                            
-                     ],
-        items:[
-                    isc.VLayout.create({
-                        defaultLayoutAlign: "center",
-                        width: "100%",
-                        height: "100%",
-                        layoutMargin: 6,
-                        membersMargin: 6,
-                        border: "1px",
-                        align: "center",  // As promised!
-                        members: [
-                            isc.Label.create({
-                                height: "100%",
-                                width: "100%",
-                                contents: Message,
-                                align:"center"
-                            }),
-                           isc.HLayout.create({
-                                layoutMargin: 6,
-                                membersMargin: 6,
-                                border: "1px",
-                                defaultLayoutAlign:"center",
-                                members:[
-                                            isc.Label.create({width:"*"}),
-                                            isc.Button.create({title:Yes,click:function(){dlgQuest.hide();eval(afterclose+'("YES")');}}),
-                                            isc.Button.create({title:No,click:function(){dlgQuest.hide();eval(afterclose+'("NO")');}}),
-                                            isc.Label.create({width:"*"})
-                                            ]
-
-                          })
-                        ]
-                    })
-                ]
-        
-    });
-}
-function AfterUploadFile(filename,DynForm,Field)
-{
-Field.setValue(filename);
-}
-function ShowUploadDialog(obj,afterclose)
-{
-    isc.HTMLPane.create({
-        ID:"myPane",
-        //contentsURL:"{/literal}{$this->baseUrl}/upload/{literal}",
-        //contentsType:"page",
-        height: "100%",
-        width: "100%",
-        scrollbarSize:0
-    });
-    var iframeid='jjjli12d';
-    myPane.setContents( "<iframe scrolling=\"no\" width=\"100%\" height=\"100%\" id=\'"+iframeid+"\' src=\'{/literal}{$this->baseUrl}/upload/{literal}\' style=\"width:100%;height:100%;border:none;\"/>" );
-    var args=[];
-	   for(var i=2; i < arguments.length; i++)
-	    {
-	        args.push(arguments[i]);
-	    }
-     isc.Window.create({
-        ID:"dlgUploadFile",
-        ARGS:args,
-        obj:obj,
-        height:200,
-        width:300,
-        canDragResize: true,
-        isModal:true,
-        align:"right",
-        autoCenter:true,
-        title:"بارگذاری پرونده",
-        items:[
-               isc.Button.create({title:'پرونده مورد تایید است',click:function(){
-            	   dlgUploadFile.hide();
-            	   if(afterclose!=null) try{
-                	   //Get File Name
-                	   
-                	   filename=document.getElementById(iframeid).contentWindow.getFileName();
-                	   dlgUploadFile.ARGS.splice(0,0,filename);
-                	   
-                	   afterclose.apply(dlgUploadFile.obj,
-                        	   dlgUploadFile.ARGS);
-
-                	   }catch(err){}
-                   }})
-               ,
-    			myPane
-               ]
-        
-    });
-}
 
 </script>
 {/literal}
