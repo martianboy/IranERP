@@ -9,7 +9,7 @@ alert(DataSourceAddress);
 }
  
 isc.RestDataSource.create({
-    ID:dsMasterName,
+	{/literal}{$this->GetMasterDataSource()}{literal}
     fields:
         [
             {hidden:"true",name:"id",primaryKey:"true",type:"integer"},
@@ -18,97 +18,31 @@ isc.RestDataSource.create({
             {type:"string",name:"MagTypeName",title:"نوع مجله"},
             {type:"integer",name:"MagTypeid",title:"نوع مجله",hidden:true}
             ],
-    dataFormat:"json",
-    operationBindings:[
-     {operationType:"fetch", dataProtocol:"getParams"},
-     {operationType:"add", dataProtocol:"postParams"},
-     {operationType:"remove", dataProtocol:"postParams", requestProperties:{httpMethod:"DELETE"}},
-     {operationType:"update", dataProtocol:"postParams", requestProperties:{httpMethod:"PUT"}}
-    ],
-    {/literal}
-    fetchDataURL :"{$this->baseUrl}/{$this->uniqueId}/",
-    addDataURL   :"{$this->baseUrl}/{$this->uniqueId}/",
-    updateDataURL:"{$this->baseUrl}/{$this->uniqueId}/",
-    removeDataURL:"{$this->baseUrl}/{$this->uniqueId}/"
             });
             
-{literal}
 isc.RestDataSource.create({
-    ID:"Title",
+	{/literal}{$this->GetDataSource('"Title"','/jahad/Title/')}{literal}
     fields:
         [
             {hidden:"true",name:"id",primaryKey:"true",type:"integer"},
             {name:"Name",type:"string",title:"نام"},
             {name:"Description",type:"string",title:"شرح", length:2000}
             ],
-    dataFormat:"json",
-    operationBindings:[
-     {operationType:"fetch", dataProtocol:"getParams"},
-     {operationType:"add", dataProtocol:"postParams"},
-     {operationType:"remove", dataProtocol:"postParams", requestProperties:{httpMethod:"DELETE"}},
-     {operationType:"update", dataProtocol:"postParams", requestProperties:{httpMethod:"PUT"}}
-    ],
-    {/literal}
-    fetchDataURL :"{$this->baseUrl}/jahad/Title/",
-    addDataURL   :"{$this->baseUrl}/jahad/Title/",
-    updateDataURL:"{$this->baseUrl}/jahad/Title/",
-    removeDataURL:"{$this->baseUrl}/jahad/Title/"
             });
-
-{literal}
 isc.RestDataSource.create({
-    ID:"MagazineType",
-    fields:
+	{/literal}{$this->GetDataSource('"MagazineType"','/jahad/MagazineType/')}{literal}
+     fields:
         [
             {hidden:"true",name:"id",primaryKey:"true",type:"integer"},
             {name:"Name",type:"string",title:"نام"},
             {name:"Description",type:"string",title:"شرح", length:2000}
             ],
-    dataFormat:"json",
-    operationBindings:[
-     {operationType:"fetch", dataProtocol:"getParams"},
-     {operationType:"add", dataProtocol:"postParams"},
-     {operationType:"remove", dataProtocol:"postParams", requestProperties:{httpMethod:"DELETE"}},
-     {operationType:"update", dataProtocol:"postParams", requestProperties:{httpMethod:"PUT"}}
-    ],
-    {/literal}
-    fetchDataURL :"{$this->baseUrl}/jahad/MagazineType/",
-    addDataURL   :"{$this->baseUrl}/jahad/MagazineType/",
-    updateDataURL:"{$this->baseUrl}/jahad/MagazineType/",
-    removeDataURL:"{$this->baseUrl}/jahad/MagazineType/"
             });
-
-{literal}
-
-isc.ListGrid.create({
-    showFilterEditor: true,
-    allowFilterExpressions: true,
-    ID: MasterGridName,
-    width:"100%", height:"100%", alternateRecordStyles:true,
-    autoFetchData: true,
-    dataSource: dsMasterName,
-    recordClick:"this.FillForm()",
-    FillForm:function()
-        {
-             var record = this.getSelectedRecord();
-             if (record == null) return ;
-             if(record.id!=eval(frmMasterName).getValues()['id'])
-             {
-            	 ChangesDetailMasterId(record.id);
-             }
-             eval(frmMasterName).editRecord(record);
-             
-             
-        }
-
-   });
-
+ isc.ListGrid.create({
+	{/literal}{$this->GetMasterListGrid()}{literal}
+});
 isc.DynamicForm.create({
-    ID:frmMasterName,
-    dataSource:dsMasterName,
-    numCols:2,
-    useAllDataSourceFields:true,
-    defaultLayoutAlign: "center",
+	{/literal}{$this->GetMasterForm()}{literal}
     fields:
         [
             {name:"id"},
@@ -117,8 +51,7 @@ isc.DynamicForm.create({
             optionDataSource:"Title",displayField:"Name",
             pickListProperties:{showFilterEditor:true},pickListFields:[{name:"Name"},{name:"Description"}]
             ,
-            
-	            titleClick:function(a,b){
+            titleClick:function(a,b){
 	            isc.Window.create({
 				        height:500,
 				        width:500,
@@ -137,141 +70,47 @@ isc.DynamicForm.create({
             pickListProperties:{showFilterEditor:true},pickListFields:[{name:"Name"},{name:"Description"}]
             }
         ]
-    
 });
 
-var dsMaster = eval(dsMasterName);
-var frmMaster = eval(frmMasterName);
-var MasterGrid = eval(MasterGridName);
-DisableForm(frmMaster);
-isc.ToolStripButton.create({ID:"btnNew_Master",title:"جدید", click:function(){EnableForm(frmMaster);btnSave_Master.enable();btnNew_Master.disable();btnEdit_Master.disable();btnDelete_Master.disable();frmMaster.editNewRecord();}});
-isc.ToolStripButton.create({ID:"btnSave_Master",title:"ذخیره",  disabled:true,click:function(){DisableForm(frmMaster);SaveMaster();btnSave_Master.disable();btnNew_Master.enable();btnEdit_Master.enable();btnDelete_Master.enable();}});
-isc.ToolStripButton.create({ID:"btnEdit_Master",title:"ویرایش",click:function(){EnableForm(frmMaster);btnSave_Master.enable();btnNew_Master.disable();btnEdit_Master.disable();btnDelete_Master.disable();}});
-isc.ToolStripButton.create({ID:"btnDelete_Master",title:"حذف", click:function(){
-    ShowDialog(
-            'اخطار حذف',
-            'آیا از حذف مورد انتخاب شده اطمینان دارید؟',
-            'بله',
-            'خیر',
-            'DeleteMaster'
-            );
-}});
-isc.ToolStripButton.create({ID:"btnCancel_Master",title:"انصراف",  icon: "Images.php?Color=Orange&IconType=Icons&ActionType=Cancel",click:function(){DisableForm(frmMaster);btnNew_Master.enable();btnEdit_Master.enable();btnSave_Master.disable();btnDelete_Master.enable();}});
-
-isc.ToolStrip.create({
-    width: "100%", 
-    height:24, 
-    ID:"ToolstripMaster",
-    members: [btnNew_Master, "separator",
-              btnEdit_Master, "separator",
-              btnSave_Master,"separator", 
-              btnDelete_Master,"separator", 
-              btnCancel_Master]
-});
-isc.HLayout.create({
-    ID:"MasterFrame",
-    width: "100%",
-    height: "50%",
-    defaultLayoutAlign: "right",
-    members: [
-              isc.VLayout.create({
-                  defaultLayoutAlign: "right",
-                  showResizeBar:true,
-                  Height:"100%",
-                  width:"*",
-                  members:[ToolstripMaster, 
-                           frmMaster
-                           ]
-              }),
-             isc.VLayout.create({
-                        width: "70%",
-                        members: [MasterGrid ]
-                         })
-              ]
-  });
-
-
+{/literal}
+{$this->GetInitMaster()}
+{$this->GetMasterToolbar()}
+{$this->GetMasterLayout()}
+{literal}
 /***********************************************************************************************
   Detail Section - Matter
  */
  var detailGrid1Name = 'Detail_Matter_Grid';
  var detailForm1Name = 'Detail_Matter_Form';
  var detailDs1Name='Magazine_Matter';
-
  isc.RestDataSource.create({
-	    ID:"Matter",
+	 {/literal}
+	 {$this->GetDataSource('"Matter"','/jahad/Matter')}
+	 {literal}
+    fields:
+	        [   {hidden:"true",name:"HelpField",primaryKey:"true",type:"integer"},
+	            {hidden:"true",name:"id",primaryKey:"true",type:"integer"},
+	            {name:"Name",type:"string",title:"نام"},
+	            {name:"Description",type:"string",title:"شرح", length:2000}
+	            ],
+	            });
+ isc.RestDataSource.create({
+	 {/literal}
+	 {$this->GetDataSource('detailDs1Name','/jahad/matter/jdsenum/_5cIRERP_5cmodules_5cjahad_5cmodels_5cMagazine/mozu/')}
+		 {literal}
 	    fields:
 	        [   {hidden:"true",name:"HelpField",primaryKey:"true",type:"integer"},
 	            {hidden:"true",name:"id",primaryKey:"true",type:"integer"},
 	            {name:"Name",type:"string",title:"نام"},
 	            {name:"Description",type:"string",title:"شرح", length:2000}
 	            ],
-	    dataFormat:"json",
-	    operationBindings:[
-	     {operationType:"fetch", dataProtocol:"getParams"},
-	     {operationType:"add", dataProtocol:"postParams"},
-	     {operationType:"remove", dataProtocol:"postParams", requestProperties:{httpMethod:"DELETE"}},
-	     {operationType:"update", dataProtocol:"postParams", requestProperties:{httpMethod:"PUT"}}
-	    ],
-	    {/literal}
-	    fetchDataURL :"{$this->baseUrl}/jahad/Matter/",
-	    addDataURL   :"{$this->baseUrl}/jahad/Matter/",
-	    updateDataURL:"{$this->baseUrl}/jahad/Matter/",
-	    removeDataURL:"{$this->baseUrl}/jahad/Matter/"
 	            });
-{literal}
-
- 
- isc.RestDataSource.create({
-	    ID:detailDs1Name,
-	    fields:
-	        [   {hidden:"true",name:"HelpField",primaryKey:"true",type:"integer"},
-	            {hidden:"true",name:"id",primaryKey:"true",type:"integer"},
-	            {name:"Name",type:"string",title:"نام"},
-	            {name:"Description",type:"string",title:"شرح", length:2000}
-	            ],
-	    dataFormat:"json",
-	    operationBindings:[
-	     {operationType:"fetch", dataProtocol:"getParams"},
-	     {operationType:"add", dataProtocol:"postParams"},
-	     {operationType:"remove", dataProtocol:"postParams", requestProperties:{httpMethod:"DELETE"}},
-	     {operationType:"update", dataProtocol:"postParams", requestProperties:{httpMethod:"PUT"}}
-	    ],
-	    {/literal}
-	    fetchDataURL :"{$this->baseUrl}/jahad/matter/jdsenum/_5cIRERP_5cmodules_5cjahad_5cmodels_5cMagazine/mozu/",
-	    addDataURL   :"{$this->baseUrl}/jahad/matter/jdsenum/_5cIRERP_5cmodules_5cjahad_5cmodels_5cMagazine/mozu/",
-	    updateDataURL:"{$this->baseUrl}/jahad/matter/jdsenum/_5cIRERP_5cmodules_5cjahad_5cmodels_5cMagazine/mozu/",
-	    removeDataURL:"{$this->baseUrl}/jahad/matter/jdsenum/_5cIRERP_5cmodules_5cjahad_5cmodels_5cMagazine/mozu/"
-	            });
-{literal}
 isc.ListGrid.create({
-	    showFilterEditor: true,
-	    allowFilterExpressions: true,
-	    initialCriteria:{
-	        HelpField : "1"
-	     },
-	    ID: detailGrid1Name,
-	    width:"100%", height:"100%", alternateRecordStyles:true,
-	    autoFetchData: true,
-	    dataSource: detailDs1Name,
-	    recordClick:"this.FillForm()",
-	    FillForm:function()
-	        {
-	             var record = this.getSelectedRecord();
-	             if (record == null) return ;
-	             eval(detailForm1Name).editRecord(record);
-	             
-	        }
-
-	   });
+	{/literal}{$this->GetDetailListGrid(1)}{literal}
+    	   });
 
 	isc.DynamicForm.create({
-	    ID:detailForm1Name,
-	    dataSource:detailDs1Name,
-	    numCols:2,
-	    useAllDataSourceFields:true,
-	    defaultLayoutAlign: "center",
-	    HelpField:1,
+		{/literal}{$this->GetDetailForm(1)}{literal}
 	    fields:[
 	            {name:"Name",hidden:true},{name:"Description",hidden:true},
 	            {name:"id",hidden:false,editorType:"SelectItem",
@@ -280,8 +119,6 @@ isc.ListGrid.create({
 	                }
 	    	    ]
 	});
- 
-
 	{/literal}
 	{$this->GetInitDetail(1)}
 	{$this->GetDetailToolbar(1)}
@@ -299,31 +136,19 @@ isc.ListGrid.create({
  var detailDs2Name='Magazine_MagazineVersion';
 
  isc.RestDataSource.create({
-	    ID:"Year",
 	    fields:
 	        [   {hidden:"true",name:"HelpField",primaryKey:"true",type:"integer"},
 	            {hidden:"true",name:"id",primaryKey:"true",type:"integer"},
 	            {name:"Name",type:"string",title:"نام"},
 	            {name:"Description",type:"string",title:"شرح", length:2000}
 	            ],
-	    dataFormat:"json",
-	    operationBindings:[
-	     {operationType:"fetch", dataProtocol:"getParams"},
-	     {operationType:"add", dataProtocol:"postParams"},
-	     {operationType:"remove", dataProtocol:"postParams", requestProperties:{httpMethod:"DELETE"}},
-	     {operationType:"update", dataProtocol:"postParams", requestProperties:{httpMethod:"PUT"}}
-	    ],
 	    {/literal}
-	    fetchDataURL :"{$this->baseUrl}/jahad/Year/",
-	    addDataURL   :"{$this->baseUrl}/jahad/Year/",
-	    updateDataURL:"{$this->baseUrl}/jahad/Year/",
-	    removeDataURL:"{$this->baseUrl}/jahad/Year/"
-	            });
-{literal}
+ 		{$this->GetDataSource('"Year"','/jahad/year')}
+		{literal}
+        });
 
  
  isc.RestDataSource.create({
-	    ID:detailDs2Name,
 	    fields:
 	        [   {hidden:"true",name:"HelpField",primaryKey:"true",type:"integer"},
 	            {hidden:"true",name:"id",primaryKey:"true",type:"integer"},
@@ -332,48 +157,17 @@ isc.ListGrid.create({
 	            {name:"Shomare",type:"string",title:"شماره"},
 	            {name:"Tirajh",type:"string",title:"تبراژ"}
 	            ],
-	    dataFormat:"json",
-	    operationBindings:[
-	     {operationType:"fetch", dataProtocol:"getParams"},
-	     {operationType:"add", dataProtocol:"postParams"},
-	     {operationType:"remove", dataProtocol:"postParams", requestProperties:{httpMethod:"DELETE"}},
-	     {operationType:"update", dataProtocol:"postParams", requestProperties:{httpMethod:"PUT"}}
-	    ],
 	    {/literal}
-	    fetchDataURL :"{$this->baseUrl}/jahad/MagazineVersion/jds/_5cIRERP_5cmodules_5cjahad_5cmodels_5cMagazine/magver/",
-	    addDataURL   :"{$this->baseUrl}/jahad/MagazineVersion/jds/_5cIRERP_5cmodules_5cjahad_5cmodels_5cMagazine/magver/",
-	    updateDataURL:"{$this->baseUrl}/jahad/MagazineVersion/jds/_5cIRERP_5cmodules_5cjahad_5cmodels_5cMagazine/magver/",
-	    removeDataURL:"{$this->baseUrl}/jahad/MagazineVersion/jds/_5cIRERP_5cmodules_5cjahad_5cmodels_5cMagazine/magver/",
-	            });
-{literal}
-isc.ListGrid.create({
-	    showFilterEditor: true,
-	    allowFilterExpressions: true,
-	    initialCriteria:{
-	        HelpField : "1"
-	     },
-	    ID: detailGrid2Name,
-	    width:"100%", height:"100%", alternateRecordStyles:true,
-	    autoFetchData: true,
-	    dataSource: detailDs2Name,
-	    recordClick:"this.FillForm()",
-	    FillForm:function()
-	        {
-	             var record = this.getSelectedRecord();
-	             if (record == null) return ;
-	             eval(detailForm2Name).editRecord(record);
-	             
-	        }
-
-	   });
+ {$this->GetDataSource('detailDs2Name',
+		 '/jahad/MagazineVersion/jds/_5cIRERP_5cmodules_5cjahad_5cmodels_5cMagazine/magver/')}
+		{literal}
+	       });
+isc.ListGrid.create({ 
+	{/literal}{$this->GetDetailListGrid(2)}{literal}	   
+					});
 
 	isc.DynamicForm.create({
-	    ID:detailForm2Name,
-	    dataSource:detailDs2Name,
-	    numCols:2,
-	    useAllDataSourceFields:true,
-	    defaultLayoutAlign: "center",
-	    HelpField:1,
+	    {/literal}{$this->GetDetailForm(2)}{literal}
 	    fields:[
 	    	    
 	            {name:"YearTitle",hidden:true},
@@ -393,33 +187,15 @@ isc.ListGrid.create({
 
  /*****************************************************/
  
+ {/literal}
+ {$this->GetTabSet(array("موضوعات یک مجله",
+		 				"نسخه های مجله"
+		 				))}
+ {$this->GetSectionStack("مجلات",
+		 					"جزییات مجله")}
+ {literal}
  
- 
- isc.TabSet.create({
-    ID:"itemDetailTabs",
-    defaultLayoutAlign: "right",
-    align:"right",
-    tabBarAlign:"right",
-    tabs:[
-			{title:"موضوعات یک مجله",pane:detail1Frame,ID:"detail1FrameTab" },
-			{title:"نسخه های مجله",pane:detail2Frame,ID:"detail2FrameTab" },
-				 
-          ]});
- 
-
-isc.SectionStack.create({
-    ID:"rightSideLayout",
-    width:"100%",height:"100%",
-    visibilityMode:"multiple",
-    animateSections:true,
-    sections:[
-              {title:"مجلات", autoShow:true, items:[MasterFrame]},
-              {title:"جزییات مربوط به مجله انتخاب شده",autoShow:true,items:[itemDetailTabs]}              
-
-              ]});
-
-
-
+  
 
 </script>
 {/literal}
