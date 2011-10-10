@@ -16,7 +16,8 @@ isc.RestDataSource.create({
             {type:"integer",hidden:true,name:"NationalityID"},
             {type:"string",title:"کدپستی",name:"PostalCode"},
             {type:"string",title:"شماره تلفن",name:"PhoneNo"}
-        ],
+
+            ],
     dataFormat:"json",
     operationBindings:[
      {operationType:"fetch", dataProtocol:"getParams"},
