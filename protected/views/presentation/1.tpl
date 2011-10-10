@@ -292,11 +292,28 @@
 		    <button id="AppMenuButton">منو</button>
 		    <ul>
 			    <li>
-			        <a href="javascript:void(0)">سیستم</a>
+			        <a href="javascript:void(0)">اطلاعات پایه</a>
 			        <ul>
-			            <li><a href="{$this->baseUrl}/#!/menu" id="mniSystemMenus">منوهای سیستم</a></li>
+			            <li><a href="{$this->baseUrl}/#!/jahad/title" id="mniSystemMenus">عناوین</a></li>
+			            <li><a href="{$this->baseUrl}/#!/jahad/Year" id="mniSystemMenus">سال</a></li>
+			            <li><a href="{$this->baseUrl}/#!/jahad/Auidunce" id="mniSystemMenus">مخاطبین</a></li>
+			            <li><a href="{$this->baseUrl}/#!/jahad/MagazineType" id="mniSystemMenus">نوع مجله</a></li>
+			            <li><a href="{$this->baseUrl}/#!/jahad/Matter" id="mniSystemMenus">موضوعات</a></li>
+			            <li><a href="{$this->baseUrl}/#!/jahad/Nationality" id="mniSystemMenus">ملیتها</a></li>
+			            <li><a href="{$this->baseUrl}/#!/jahad/Size" id="mniSystemMenus">قطع ها و اندازه های مجله</a></li>
+			            <li>
+			            	<a href="javascript:void(0)">اطلاعات پایه عکس</a>
+			            	<ul>
+			            	<li><a href="{$this->baseUrl}/#!/jahad/PictureType" id="mniSystemMenus" >تعریف انواع عکس</a></li>
+			            	<li><a href="{$this->baseUrl}/#!/jahad/PictureFormat" id="mniSystemMenus">فرمتهای عکس</a></li>
+			            	<li><a href="{$this->baseUrl}/#!/jahad/Subject" id="mniSystemMenus">سوژه های عکس</a></li>
+			            	<li><a href="{$this->baseUrl}/#!/jahad/Resulation" id="mniSystemMenus">وضوح عکس</a></li>
+			            	<li><a href="{$this->baseUrl}/#!/jahad/Location" id="mniSystemMenus">محل عکسبرداری</a></li>
+			            	</ul>
+			            </li>
 			        </ul>
 			    </li>
+			    <li><a href="{$this->baseUrl}/#!/jahad/Picture" id="mniJahadPicture">عکس</a>
 			    <li><a href="{$this->baseUrl}/#!/jahad/human" id="mniJahadHuman">منو آیتم ۲</a></li>
 			    <li><a href="{$this->baseUrl}/#!/jahad/magazine" id="mniJahadMagazine">منو آیتم ۳</a></li>
 		    </ul>
@@ -310,7 +327,7 @@
 			    </li>
             </ul>
             
-		    <a id="Profile" href="{$this->baseUrl}/#!/profile">عباس مشایخ</a>
+		    <a id="Profile" href="{$this->baseUrl}/#!/profile">کاربر</a>
 		    
 		    <a id="LogOutAnchor" href="{$this->baseUrl}/#!/logout">خروج</a>
 	        

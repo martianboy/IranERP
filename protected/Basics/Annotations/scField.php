@@ -25,3 +25,4 @@ final class scField extends \IRAnnotation
 	public $DoctrineField;
 	public $length;
 }
+?>

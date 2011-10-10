@@ -1,4 +1,5 @@
 ﻿<?php
+use IRERP\modules\jahad\models\Picture;
 use IRERP\modules\jahad\models\Magazine;
 use IRERP\modules\jahad\models\Matter;
 use IRERP\modules\jahad\models\Nationality;
@@ -113,6 +114,12 @@ class SiteController extends SmartClientController
 			'\IRERP\modules\jahad\models\Media',
 			'\IRERP\modules\jahad\models\Section',
 			'\IRERP\modules\jahad\models\MagazineVersion',
+					'\IRERP\modules\jahad\models\Resulation',
+					'\IRERP\modules\jahad\models\Subject',
+					'\IRERP\modules\jahad\models\PictureFormat',
+					'\IRERP\modules\jahad\models\PictureType',
+					'\IRERP\modules\jahad\models\Location',
+					'\IRERP\modules\jahad\models\Picture',
 		);
 		
 		$em = Yii::app()->doctrine->getEntityManager();
@@ -304,5 +311,10 @@ class SiteController extends SmartClientController
 		
 		
 		
-	
+public function actionGetDataSource()
+{
+	include "protected/components/Generate_SC_Resources.php";
+	$a=new Picture();
+	print_r(GetSimpleDataSource(get_class($a),null));
+}	
 }

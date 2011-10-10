@@ -361,6 +361,17 @@ class IRController extends CController
 		$rtn="ID:detailForm".$DetailNumber."Name,	    dataSource:detailDs".$DetailNumber."Name,	    numCols:2,	    useAllDataSourceFields:true,	    defaultLayoutAlign: \"center\",	    HelpField:1,";
 		return $rtn;
 	}
+
+	public function GetPickListField($fieldname,$ds,$displayfield,$valuefield='id',array $picklistfields)
+	{
+		$rtn="{name:\"$fieldname\",hidden:false,editorType: \"SelectItem\",";
+		$rtn.="optionDataSource: \"$ds\", displayField:\"$displayfield\", valueField:\"$valuefield\",";
+		$rtn.="pickListProperties: {showFilterEditor:true},                 pickListFields:[";
+		foreach ($picklistfields as $f)
+		$rtn.="{name:\"".$f."\"},";
+        $rtn.="  ]}	";
+        return $rtn;
+	}
 }
 	
 

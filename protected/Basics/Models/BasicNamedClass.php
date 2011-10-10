@@ -18,7 +18,13 @@ use \IRERP\Basics\Annotations\scField;
  * 						"AUD"="\IRERP\modules\jahad\models\Auidunce",
  * 						"STA"="\IRERP\modules\jahad\models\State",
  * 						"NAT"="\IRERP\modules\jahad\models\Nationality",
- * 						"BNC"="BasicNamedClass"
+ * 						"BNC"="BasicNamedClass",
+ * 						"RES"="\IRERP\modules\jahad\models\Resulation",
+ * 						"pif"="\IRERP\modules\jahad\models\PictureFormat",
+ * 						"loc"="\IRERP\modules\jahad\models\Location",
+ * 						"pit"="\IRERP\modules\jahad\models\PictureType",
+ * 						"sub"="\IRERP\modules\jahad\models\Subject"
+ * 			
  * 					})
  */
 

@@ -1,9 +1,10 @@
 <?php
-require_once 'SmartClientAnnotation.php';
+
 use 
     Doctrine\Common\Annotations\AnnotationReader,
     Doctrine\Common\Annotations\AnnotationRegistry,
     Doctrine\ORM\Mapping\ClassMetadataInfo,
+    
     Doctrine\ORM\Mapping\MappingException;
 
 function parseObjectToArray($object) {
