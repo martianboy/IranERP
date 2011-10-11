@@ -23,7 +23,10 @@ use \IRERP\Basics\Annotations\scField;
  * 						"pif"="\IRERP\modules\jahad\models\PictureFormat",
  * 						"loc"="\IRERP\modules\jahad\models\Location",
  * 						"pit"="\IRERP\modules\jahad\models\PictureType",
- * 						"sub"="\IRERP\modules\jahad\models\Subject"
+ * 						"sub"="\IRERP\modules\jahad\models\Subject",
+ * 						"fpf"="\IRERP\modules\jahad\models\FilmProductionFormat",
+ * 						"fst"="\IRERP\modules\jahad\models\FilmSystemType",
+ * 						"feg"="\IRERP\modules\jahad\models\FilmEducationalGoal"
  * 			
  * 					})
  */

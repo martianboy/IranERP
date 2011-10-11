@@ -311,11 +311,19 @@
 			            	<li><a href="{$this->baseUrl}/#!/jahad/Location" id="mniSystemMenus">محل عکسبرداری</a></li>
 			            	</ul>
 			            </li>
+			            <li>
+			            	<a href="javascript:void(0)">اطلاعات پایه فیلم</a>
+			            	<ul>
+			            	<li> <a href="{$this->baseUrl}/#!/jahad/FilmProductionFormat" id="mniJahadFilmProductionFormat">قالب تولید</a></li>
+			            	<li> <a href="{$this->baseUrl}/#!/jahad/FilmSystemType" id="mniJahadFilmSystemType">نوع سیستم</a></li>
+			            	</ul>
+			            </li>
+			            
 			        </ul>
 			    </li>
 			    <li><a href="{$this->baseUrl}/#!/jahad/Picture" id="mniJahadPicture">عکس</a>
-			    <li><a href="{$this->baseUrl}/#!/jahad/human" id="mniJahadHuman">منو آیتم ۲</a></li>
-			    <li><a href="{$this->baseUrl}/#!/jahad/magazine" id="mniJahadMagazine">منو آیتم ۳</a></li>
+			    <li><a href="{$this->baseUrl}/#!/jahad/Film" id="mniJahadFilm">فیلم</a>
+			    <li><a href="{$this->baseUrl}/#!/jahad/Human" id="mniJahadHuman">افراد </a>
 		    </ul>
 
 		    <a href="{$this->baseUrl}/#!/system/alerts" id="Alerts">هشدارها <span id="AlertsCount" style="color: red;">(۴)</span></a>

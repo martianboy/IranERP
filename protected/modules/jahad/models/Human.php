@@ -115,7 +115,11 @@ class Human extends IRDataModel
 	 * )
 	 */
 	public function getNationality(){
-		return $this->nationality->getName();
+		if(isset($this->nationality)){
+		try{
+		return $this->nationality->getName();}
+		catch (\CException $e){return '';}
+		}
 	}
 	public function setNationality($nl) {
 		/*$this->nationality=$nl;*/

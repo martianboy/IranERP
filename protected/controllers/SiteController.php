@@ -120,6 +120,13 @@ class SiteController extends SmartClientController
 					'\IRERP\modules\jahad\models\PictureType',
 					'\IRERP\modules\jahad\models\Location',
 					'\IRERP\modules\jahad\models\Picture',
+		'\IRERP\modules\jahad\models\Film',
+		'\IRERP\modules\jahad\models\FilmSystemType',
+		'\IRERP\modules\jahad\models\FilmProductionFormat',
+		'\IRERP\modules\jahad\models\FilmContentlist',
+		'\IRERP\modules\jahad\models\FilmEducationalGoal',
+		
+		
 		);
 		
 		$em = Yii::app()->doctrine->getEntityManager();

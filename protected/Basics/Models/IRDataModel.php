@@ -126,6 +126,26 @@ class IRDataModel extends CModel
 		
 	}
 	
+	/***
+	 * this method copy all property from src to this class property which have save name
+	 */
+	
+	public function CopyProps($src)
+	{
+		//Get all Properties
+		$rcls = new \ReflectionClass(get_class($src));
+		foreach($rcls->getProperties(\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED) as $p){
+			//$p is PropertyReflection
+			try{
+			$p->setAccessible(true);
+			$thisclassp=new \ReflectionProperty($this, $p->getName());
+			$thisclassp->setAccessible(true);
+			$thisclassp->setValue($this, $p->getValue($src));
+			}catch(\Exception $e)
+			{}
+		}
+	}
+	
 	public function setEntityManager(&$value = NULL){
 		if ($value !== NULL && is_a($value, '\Doctrine\ORM\EntityManager'))
 			$this->entityManager = $value;
@@ -236,7 +256,10 @@ class IRDataModel extends CModel
 				if(is_a($annots,'\IRERP\Basics\Annotations\scField')){
 					//if defined Annotation is scField
 					//Get Value
+					
+					try{
 					$rtnval[$annots->name]=	call_user_func(array(&$this, 'get'.$propname));
+					}catch(\Exception $ex){}
 				}
 			}
 		}
@@ -329,6 +352,7 @@ public function __construct($em=NULL)
  * 																['Value'=>Value]['function'=>function($reterivedClass)]))
  */
 	public function fetchObjects($startRow=0,$endRow=100,$whstr='',$whparam=NULL,$orderby=array(),JoinTb  $joinedTable=NULL){
+		
 		$em = $this->entityManager;
 		
 		$qb = $em->createQueryBuilder();
@@ -505,8 +529,10 @@ public function __construct($em=NULL)
 			else
 				$qb1->add('where','tmp.IsDeleted =0');
 		$dql = $qb1->getQuery();
+		
 		$tmptest = $dql->getResult();
 		$totalRows = $tmptest[0][1];
+		
 		return array('totalRows'=>$totalRows,'results'=>$results);
 	}
 	

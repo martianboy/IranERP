@@ -43,7 +43,12 @@ class JoinTb
 		$r = new \ReflectionClass($this->getPropClass());
 		return $r->newInstance($em);
 	}
-	
+	public function getMsdPropClassInstance($em=NULL){
+		$r = new IR_ClassLoader();
+		$r->LoadIRanClasses($this->getPropClass());
+		$m=new \ReflectionClass($this->getPropClass());
+		return $m->newInstance($em);
+	}
 	public function getClassInstance($em=NULL){
 		$r = new \ReflectionClass($this->getClass());
 		return $r->newInstance($em);

@@ -136,7 +136,7 @@ isc.DynamicForm.create({
 	                 {/literal}{$this->GetPickListField('LocationID','Location','Name','id',array('Name','Description'))}{literal}
 	                 ,{name:"PhotographerFirstName",hidden:true},
 	                 {name:"PhotographerLastName",hidden:true},
-	                 {/literal}{$this->GetPickListField('PhotographerID','Human','LastName','id',array('FirstName','LastName'))}{literal}
+	                 {/literal}{$this->GetPickListField('PhotographerID','Human','LastName','id',array('FirstName','LastName','NationalCode','PhoneNo'))}{literal}
 	                 ,{name:"PictureFormatName",hidden:true},
 	                 {/literal}{$this->GetPickListField('PictureFormatID','PictureFormat','Name','id',array('Name','Description'))}{literal}
 	                 ,{name:"PictureTypeName",hidden:true},

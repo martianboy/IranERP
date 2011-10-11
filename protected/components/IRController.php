@@ -180,6 +180,7 @@ class IRController extends CController
 		$rtn="	ID:frmMasterName,
     dataSource:dsMasterName,
     numCols:2,
+    width:\"100%\",
     useAllDataSourceFields:true,
     defaultLayoutAlign: \"center\",";
 		return $rtn;

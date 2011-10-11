@@ -89,7 +89,8 @@ abstract class EntityController extends \IRController
 		$JoinDS->setPropClass($ChildClassName);
 		$JoinDS->setHelpFieldType('Value');
 		$JoinDS->setHelpField($this->getActionParam('HelpField'));
-		
+		/*print_r($JoinDS);
+		die;*/
 		/**
 		 * 
 		 */
@@ -215,6 +216,7 @@ abstract class EntityController extends \IRController
 	 */
 	protected function fetchResponse(JoinTb $JoinDS=NULL,$IgnoredProperties = NULL, $em = NULL)
 	{
+		
 		if ($em == NULL)
 			$em = \Yii::app()->doctrine->getEntityManager();
 		
@@ -325,7 +327,7 @@ abstract class EntityController extends \IRController
 				));
 				//$this->SmartClientRespond($startRow,$endRow,$totalRows,$resarr);
 			}
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			print_r($e);
 		}
 	}
@@ -393,9 +395,31 @@ abstract class EntityController extends \IRController
 		$ccls=$ccls->GetByID($childid);
 		$pcls->AddToMemberENUM($joinTable->getProp(),$ccls);
 		$em->flush();
-		$ccls->setHelpField($pcls->getid());
-		$this->SmartClientRespond($ccls->GetClassSCPropertiesInArray());
+		$ccls = $joinTable->getPropClassInstance($em);
 		
+		$ccls=$ccls->GetByID($childid);
+		$ccls->setHelpField($pcls->getid());
+		
+		/***
+		 * In Some Times the GetByID return proxied Class 
+		 * and proxied class has no annotations to use in GetClassSCPropertyInArray
+		 * abnd this cause some problem like send embty data section in response to client
+		 * to prevent this problem we need test that $ccls class equals with requested
+		 * PropClass , if it is not we must copy all property to PropClass Type 
+		 */
+
+		if(get_class($ccls)!=$joinTable->getPropClass()){
+				$tmpccls=$joinTable->getPropClassInstance($em);
+				$tmpccls->CopyProps($ccls);
+				$ccls=$tmpccls;
+		}
+		
+		try {
+		$rtn=$ccls->GetClassSCPropertiesInArray();
+		} catch (\Exception $e) {
+			print_r($e);
+		}
+		$this->SmartClientRespond($rtn);
 	}
 	/**
 	 * 

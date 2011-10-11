@@ -89,7 +89,14 @@ for(var i=0;i<frm.getFields().length;i++) frm.getFields()[i].disable();
 
 function ShowDialog(Title,Message,Yes,No,afterclose)
 {
+    var args=["YES"];
+	   	for(var i=5; i < arguments.length; i++)
+	    {
+	        args.push(arguments[i]);
+	    }
+
     isc.Window.create({
+    	ARGS:args,
         ID:"dlgQuest",
         height:100,
         width:300,
@@ -130,7 +137,11 @@ function ShowDialog(Title,Message,Yes,No,afterclose)
                                 defaultLayoutAlign:"center",
                                 members:[
                                             isc.Label.create({width:"*"}),
-                                            isc.Button.create({title:Yes,click:function(){dlgQuest.hide();eval(afterclose+'("YES")');}}),
+                                            isc.Button.create({title:Yes,click:function(){dlgQuest.hide();
+                                            var func=eval(afterclose);
+                                            func.apply(null,dlgQuest.ARGS);
+                                            //eval(afterclose+'("YES")');
+                                            }}),
                                             isc.Button.create({title:No,click:function(){dlgQuest.hide();eval(afterclose+'("NO")');}}),
                                             isc.Label.create({width:"*"})
                                             ]
@@ -148,8 +159,6 @@ Field.setValue(filename);
 }
 function ShowUploadDialog(obj,afterclose)
 {
-	alert(baseurl);
-	alert(window.baseurl);
     isc.HTMLPane.create({
         ID:"myPane",
         height: "100%",
