@@ -132,6 +132,12 @@ class SiteController extends SmartClientController
 		'\IRERP\modules\jahad\models\RadioSchool',
 		'\IRERP\modules\jahad\models\RadioContentList',
 		
+		'\IRERP\modules\jahad\models\SlideVision',
+		'\IRERP\modules\jahad\models\SlideVisionContentlist',
+
+		'\IRERP\modules\jahad\models\PlayShow',
+		'\IRERP\modules\jahad\models\PlayShowContentlist',
+		
 		);
 		
 		$em = Yii::app()->doctrine->getEntityManager();

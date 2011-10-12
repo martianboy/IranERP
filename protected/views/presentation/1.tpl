@@ -301,6 +301,9 @@
 			            <li><a href="{$this->baseUrl}/#!/jahad/Matter" id="mniSystemMenus">موضوعات</a></li>
 			            <li><a href="{$this->baseUrl}/#!/jahad/Nationality" id="mniSystemMenus">ملیتها</a></li>
 			            <li><a href="{$this->baseUrl}/#!/jahad/Size" id="mniSystemMenus">قطع ها و اندازه های مجله</a></li>
+			            <li> <a href="{$this->baseUrl}/#!/jahad/FilmProductionFormat" id="mniJahadFilmProductionFormat">قالب تولید</a></li>
+			            <li> <a href="{$this->baseUrl}/#!/jahad/FilmSystemType" id="mniJahadFilmSystemType">نوع سیستم</a></li>
+			            
 			            <li>
 			            	<a href="javascript:void(0)">اطلاعات پایه عکس</a>
 			            	<ul>
@@ -311,30 +314,15 @@
 			            	<li><a href="{$this->baseUrl}/#!/jahad/Location" id="mniSystemMenus">محل عکسبرداری</a></li>
 			            	</ul>
 			            </li>
-			            <li>
-			            	<a href="javascript:void(0)">اطلاعات پایه فیلم</a>
-			            	<ul>
-			            	<li> <a href="{$this->baseUrl}/#!/jahad/FilmProductionFormat" id="mniJahadFilmProductionFormat">قالب تولید</a></li>
-			            	<li> <a href="{$this->baseUrl}/#!/jahad/FilmSystemType" id="mniJahadFilmSystemType">نوع سیستم</a></li>
-			            	</ul>
-			            </li>
-			            <li>
-			            	<a href="javascript:void(0)">اطلاعات پایه مدرسه تلویزیونی</a>
-			            	<ul>
-			            	</ul>
-			            </li>
-			             <li>
-			            	<a href="javascript:void(0)">اطلاعات پایه مدرسه رادیویی</a>
-			            	<ul>
-			            	</ul>
-			            </li>
-			            
 			        </ul>
 			    </li>
 			    <li><a href="{$this->baseUrl}/#!/jahad/Picture" id="mniJahadPicture">عکس</a>
 			    <li><a href="{$this->baseUrl}/#!/jahad/Film" id="mniJahadFilm">فیلم</a>
 			    <li><a href="{$this->baseUrl}/#!/jahad/TVSchool" id="mniJahadTVSchool">مدرسه تلویزیونی</a>
-			    <li><a href="{$this->baseUrl}/#!/jahad/TVSchool" id="mniJahadTVSchool">مدرسه رادیویی</a>
+			    <li><a href="{$this->baseUrl}/#!/jahad/TVSchool" id="mniJahadRadioSchool">مدرسه رادیویی</a>
+			    <li><a href="{$this->baseUrl}/#!/jahad/SlideVision" id="mniJahadSlideVision">اسلاید ویژن</a>
+			    <li><a href="{$this->baseUrl}/#!/jahad/PlayShow" id="mniJahadPlayShow">نمایش</a>
+			    
 			    <li><a href="{$this->baseUrl}/#!/jahad/Human" id="mniJahadHuman">افراد </a>
 		    </ul>
 
