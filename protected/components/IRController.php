@@ -137,7 +137,7 @@ class IRController extends CController
 		$rtn="isc.HLayout.create({
     ID:\"MasterFrame\",
     width: \"100%\",
-    height: \"50%\"
+    height: \"70%\"
 		,
     defaultLayoutAlign: \"right\",
     members: [

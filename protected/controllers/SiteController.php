@@ -126,6 +126,11 @@ class SiteController extends SmartClientController
 		'\IRERP\modules\jahad\models\FilmContentlist',
 		'\IRERP\modules\jahad\models\FilmEducationalGoal',
 		
+		'\IRERP\modules\jahad\models\TVSchool',
+		'\IRERP\modules\jahad\models\TVContentList',
+		
+		'\IRERP\modules\jahad\models\RadioSchool',
+		'\IRERP\modules\jahad\models\RadioContentList',
 		
 		);
 		

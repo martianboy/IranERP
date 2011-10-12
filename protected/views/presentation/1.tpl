@@ -318,11 +318,23 @@
 			            	<li> <a href="{$this->baseUrl}/#!/jahad/FilmSystemType" id="mniJahadFilmSystemType">نوع سیستم</a></li>
 			            	</ul>
 			            </li>
+			            <li>
+			            	<a href="javascript:void(0)">اطلاعات پایه مدرسه تلویزیونی</a>
+			            	<ul>
+			            	</ul>
+			            </li>
+			             <li>
+			            	<a href="javascript:void(0)">اطلاعات پایه مدرسه رادیویی</a>
+			            	<ul>
+			            	</ul>
+			            </li>
 			            
 			        </ul>
 			    </li>
 			    <li><a href="{$this->baseUrl}/#!/jahad/Picture" id="mniJahadPicture">عکس</a>
 			    <li><a href="{$this->baseUrl}/#!/jahad/Film" id="mniJahadFilm">فیلم</a>
+			    <li><a href="{$this->baseUrl}/#!/jahad/TVSchool" id="mniJahadTVSchool">مدرسه تلویزیونی</a>
+			    <li><a href="{$this->baseUrl}/#!/jahad/TVSchool" id="mniJahadTVSchool">مدرسه رادیویی</a>
 			    <li><a href="{$this->baseUrl}/#!/jahad/Human" id="mniJahadHuman">افراد </a>
 		    </ul>
 
