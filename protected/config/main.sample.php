@@ -72,7 +72,7 @@ return array(
                     'metadataCache' => 'default',
                     'queryCache' => 'default',
                     'entityPath' => 'application.models',
-                    'mappingDriver' => 'YamlDriver',
+                    'mappingDriver' => 'AnnotationDriver',
                     'mappingPaths' => array(
                         'ext.Wildkat.YiiExt.DoctrineOrm.mapping'
                     ),
