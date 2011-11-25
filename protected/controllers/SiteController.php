@@ -47,8 +47,6 @@ class SiteController extends SmartClientController
                 if ($this->beforeRender('//session/login')) {
                         $this->renderPartial('//session/login');
                 }
-
-//		$this->render('//session/login');
 	}
 
 	/**
@@ -57,11 +55,6 @@ class SiteController extends SmartClientController
 	 */
 	public function actionIndex()
 	{
-		// renders the view file 'protected/views/site/index.tpl'
-//<<<<<<< HEAD
-//		print_r($_POST['Magazineid']);
-//		$this->render('index');
-//=======
 		session_start();
 		if(!isset(\Yii::app()->session['username'])) {
 			$this->redirect(Yii::app()->baseUrl . '/login');
@@ -69,7 +62,6 @@ class SiteController extends SmartClientController
 		}
 		else
 			$this->actionjQueryUITest();
-//>>>>>>> presentation
 	}
 
 	public function renderAppFrame($return=false)
@@ -139,6 +131,19 @@ class SiteController extends SmartClientController
 		'\IRERP\modules\jahad\models\FilmProductionFormat',
 		'\IRERP\modules\jahad\models\FilmContentlist',
 		'\IRERP\modules\jahad\models\FilmEducationalGoal',
+		
+		'\IRERP\modules\jahad\models\TVSchool',
+		'\IRERP\modules\jahad\models\TVContentList',
+		
+		'\IRERP\modules\jahad\models\RadioSchool',
+		'\IRERP\modules\jahad\models\RadioContentList',
+		
+		'\IRERP\modules\jahad\models\SlideVision',
+		'\IRERP\modules\jahad\models\SlideVisionContentlist',
+
+		'\IRERP\modules\jahad\models\PlayShow',
+		'\IRERP\modules\jahad\models\PlayShowContentlist',
+		
 		);
 
 		$em = Yii::app()->doctrine->getEntityManager();

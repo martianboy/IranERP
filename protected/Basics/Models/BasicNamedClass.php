@@ -27,7 +27,6 @@ use \IRERP\Basics\Annotations\scField;
  * 						"fpf"="\IRERP\modules\jahad\models\FilmProductionFormat",
  * 						"fst"="\IRERP\modules\jahad\models\FilmSystemType",
  * 						"feg"="\IRERP\modules\jahad\models\FilmEducationalGoal"
- * 			
  * 					})
  */
 
