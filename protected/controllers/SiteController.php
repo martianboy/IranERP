@@ -42,6 +42,14 @@ class SiteController extends SmartClientController
 		);
 	}
 
+	public function actionLogin()
+	{
+                if ($this->beforeRender('//session/login')) {
+                        $this->renderPartial('//session/login');
+                }
+
+//		$this->render('//session/login');
+	}
 
 	/**
 	 * This is the default 'index' action that is invoked
@@ -54,7 +62,13 @@ class SiteController extends SmartClientController
 //		print_r($_POST['Magazineid']);
 //		$this->render('index');
 //=======
-		$this->actionjQueryUITest();
+		session_start();
+		if(!isset(\Yii::app()->session['username'])) {
+			$this->redirect(Yii::app()->baseUrl . '/login');
+			Yii::app()->end();
+		}
+		else
+			$this->actionjQueryUITest();
 //>>>>>>> presentation
 	}
 
@@ -64,18 +78,18 @@ class SiteController extends SmartClientController
 		{
 			if(($layoutFile=$this->getLayoutFile('//layouts/main-mdi'))!==false)
 				$output=$this->renderFile($layoutFile,NULL,true);
-	
+
 			$this->afterRender('index',$output);
-	
+
 			$output=$this->processOutput($output);
-	
+
 			if($return)
 				return $output;
 			else
 				echo $output;
 		}
 	}
-	
+
 	/**
 	 * This is the action to handle external exceptions.
 	 */
@@ -125,10 +139,8 @@ class SiteController extends SmartClientController
 		'\IRERP\modules\jahad\models\FilmProductionFormat',
 		'\IRERP\modules\jahad\models\FilmContentlist',
 		'\IRERP\modules\jahad\models\FilmEducationalGoal',
-		
-		
 		);
-		
+
 		$em = Yii::app()->doctrine->getEntityManager();
 		$helperSet = new \Symfony\Component\Console\Helper\HelperSet(array(
 			'db' => new \Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper($em->getConnection()),
@@ -194,7 +206,7 @@ class SiteController extends SmartClientController
 	/**
 	 * Displays the login page
 	 */
-	public function actionLogin()
+	public function actionLoginYii()
 	{
 		$model=new LoginForm;
 
@@ -254,9 +266,9 @@ class SiteController extends SmartClientController
 	
 	public function actionjQueryUITest()
 	{
-    	if ($this->beforeRender('//presentation/1')) {
+		if ($this->beforeRender('//presentation/1')) {
   			$this->renderPartial('//presentation/1');
-	    }
+		}
 	}
 	
 	public function actionMatTest()
