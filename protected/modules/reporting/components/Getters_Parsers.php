@@ -126,6 +126,45 @@
 		return \Yii::app()->basePath . "/modules/reporting/" . "localization";
 	}
 	
+	/**
+	 *  Saving a report.
+	 *  Response to the client - error code. Standard codes:
+	 *      -1: the message box is not shown
+	 *       0: shows the "Report is successfully saved" message
+	 *  In other cases shows a window with the defined value
+	 */
+	function sti_save_report($report, $report_key, $new_report_flag)
+	{
+		//echo \Yii::app()->basePath .'/uploads/sys/reports/'.$report_key;
+		
+		// The code for saving a report can be placed here
+		if (file_put_contents(
+		\Yii::app()->basePath .'/uploads/sys/reports/'.$report_key, $report) === false) return  "Error when saving a report";
+		return  "-1";
+	}
+
+	/**
+	 *  Returns .mrt or .mdc file by string ID that was set when running.
+	 *  If necessary, it is possible to change the code for getting a report by its ID from file or from database.
+	 */
+	function sti_get_report($report_key)
+	{
+		/*switch ($report_key)
+		{
+			case "report1": return file_get_contents("/reports/Report.mrt");
+			case "report2": return file_get_contents("/reports/Document.mdc");
+		}*/
+		
+		if (file_exists(\Yii::app()->basePath .'/uploads/sys/reports/'.$report_key)) return file_get_contents(\Yii::app()->basePath .'/uploads/sys/reports/'.$report_key);
+		
+		// If there is no need to load the report, then the empty string will be sent
+		return "";
+		
+		// If you want to display an error message, please use the following format
+		return "ServerError:Some text message";
+	}
+	
+	
 	// Returns the information about the specified localization
 	 function sti_get_localization_node($config_xml, $localization_directory, $localization_file_name)
 	{

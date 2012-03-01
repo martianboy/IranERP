@@ -24,6 +24,7 @@ class IRController extends CController
 	
 	public function __construct($id,$m=NULL)
 	{
+		
 		parent::__construct($id,$m);
 		Yii::app()->ir_ClassLoader->nop();
 		Yii::app()->doctrine->nop();

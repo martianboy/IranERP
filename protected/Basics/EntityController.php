@@ -171,6 +171,9 @@ abstract class EntityController extends \IRController
 //		$this->actionIndex($JoinDS);
 	}
 	
+	
+	
+	
 	public function actionIndex(JoinTb $JoinDS=NULL)
 	{
 		$req = Yii::app()->getRequest();

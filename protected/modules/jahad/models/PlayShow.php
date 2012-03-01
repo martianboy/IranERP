@@ -4,16 +4,265 @@ namespace IRERP\modules\jahad\models;
 use IRERP\Basics\Models\IRDataModel,
     IRERP\Basics\Annotations\scField;
    
+
+use IRERP\Basics\Annotations\UI\IRUseInClientDS,
+IRERP\Basics\Annotations\UI\IRClientName,
+IRERP\Basics\Annotations\UI\IRTitle,
+IRERP\Basics\Annotations\UI\IRPropertyType,
+IRERP\Basics\Annotations\UI\IRParentGridMember,
+IRERP\Basics\Annotations\UI\IRPickListMember,
+IRERP\Basics\Annotations\UI\IRUseAsProfile,
+IRERP\Basics\Annotations\UI\IRRequire
+;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\Id;
 /**
  * @Entity 
  */
 class PlayShow extends IRDataModel
 {
 
+	// <===================== Properties
 	/**
 	 * @ManyToOne(targetEntity="Title")
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRRequire
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRPickListMember
+	 * @IRParentGridMember
+	 * @IRUseAsProfile(TargetProfile="ABSTRACT")
 	 */
 	protected $Title;
+	/**
+	 * @Column(type="string",length=10)
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="مدت زمان")
+	 * @IRPropertyType(Type="string")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 */
+	protected $PlayShowTime;
+	/**
+	 * @Column(type="string",length=50)
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="مرکز")
+	 * @IRPropertyType(Type="string")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRPickListMember
+	 * @IRParentGridMember
+	 */
+	protected $Center;
+	/**
+	 * @Column(type="string",length=50)
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="کد")
+	 * @IRPropertyType(Type="string")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRPickListMember
+	 * @IRParentGridMember
+	 */
+	protected $PlayShowCode;
+	/**
+	 * @Column(type="string",length=50)
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="خلاصه")
+	 * @IRPropertyType(Type="string")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 */
+	protected $PlayShowabstracFile;
+	/**
+	 * @OneToMany(targetEntity="PlayShowContentlist",mappedBy="PlayShow")
+	 * @var PlayShowContentlist
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="فهرست")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 */
+	protected $PlayShowContentlists;
+	/**
+	 * 
+	 * @ManyToMany(targetEntity="FilmEducationalGoal")
+	 * @var FilmEducationalGoal
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="اهداف")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 
+	 */
+	protected $EducationalGoals;
+	/**
+	 * 
+	 * @ManyToMany(targetEntity="Human")
+     * @JoinTable(name="PlayShow_TechnicalExperts",
+	 *      joinColumns={@JoinColumn(name="PlayShow_id", referencedColumnName="id")},
+	 *      inverseJoinColumns={@JoinColumn(name="TechnicalExpert_id", referencedColumnName="id")}
+ 	 *      )
+	 * @var Human
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="کارشناسان فنی")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+
+	 */
+	protected $TechnicalExperts;
+	/**
+	 * 
+	 * @ManyToMany(targetEntity="Human")
+     * @JoinTable(name="PlayShow_Speakers",
+	 *      joinColumns={@JoinColumn(name="PlayShow_id", referencedColumnName="id")},
+	 *      inverseJoinColumns={@JoinColumn(name="Speaker_id", referencedColumnName="id")}
+ 	 *      )
+	 * @var Human
+ 	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="گویندگان")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+
+	 */
+	protected $Speakers;
+	/**
+	 * 
+	 * @ManyToMany(targetEntity="Human")
+	 * @var Human
+     * @JoinTable(name="PlayShow_Actors",
+	 *      joinColumns={@JoinColumn(name="PlayShow_id", referencedColumnName="id")},
+	 *      inverseJoinColumns={@JoinColumn(name="Actor_id", referencedColumnName="id")}
+ 	 *      )
+ 	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="بازیگران")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+
+	 */
+	protected $Actors;
+	/**
+	 * 
+	 * @ManyToMany(targetEntity="Human")
+     * @JoinTable(name="PlayShow_Writers",
+	 *      joinColumns={@JoinColumn(name="PlayShow_id", referencedColumnName="id")},
+	 *      inverseJoinColumns={@JoinColumn(name="Writer_id", referencedColumnName="id")}
+ 	 *      )
+	 * @var Human
+ 	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="نویسندگان")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+
+	 */
+	protected $Writers;
+	
+	/**
+	 * 
+	 * @ManyToMany(targetEntity="Human")
+	 * 
+     * @JoinTable(name="PlayShow_Directors",
+	 *      joinColumns={@JoinColumn(name="PlayShow_id", referencedColumnName="id")},
+	 *      inverseJoinColumns={@JoinColumn(name="Director_id", referencedColumnName="id")}
+ 	 *      )
+	 * @var Human
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="کارگردانان")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+
+	 */
+	protected $Directors;
+	
+	
+	/**
+	 * 
+	 * @ManyToMany(targetEntity="Human")
+	 * 
+     * @JoinTable(name="PlayShow_Producers",
+	 *      joinColumns={@JoinColumn(name="PlayShow_id", referencedColumnName="id")},
+	 *      inverseJoinColumns={@JoinColumn(name="Producer_id", referencedColumnName="id")}
+ 	 *      )
+	 * @var Human
+ 	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="تهیه کننده")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+
+	 */
+	protected $Producers;
+	
+	
+	/**
+	 * @ManyToMany(targetEntity="Auidunce")
+	 * @var Auidunce
+ 	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="مخاطبان")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+
+	 */
+	protected $Audiences;
+	
+	// 						  Properties ======================>
 	/**
 	 * 
 	 * @scField(name="TitleName",type="string",title="عنوان",DoctrineField="Title.Name")
@@ -36,10 +285,6 @@ class PlayShow extends IRDataModel
 	}catch(\Exception $ex){}
 	}
 	
-	/**
-	 * @Column(type="string",length=10)
-	 */
-	protected $PlayShowTime;
 		/**
 	 * 
 	 * @scField(name="PlayShowTime",type="string",title="زمان ",DoctrineField="PlayShowTime")
@@ -51,10 +296,6 @@ class PlayShow extends IRDataModel
 	public function setPlayShowTime($v){$this->PlayShowTime=$v;}
 	
 	
-	/**
-	 * @Column(type="string",length=50)
-	 */
-	protected $Center;
 		/**
 	 * 
 	 * @scField(name="Center",type="string",title="مرکز",DoctrineField="Center")
@@ -65,11 +306,6 @@ class PlayShow extends IRDataModel
 	}
 	public function setCenter($v){$this->Center=$v;}
 	
-	/**
-	 * @Column(type="string",length=50)
-	 */
-	
-	protected $PlayShowCode;
 		/**
 	 * 
 	 * @scField(name="PlayShowCode",type="string",title="کد ",DoctrineField="PlayShowCode")
@@ -81,10 +317,6 @@ class PlayShow extends IRDataModel
 	public function setPlayShowCode($v){$this->PlayShowCode=$v;}
 	
 	
-	/**
-	 * @Column(type="string",length=50)
-	 */
-	protected $PlayShowabstracFile;
 		/**
 	 * 
 	 * @scField(name="PlayShowabstracFile",type="string",title="پرونده خلاصه ",DoctrineField="PlayShowabstracFile")
@@ -96,89 +328,6 @@ class PlayShow extends IRDataModel
 	}
 	public function setPlayShowabstracFile($v){$this->PlayShowabstracFile=$v;}
 	
-	/**
-	 * @OneToMany(targetEntity="PlayShowContentlist",mappedBy="PlayShow")
-	 * @var PlayShowContentlist
-	 */
-	protected $PlayShowContentlists;
-	/**
-	 * 
-	 * @ManyToMany(targetEntity="FilmEducationalGoal")
-	 * @var FilmEducationalGoal
-	 */
-	protected $EducationalGoals;
-	/**
-	 * 
-	 * @ManyToMany(targetEntity="Human")
-     * @JoinTable(name="PlayShow_TechnicalExperts",
-	 *      joinColumns={@JoinColumn(name="PlayShow_id", referencedColumnName="id")},
-	 *      inverseJoinColumns={@JoinColumn(name="TechnicalExpert_id", referencedColumnName="id")}
- 	 *      )
-	 * @var Human
-	 */
-	protected $TechnicalExperts;
-	/**
-	 * 
-	 * @ManyToMany(targetEntity="Human")
-     * @JoinTable(name="PlayShow_Speakers",
-	 *      joinColumns={@JoinColumn(name="PlayShow_id", referencedColumnName="id")},
-	 *      inverseJoinColumns={@JoinColumn(name="Speaker_id", referencedColumnName="id")}
- 	 *      )
-	 * @var Human
-	 */
-	protected $Speakers;
-	/**
-	 * 
-	 * @ManyToMany(targetEntity="Human")
-	 * @var Human
-     * @JoinTable(name="PlayShow_Actors",
-	 *      joinColumns={@JoinColumn(name="PlayShow_id", referencedColumnName="id")},
-	 *      inverseJoinColumns={@JoinColumn(name="Actor_id", referencedColumnName="id")}
- 	 *      )
-	 */
-	protected $Actors;
-	/**
-	 * 
-	 * @ManyToMany(targetEntity="Human")
-     * @JoinTable(name="PlayShow_Writers",
-	 *      joinColumns={@JoinColumn(name="PlayShow_id", referencedColumnName="id")},
-	 *      inverseJoinColumns={@JoinColumn(name="Writer_id", referencedColumnName="id")}
- 	 *      )
-	 * @var Human
-	 */
-	protected $Writers;
-	
-	/**
-	 * 
-	 * @ManyToMany(targetEntity="Human")
-	 * 
-     * @JoinTable(name="PlayShow_Directors",
-	 *      joinColumns={@JoinColumn(name="PlayShow_id", referencedColumnName="id")},
-	 *      inverseJoinColumns={@JoinColumn(name="Director_id", referencedColumnName="id")}
- 	 *      )
-	 * @var Human
-	 */
-	protected $Directors;
-	
-	
-	/**
-	 * 
-	 * @ManyToMany(targetEntity="Human")
-	 * 
-     * @JoinTable(name="PlayShow_Producers",
-	 *      joinColumns={@JoinColumn(name="PlayShow_id", referencedColumnName="id")},
-	 *      inverseJoinColumns={@JoinColumn(name="Producer_id", referencedColumnName="id")}
- 	 *      )
-	 * @var Human
-	 */
-	protected $Producers;
-	
-	
-	/**
-	 * @ManyToMany(targetEntity="Auidunce")
-	 * @var Auidunce
-	 */
-	protected $Audiences;
 	
 	
 	

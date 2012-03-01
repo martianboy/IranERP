@@ -9,6 +9,7 @@ namespace IRERP\Basics\Annotations\UI;
  * فهرست باز شونده چه باشند با استفاده از این نشانه 
  * تعیین می شود
  */
+/** @deprecated */
 /** @Annotation */
 final class IRPickListMember extends IRUIAnnotation
 {

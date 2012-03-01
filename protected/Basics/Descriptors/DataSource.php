@@ -21,14 +21,49 @@ class DataSource extends DescriptorBase
 	protected $updateurl='';
 	protected $id='__';
 	protected $DetailDS=array();
+	protected $HasItsGRIDFORM=FALSE;
+	protected $Profile='';
+	/**
+	 * 
+	 * Enter description here ...
+	 * @var DataSource
+	 */	
+	protected $ParentDataSource;
+	
+	// Specified Class That This DS Generated For it.
+	protected $IRMClass=NULL;
+	/**
+	 * 
+	 * Specified To Parent Class Property
+	 * @var string
+	 */	
+	protected $ParentClassProperty=NULL;
+	
+	
+	public function getParentDataSource(){return $this->ParentDataSource;}
+	public function setParentDataSource($v){$this->ParentDataSource=$v;}
+	
+	public function getParentClassProperty(){return $this->ParentClassProperty;}
+	public function setParentClassProperty($v){$this->ParentClassProperty=$v;}
+	
+	public function getIRMClass(){return $this->IRMClass;}
+	public function setIRMClass($v){$this->IRMClass=$v;}
+	
+	public function getProfile(){return $this->Profile;}
+	public function setProfile($v){$this->Profile=$v;}
+	
+	public function getHasItsGRIDFORM(){return $this->HasItsGRIDFORM;}
+	public function setHasItsGRIDFORM($v){$this->HasItsGRIDFORM=$v;}
 	
 	public function getDetails(){return $this->DetailDS;}
 	public function addDetail(DataSource $ds){
 		for($i=0;$i<count($this->DetailDS);$i++)
-		if($this->DetailDS[i]->getID()==$ds->getID) {
-			$this->DetailDS[i]=$ds;
+		if($this->DetailDS[$i]->getID()==$ds->getID()) {
+			$this->DetailDS[$i]=$ds;
+//			print_r("ooooo ".$this->DetailDS[$i]->getID()." == ".$ds->getID()."ooooo <br/>");
 			return ;
-		}
+		}/*else 
+		print_r($this->DetailDS[$i]->getID()." != ".$ds->getID()."<br/>");*/
 		$this->DetailDS[]=$ds;
 	}
 	
@@ -49,7 +84,16 @@ class DataSource extends DescriptorBase
 			//TODO: Remove $i index from fields
 		}
 	}
-	
+	/**
+	 * 
+	 * Enter description here ...
+	 * @param string $FieldName
+	 * @return DataSourceField
+	 */
+	public function getField($FieldName)
+	{
+		foreach ($this->fields as $f) if($f->FieldName()==$FieldName) return  $f;
+	}
 	public function setDataFormat($DataFormat){$this->dataFormat=$DataFormat;}
 	public function getDataFormat(){return $this->dataFormat;}
 	
@@ -80,7 +124,10 @@ class DataSource extends DescriptorBase
 			$str.=','.$this->fields[$i]->GenerateClientCode(ClientFrameWork::SmartClient);
 		return $str;
 	}
-	public function GenerateClientCode($ClientFrameWork)
+	//public function GetID(){return $this->getID();}
+	
+
+	public function GenerateClientCode($ClientFrameWork=ClientFrameWork::SmartClient)
 	{
 		switch ($ClientFrameWork)
 		{
@@ -91,7 +138,7 @@ class DataSource extends DescriptorBase
 				$str.='fields:[';
 				$str.=$this->GetFieldCodes();
 				$str.='],';
-				$str.='dataFormat:'.$this->getDataFormat().',';
+				$str.='dataFormat:"'.$this->getDataFormat().'",';
 				$str.='operationBindings:[
      									{operationType:"fetch", dataProtocol:"getParams"},
      									{operationType:"add", dataProtocol:"postParams"},
@@ -102,7 +149,7 @@ class DataSource extends DescriptorBase
     					addDataURL   :"'.$this->getaddURL().'",
     					updateDataURL:"'.$this->getupdateURL().'",
     					removeDataURL:"'.$this->getremoveURL().'"';
-				$str.=' });';
+				$str.=' ,});';
 				return $str;
 				break;
 		}

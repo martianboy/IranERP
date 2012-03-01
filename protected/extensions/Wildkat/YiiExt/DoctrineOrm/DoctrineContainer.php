@@ -18,6 +18,23 @@ require_once 'vendor/Doctrine/ORM/Mapping/Driver/DoctrineAnnotations.php';
 require_once \Yii::app()->basePath . '/Basics/Annotations/scField.php';
 require_once \Yii::app()->basePath . '/Basics/Annotations/MapModelController.php';
 
+//UI Annotation
+require_once \Yii::app()->basePath . '/Basics/Annotations/UI/IRTitle.php';
+require_once \Yii::app()->basePath . '/Basics/Annotations/UI/IRUseInClientDS.php';
+require_once \Yii::app()->basePath . '/Basics/Annotations/UI/IRClientName.php';
+require_once \Yii::app()->basePath . '/Basics/Annotations/UI/IRParentGridMember.php';
+require_once \Yii::app()->basePath . '/Basics/Annotations/UI/IRPickListMember.php';
+require_once \Yii::app()->basePath . '/Basics/Annotations/UI/IRPropertyType.php';
+require_once \Yii::app()->basePath . '/Basics/Annotations/UI/IRRequire.php';
+require_once \Yii::app()->basePath . '/Basics/Annotations/UI/IRUseAsProfile.php';
+require_once \Yii::app()->basePath . '/Basics/Annotations/UI/IRHidden.php';
+require_once \Yii::app()->basePath . '/Basics/Annotations/UI/IRPrimaryKey.php';
+require_once \Yii::app()->basePath . '/Basics/Annotations/UI/IREnumRelation.php';
+require_once \Yii::app()->basePath . '/Basics/Annotations/UI/IRInternalType.php';
+require_once \Yii::app()->basePath . '/Basics/Annotations/UI/IRPickListDisplayField.php';
+require_once \Yii::app()->basePath . '/Basics/Annotations/UI/IRDetailViewDefines.php';
+
+
 /**
  * DoctrineContainer.
  *

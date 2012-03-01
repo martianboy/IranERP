@@ -5,7 +5,21 @@ use IRERP\modules\jahad\models\PictureType;
 use Symfony\Component\Console\Input\StringInput;
 use IRERP\Basics\Models\IRDataModel;
 use IRERP\Basics\Annotations\scField;
-
+use IRERP\Basics\Annotations\UI\IRUseInClientDS,
+IRERP\Basics\Annotations\UI\IRClientName,
+IRERP\Basics\Annotations\UI\IRTitle,
+IRERP\Basics\Annotations\UI\IRPropertyType,
+IRERP\Basics\Annotations\UI\IRParentGridMember,
+IRERP\Basics\Annotations\UI\IRPickListMember,
+IRERP\Basics\Annotations\UI\IRUseAsProfile,
+IRERP\Basics\Annotations\UI\IRRequire
+;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\Id;
 /**
  * 
  * Enter description here ...
@@ -14,13 +28,174 @@ use IRERP\Basics\Annotations\scField;
  */
 class Picture extends IRDataModel
 {
+	// <================== Properties
 	/**
-	 * 
-	 * Enter description here ...
+	 * @var string
+	 * @Column(type="string",length=500)
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRRequire
+	 * @IRTitle(TitleType="STRING",Value="پرونده")
+	 * @IRPropertyType(Type="FILE")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 */
+	protected $PicFile;
+	
+	/**
+	 * @var String
+	 * @Column(type="string",length=50)
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRRequire
+	 * @IRTitle(TitleType="STRING",Value="کد عکس")
+	 * @IRPropertyType(Type="string")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRPickListMember
+	 * @IRParentGridMember
+	 */
+	protected $piccode;
+	
+	/**
+	 * @var string
+	 * @Column(type="string",length=50)
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="تاریخ عکس برداردی")
+	 * @IRPropertyType(Type="DATE")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRPickListMember
+	 */
+	protected $shotdate;
+	/**
+	 * @var Human
+	 * @ManyToOne(targetEntity="Human")
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRPickListMember
+	 * @IRUseAsProfile(TargetProfile="ABSTRACT",PostfixTitle=" سفارش دهنده ")
+	 */
+	protected $client;
+	/**
 	 * @var Title
 	 * @ManyToOne(targetEntity="Title")
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRRequire
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRPickListMember
+	 * @IRParentGridMember
+	 * @IRUseAsProfile(TargetProfile="ABSTRACT")
 	 */
 	protected $title;
+	/**
+	 * @var Size
+	 * @ManyToOne(targetEntity="Size")
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRUseAsProfile(TargetProfile="ABSTRACT",PostfixTitle=" اندازه ")
+	 * 
+	 */
+	protected $Size;
+	/**
+	 * 
+	 * @var Resulation
+	 * @ManyToOne(targetEntity="Resulation")
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRUseAsProfile(TargetProfile="ABSTRACT",PostfixTitle=" کیفیت ")
+	 */
+	protected $resulation;
+	/**
+	 * @var Location
+	 * @ManyToOne(targetEntity="Location")
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRUseAsProfile(TargetProfile="ABSTRACT", PostfixTitle=" مکان ")
+	 * 
+	 */
+	protected $Location;
+	/**
+	 * @var Human
+	 * @ManyToOne(targetEntity="Human")
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRUseAsProfile(TargetProfile="ABSTRACT", PostfixTitle=" عکاس ")
+	 */
+	protected $Photographer;
+	
+	/**
+	 * @var PictureType
+	 * @ManyToOne(targetEntity="PictureType")
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRUseAsProfile(TargetProfile="ABSTRACT",PostfixTitle=" نوع عکس ")
+	 * 
+	 */
+	protected $pictype;
+	/**
+	 * @var PictureFormat
+	 * @ManyToOne(targetEntity="PictureFormat")
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRPickListMember
+	 * @IRParentGridMember
+	 * @IRUseAsProfile(TargetProfile="ABSTRACT",PostfixTitle=" قالب عکس ")
+	 */
+	protected $picformat;
+	
+	
+	//                     Properties ===================>
 	/**
 	 * 
 	 * @scField(name="TitleName",type="string",title="عنوان",DoctrineField="title.Name")
@@ -45,13 +220,6 @@ class Picture extends IRDataModel
 	
 	/**
 	 * 
-	 * Enter description here ...
-	 * @var string
-	 * @Column(type="string",length=50)
-	 */
-	protected $shotdate;
-	/**
-	 * 
 	 * @scField(name="ShotDate",type="string",DoctrineField="shotdate",title="تاریخ عکسبرداری")
 	 */
 	public function getShotDate(){
@@ -60,13 +228,6 @@ class Picture extends IRDataModel
 	public function setShotDate($v){$this->shotdate=$v;}
 	
 	
-	/**
-	 * 
-	 * Enter description here ...
-	 * @var Human
-	 * @ManyToOne(targetEntity="Human")
-	 */
-	protected $client;
 	/**
 	 * 
 	 * @scField(name="ClientFirstName",type="string",DoctrineField="client.fname",title="نام سفارش دهنده")
@@ -99,13 +260,6 @@ class Picture extends IRDataModel
 	}
 	
 	
-	/**
-	 * 
-	 * Enter description here ...
-	 * @var String
-	 * @Column(type="string",length=50)
-	 */
-	protected $piccode;
 	
 	/**
 	 * 
@@ -116,13 +270,6 @@ class Picture extends IRDataModel
 	}
 	public function setPicCode($v){$this->piccode=$v;}
 	
-	/**
-	 * 
-	 * Enter description here ...
-	 * @var Resulation
-	 * @ManyToOne(targetEntity="Resulation")
-	 */
-	protected $resulation;
 	/**
 	 * 
 	 * @scField(name="ResulationName",type="string",title="وضوح تصویر",DoctrineField="resulation.Name")
@@ -148,13 +295,6 @@ class Picture extends IRDataModel
 	
 	/**
 	 * 
-	 * Enter description here ...
-	 * @var Size
-	 * @ManyToOne(targetEntity="Size")
-	 */
-	protected $Size;
-	/**
-	 * 
 	 * @scField(name="SizeName",type="string",title="قطع عکس",DoctrineField="Size.Name")
 	 */
 	public function getSizeName(){
@@ -177,13 +317,6 @@ class Picture extends IRDataModel
 	
 	/**
 	 * 
-	 * Enter description here ...
-	 * @var Location
-	 * @ManyToOne(targetEntity="Location")
-	 */
-	protected $Location;
-	/**
-	 * 
 	 * @scField(name="LocationName",type="string",title="محل عکسبرداری",DoctrineField="Location.Name")
 	 */
 	public function getLocationName(){
@@ -203,14 +336,6 @@ class Picture extends IRDataModel
 		$this->Location= $this->Location->GetByID($v);
 	}catch(\Exception $ex){}
 	}
-	
-	/**
-	 * 
-	 * Enter description here ...
-	 * @var Human
-	 * @ManyToOne(targetEntity="Human")
-	 */
-	protected $Photographer;
 	/**
 	 * 
 	 * @scField(name="PhotographerFirstName",type="string",DoctrineField="Photographer.fname",title="نام عکاس")
@@ -244,13 +369,6 @@ class Picture extends IRDataModel
 	
 	/**
 	 * 
-	 * Enter description here ...
-	 * @var PictureFormat
-	 * @ManyToOne(targetEntity="PictureFormat")
-	 */
-	protected $picformat;
-	/**
-	 * 
 	* @scField(name="PictureFormatName",type="string",title="فرمت عکس",DoctrineField="picformat.Name")
 	 */
 	public function getPictureFormatName(){
@@ -271,14 +389,6 @@ class Picture extends IRDataModel
 	}catch(\Exception $ex){}
 	}
 	
-	
-	/**
-	 * 
-	 * Enter description here ...
-	 * @var PictureType
-	 * @ManyToOne(targetEntity="PictureType")
-	 */
-	protected $pictype;
 	/**
 	 * 
 	 * @scField(name="PictureTypeName",type="string",title="نوع عکس",DoctrineField="pictype.Name")
@@ -332,13 +442,6 @@ class Picture extends IRDataModel
 	}
 	
 	
-	/**
-	 * 
-	 * Enter description here ...
-	 * @var string
-	 * @Column(type="string",length=500)
-	 */
-	protected $PicFile;
 	/**
 	 * 
 	 * @scField(name="PicFile",type="string",title="پرونده",DoctrineField="PicFile")

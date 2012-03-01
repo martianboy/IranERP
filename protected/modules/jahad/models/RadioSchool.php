@@ -4,6 +4,22 @@ namespace IRERP\modules\jahad\models;
 use IRERP\Basics\Models\IRDataModel,
     IRERP\Basics\Annotations\scField;
 use IRERP\modules\jahad\models\RadioEducationalGoal;    
+
+use IRERP\Basics\Annotations\UI\IRUseInClientDS,
+IRERP\Basics\Annotations\UI\IRClientName,
+IRERP\Basics\Annotations\UI\IRTitle,
+IRERP\Basics\Annotations\UI\IRPropertyType,
+IRERP\Basics\Annotations\UI\IRParentGridMember,
+IRERP\Basics\Annotations\UI\IRPickListMember,
+IRERP\Basics\Annotations\UI\IRUseAsProfile,
+IRERP\Basics\Annotations\UI\IRRequire
+;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\Id;
 /**
  * @Entity 
  */
@@ -11,8 +27,20 @@ class RadioSchool extends IRDataModel
 {
 
 		
-/**
+	/**
 	 * @Column(type="string",length=50)
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRRequire
+	 * @IRTitle(TitleType="STRING",Value="نام مدرسه")
+	 * @IRPropertyType(Type="string")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRPickListMember
+	 * @IRParentGridMember
 	 */
 	protected $RadioSchoolName;
 /**
@@ -28,6 +56,17 @@ class RadioSchool extends IRDataModel
 	
 /**
 	 * @Column(type="string",length=50)
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="عنوان رادیو")
+	 * @IRPropertyType(Type="string")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRPickListMember
+	 * @IRParentGridMember
 	 */
 	protected $RadioTitle;
 /**
@@ -41,6 +80,15 @@ class RadioSchool extends IRDataModel
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * @Column(type="string",length=500)
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="توضیحات")
+	 * @IRPropertyType(Type="string")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
 	 */
 	protected $RadioDescription;
 	/**
@@ -54,6 +102,17 @@ class RadioSchool extends IRDataModel
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
 	 * @Column(type="string",length=50)
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="شماره نشر")
+	 * @IRPropertyType(Type="string")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRPickListMember
+	 * @IRParentGridMember
 	 */
 	protected $PublicationNo;
 	/**
@@ -68,6 +127,17 @@ class RadioSchool extends IRDataModel
 	
 /**
 	 * @Column(type="string",length=50)
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="کد نشر")
+	 * @IRPropertyType(Type="string")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRPickListMember
+	 * @IRParentGridMember
 	 */
 	protected $PublicationCode;
 	/**
@@ -91,6 +161,15 @@ class RadioSchool extends IRDataModel
  	 *      )
 
 	 * @var Human
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="ناشران")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRUseAsProfile(TargetProfile="DETAIL",PostfixTitle="ناشر")
 	 */
 		protected $Publishers;
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -104,6 +183,16 @@ class RadioSchool extends IRDataModel
  	 *      )
 
 	 * @var Human
+	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="نویسندگان")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRUseAsProfile(TargetProfile="DETAIL",PostfixTitle="")
+
 	 */
 	protected $Writers;
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -115,20 +204,38 @@ class RadioSchool extends IRDataModel
 	 *      joinColumns={@JoinColumn(name="RadioSchool_id", referencedColumnName="id")},
 	 *      inverseJoinColumns={@JoinColumn(name="TechnicalExpert_id", referencedColumnName="id")}
  	 *      )
-
 	 * @var Human
+ 	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="کارشناسان فنی ")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRUseAsProfile(TargetProfile="DETAIL",PostfixTitle="")
 	 */
 	protected $TechnicalExperts;
 	////////////////////////////////////////////////////////////////////////////////////////////////
-		/**
+	/**
 	 * 
 	 * @ManyToMany(targetEntity="Human")
      * @JoinTable(name="RadioSchool_TechnicalSupervisors",
 	 *      joinColumns={@JoinColumn(name="RadioSchool_id", referencedColumnName="id")},
 	 *      inverseJoinColumns={@JoinColumn(name="TechnicalSupervisor_id", referencedColumnName="id")}
  	 *      )
-
 	 * @var Human
+  	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="بازرسان فنی ")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRUseAsProfile(TargetProfile="DETAIL",PostfixTitle="")
+
+
 	 */
 	protected $TechnicalSupervisors;
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -141,6 +248,17 @@ class RadioSchool extends IRDataModel
  	 *      )
 
 	 * @var Human
+	  	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="چاپ های رادیویی")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRUseAsProfile(TargetProfile="DETAIL",PostfixTitle="")
+
+
 	 */
 		protected $RadioPrints;
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -153,6 +271,18 @@ class RadioSchool extends IRDataModel
  	 *      )
 
 	 * @var Human
+	 * 
+  	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="تنظیم کنندگان تایپ")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRUseAsProfile(TargetProfile="DETAIL",PostfixTitle="")
+
+
 	 */
 	protected $TypeSetters;
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -165,6 +295,17 @@ class RadioSchool extends IRDataModel
  	 *      )
 
 	 * @var Human
+	  	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="ویرایشگران")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRUseAsProfile(TargetProfile="DETAIL",PostfixTitle="")
+
+
 	 */
 	protected $Editors;
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -177,6 +318,18 @@ class RadioSchool extends IRDataModel
  	 *      )
 
 	 * @var Human
+	 *
+  	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="صفحه آرا ها")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRUseAsProfile(TargetProfile="DETAIL",PostfixTitle="")
+
+
 	 */
 	protected $PageStylists;
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -189,6 +342,15 @@ class RadioSchool extends IRDataModel
  	 *      )
 
 	 * @var Human
+  	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="گرافیست ها")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRUseAsProfile(TargetProfile="DETAIL",PostfixTitle="")
 	 */
 	protected $Graphists;
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -201,6 +363,17 @@ class RadioSchool extends IRDataModel
  	 *      )
 
 	 * @var Human
+  	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="تهیه کنندگان")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRUseAsProfile(TargetProfile="DETAIL",PostfixTitle="")
+
+
 	 */
 	protected $Preparators;
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -255,6 +428,15 @@ class RadioSchool extends IRDataModel
  	 *      )
 
 	 * @var Human
+	  	 * -----------
+	 * Client Side Definations
+	 * -----------
+	 * @IRUseInClientDS
+	 * @IRTitle(TitleType="STRING",Value="لیتوگرافیست ها")
+	 * -----------
+	 * Internal Relation Definations
+	 * -----------
+	 * @IRUseAsProfile(TargetProfile="DETAIL",PostfixTitle="")
 	 */
 	protected $LitoGraphists;
 	////////////////////////////////////////////////////////////////////////////////////////////////

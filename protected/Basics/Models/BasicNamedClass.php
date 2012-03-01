@@ -1,7 +1,19 @@
 <?php
 namespace IRERP\Basics\Models;
 use \IRERP\Basics\Annotations\scField;
-
+use Doctrine\ORM\Mapping\Column;
+use 
+IRERP\Basics\Annotations\UI\IRUseInClientDS,
+IRERP\Basics\Annotations\UI\IRClientName,
+IRERP\Basics\Annotations\UI\IRTitle,
+IRERP\Basics\Annotations\UI\IRPropertyType,
+IRERP\Basics\Annotations\UI\IRParentGridMember,
+IRERP\Basics\Annotations\UI\IRPickListMember,
+IRERP\Basics\Annotations\UI\IRUseAsProfile,
+IRERP\Basics\Annotations\UI\IRPrimaryKey,
+IRERP\Basics\Annotations\UI\IRHidden
+;
+   
 /**
  * @Entity 
  * @Table(indexes={@Index(name="indx_Descrim",columns={"classname"})})
@@ -32,15 +44,28 @@ use \IRERP\Basics\Annotations\scField;
 
 class BasicNamedClass extends IRDataModel
 {
+	
 
 	 /**
      * @Column(type="string",length=50)
+     * @IRUseInClientDS
+     * @IRTitle(TitleType="STRING",Value="عنوان")
+     * @IRClientName(ClientName="Name")
+     * @IRPropertyType(Type="String")
+     * @IRPickListMember 
+     * @IRParentGridMember
      * @var string
      */
+
 	protected $Name;
 	 /**
      * @Column(type="string",length=1000,nullable=true)
      * @var string
+     * @IRUseInClientDS(Profile="GENERAL,ABSTRACT,DETAIL")
+     * @IRTitle(TitleType="STRING",Value="توضیحات")
+     * @IRClientName(ClientName="Description")
+     * @IRPropertyType(Type="String")
+     * @IRPickListMember
      */
 	protected $Description;
 	 /*

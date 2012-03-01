@@ -93,8 +93,7 @@ return array(
         		'<module:\w+>/<controller:\w+>/<jds:jds>/<parentclass:\w+>/<propname:\w+>'=>'<module>/<controller>/GeneralSimpleJoin',
         		'<module:\w+>/<controller:\w+>/<jds:jds>/<parentclass:\w+>/<propname:\w+>/<params:\w+>'=>'<module>/<controller>/GeneralSimpleJoin',
         		'<module:\w+>/<controller:\w+>/<jdsenum:jdsenum>/<parentclass:\w+>/<propname:\w+>'=>'<module>/<controller>/GeneralSimpleJoinENUM',
-				'<action:(login|logout|about)>' => 'site/<action>',
-
+        		
         
 			),
 		),

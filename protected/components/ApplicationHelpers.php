@@ -1,10 +1,21 @@
 <?php 
-use IRERP\Basics\Annotations\UI\IRParentGridMember;
-use IRERP\Basics\Annotations\UI\IRUseAsProfile;
+use Doctrine\Common\Annotations\Annotation;
+use IRERP\modules\jahad\models\Human;
+use IRERP\Basics\Descriptors\DataSource;
+use 
+IRERP\Basics\Annotations\UI\IRUseInClientDS,
+IRERP\Basics\Annotations\UI\IRClientName,
+IRERP\Basics\Annotations\UI\IRTitle,
+IRERP\Basics\Annotations\UI\IRPropertyType,
+IRERP\Basics\Annotations\UI\IRParentGridMember,
+IRERP\Basics\Annotations\UI\IRPickListMember,
+IRERP\Basics\Annotations\UI\IRUseAsProfile,
+IRERP\Basics\Annotations\UI\IRPrimaryKey,
+IRERP\Basics\Annotations\UI\IRHidden,
+IRERP\Basics\Annotations\UI\IREnumRelation
+;   
 use Doctrine\ORM\Mapping\ManyToOne;
-use IRERP\Basics\Annotations\UI\IRTitle;
-use IRERP\Basics\Annotations\UI\IRPropertyType;
-use IRERP\Basics\Annotations\UI\IRUseInClientDS;
+
 use IRERP\Basics\Models\IRDataModel;
 use IRERP\Basics\Descriptors;
 use 
@@ -17,6 +28,84 @@ use
 
 class ApplicationHelpers
 {
+
+		const ManyToOne= 2;
+		const OneToOne=1;
+		const ManyToMany=8;
+		const OneToMany=4;
+		
+		
+	public static function IsORMProxyClass($ClassName)
+	{
+		$nameparts = explode('\\', $ClassName);
+		if(strtolower($nameparts[0])=='proxy') return true; else return false;
+		
+	}		
+	protected static function GetClientSideClassName($ServerClassName)
+	{
+		return str_replace('\\', '_5c', $ServerClassName);
+	}
+	
+	public static function GetClassAnnots($ClassName,$Profile)
+	{
+		$rtn=array();
+		$clsref = new \ReflectionClass($ClassName);
+		$allprops = $clsref->getProperties();
+		$reader=new AnnotationReader();
+		$reader->setIgnoreNotImportedAnnotations(FALSE);
+		foreach ($allprops as $p)
+		{
+			$proparr=array();
+			$annots = $reader->getPropertyAnnotations($p);
+			foreach ($annots as $annot)
+				if(ApplicationHelpers::IsAnnotValid($annot, $Profile)!=NULL){
+					$proparr[get_class($annot)]=$annot;
+				}
+			$rtn[$p->name]=$proparr;
+		}
+		return $rtn; 
+	}
+	/**
+	 * 
+	 * Check That spca is valid for Profile
+	 * @param IRAnnotation $spca
+	 * @param string $Profile
+	 */
+	protected static function IsAnnotValid($spca , $Profile)
+	{
+		$pr=NULL;
+		try {
+		$pr=new \ReflectionProperty($spca, 'Profile');	
+		} catch (\Exception $e) {
+		}
+		
+		if(!isset($pr)) return $spca;
+		$rtnval=NULL;
+			if($spca->Profile==NULL){
+				//Check That NotForProfile
+				if($spca->NotForProfile==NULL) $rtnval=$spca;
+				else 
+				{
+				$notfor = split(',', $spca->NotForProfile);
+				//print_r((array_search('ABSTRACT', $notfor)>-1));
+				if((array_search($Profile, $notfor)>-1)) $rtnval=NULL;
+				else $rtnval=$spca;
+				}
+			}
+			else 
+			{
+				$notfor = split(',', $spca->NotForProfile);
+				if(array_search($Profile, $notfor)>-1) $rtnval=NULL;
+				else $rtnval=$spca;
+				
+				//Check That is is in Profiles Name
+				$for=split(',', $spca->Profile);
+				if(array_search($Profile, $for)>-1) $rtnval=$spca;
+				else $rtnval=NULL;
+			}
+		return $rtnval;
+	}
+	  
 	protected static function GetValidAnnotationUsingProfile($annots , $an,$Profile='General')
 	{
 		if($annots==NULL) return NULL;
@@ -24,7 +113,7 @@ class ApplicationHelpers
 		foreach ($annots as $a)
 			if(is_a($a,get_class($an)))	
 				$specificAnnots[]=$a;
-
+				
 		$rtnval=NULL;
 		foreach ($specificAnnots as $spca)
 		{
@@ -34,9 +123,21 @@ class ApplicationHelpers
 				else 
 				{
 				$notfor = split(',', $spca->NotForProfile);
-				if(array_search($Profile, $notfor)) $rtnval=NULL;
+				//print_r((array_search('ABSTRACT', $notfor)>-1));
+				if((array_search($Profile, $notfor)>-1)) $rtnval=NULL;
 				else $rtnval=$spca;
 				}
+			}
+			else 
+			{
+				$notfor = split(',', $spca->NotForProfile);
+				if(array_search($Profile, $notfor)>-1) $rtnval=NULL;
+				else $rtnval=$spca;
+				
+				//Check That is is in Profiles Name
+				$for=split(',', $spca->Profile);
+				if(array_search($Profile, $for)>-1) $rtnval=$spca;
+				else $rtnval=NULL;
 			}
 			
 			if($rtnval!=NULL) break;
@@ -45,14 +146,186 @@ class ApplicationHelpers
 		return $rtnval;
 		
 	}
-	
-	
+
+	protected static function GDSD_FP_Complex_ToMany (ReflectionProperty $p,IRDataModel $Cls,$Profile,&$DS,$meta,$isuseasprofile,$annots)
+	{
+		if($meta->associationMappings[$p->name]['type']==ApplicationHelpers::ManyToMany 
+												||
+		   $meta->associationMappings[$p->name]['type']==ApplicationHelpers::OneToMany)
+		{
+			if($isuseasprofile==NULL) return;
+				$trgcls = new \ReflectionClass($meta->associationMappings[$p->name]['targetEntity']);
+				$trgcls= $trgcls->newInstance();
+				$tmprtns=\ApplicationHelpers::GetDataSourceDescriptor($trgcls,$isuseasprofile->TargetProfile,$Cls,$p->name);
+				
+				if($tmprtns!=NULL)
+				{
+					//FIXME: may be to remove this line
+					//if($tmprtns['DataSource']!=NULL) $DS->addDetail($tmprtns['DataSource']);
+					//Add Tabs For ManyToMany Relation
+					if($meta->associationMappings[$p->name]['type']==ApplicationHelpers::ManyToMany )
+					{
+						//Detect M2M Realtion is ENUM Or Not
+						$EnumRel=\ApplicationHelpers::GetValidAnnotationUsingProfile($annots,new IREnumRelation(array()),$Profile);
+						if($EnumRel==null) {$EnumRel=new IREnumRelation(array());$EnumRel->RelType="NOTENUM";}
+						
+						$_ds=$tmprtns['DataSource'];
+						//Change DataSource id
+						$_ds->setID(ApplicationHelpers::GetClientSideClassName( $p->getDeclaringClass()->getName()) .'_2E'.$p->getName()) ;
+						//Change Its Address
+						$url=$_ds->getfetchURL();
+						$urlparts=explode('/', $url);
+						$url='';
+						foreach ($urlparts as $v) if($v=='advjds') break; else $url.=$v.'/';
+						
+						$_ds->setdataURL($url.$EnumRel->GetAddressKey().'/'.$isuseasprofile->TargetProfile.'/'.ApplicationHelpers::GetClientSideClassName(get_class($Cls)).'/'.$p->getName());
+						$_ds->setHasItsGRIDFORM(true);
+						$_ds->setProfile($isuseasprofile->TargetProfile);
+						$_ds->setParentDataSource($DS);
+						$_ds->setParentClassProperty($p->name);
+						
+						if($EnumRel->RelType=='ENUM')
+						{
+							//Generate EnumFiller DataSource
+							//FIXME: it is better to seperate url addressing of fillers from other , for example we can use /ir/mo/co/enumfillers/profile/class/property 
+							$enumfillerds = ApplicationHelpers::GetDataSourceDescriptor($trgcls,$EnumRel->ENUMFILLER_Profile,null,null);
+							$enumfillerds['DataSource']->setParentDataSource($_ds);
+							$_ds->addDetail($enumfillerds['DataSource']);
+							
+						}
+						$DS->addDetail($_ds);
+					}else $DS->addDetail($tmprtns['DataSource']);
+				}
+		}
+	}
+	protected static function GDSD_FP_Complex_ToOne (ReflectionProperty $p,IRDataModel $Cls,$Profile,&$DS,$meta,$isuseasprofile)
+	{
+					if($meta->associationMappings[$p->name]['type']==ApplicationHelpers::ManyToOne 
+												||
+					   $meta->associationMappings[$p->name]['type']==ApplicationHelpers::OneToOne)
+						{
+							//Check That Can We Use this Property
+							//Is Defined IRUseAsProfile
+							if($isuseasprofile==NULL) return;
+							$trgcls = new \ReflectionClass($meta->associationMappings[$p->name]['targetEntity']);
+							$trgcls= $trgcls->newInstance();
+							$tmprtns=\ApplicationHelpers::GetDataSourceDescriptor($trgcls,$isuseasprofile->TargetProfile,$Cls,$p->name);
+
+							$tmprtns['DataSource']->setParentDataSource($DS);
+							$tmprtns['DataSource']->setParentClassProperty($p->name);
+							
+							if($tmprtns!=NULL)
+							{
+								if($tmprtns['Fields']!=NULL)
+									foreach ($tmprtns['Fields'] as $tmpa)
+									{
+										
+										if($isuseasprofile->PrefixTitle!=NULL) $tmpa->setTitle($isuseasprofile->PrefixTitle.$tmpa->getTitle());
+										if($isuseasprofile->PostfixTitle!=NULL) $tmpa->setTitle($tmpa->getTitle().$isuseasprofile->PostfixTitle);
+										//Correct Field Names
+										$fieldnameprefix=ApplicationHelpers::GetClientSideClassName(get_class($trgcls));
+										//$fieldnameprefix=ApplicationHelpers::GetClientSideClassName($p->getName()).'_2E'.$fieldnameprefix;
+										$fname = str_replace($fieldnameprefix,ApplicationHelpers::GetClientSideClassName(get_class($Cls)).'_2E'.$p->getName(), $tmpa->getFieldName());
+										//$fname=str_replace('IRERP'.$fieldnameprefix,$p->getName(), $tmpa->getFieldName());
+										$tmpa->setFieldName($fname);
+										$DS->addField($tmpa);
+									}
+								if($tmprtns['DataSource']!=NULL)
+									$DS->addDetail($tmprtns['DataSource']);
+							}
+						}
+		
+		
+	}
+	protected static function GDSD_FP_SimpleField(ReflectionProperty $p,IRDataModel $Cls, $ParentClass,$ParentProperty='',$Profile,&$DS,$annots)
+	{
+		$pmeta = NULL;
+		if(isset($ParentClass))
+			$pmeta = $ParentClass->getEntityManager()->getClassMetadata(get_class($ParentClass));
+		$Is_ToManyRelation=false;
+		if(isset($ParentClass)) 
+			if($pmeta->
+				associationMappings
+					[$ParentProperty]['type']
+				==
+				ApplicationHelpers::ManyToMany 
+				||
+			   $pmeta->
+			   	associationMappings
+			   		[$ParentProperty]['type']
+			   	==
+			   	ApplicationHelpers::OneToMany)	$Is_ToManyRelation=TRUE;
+			
+	//Simple Field
+		$FieldType=\ApplicationHelpers::GetValidAnnotationUsingProfile($annots, new IRPropertyType(array()),$Profile);
+		$FieldTitle=\ApplicationHelpers::GetValidAnnotationUsingProfile($annots, new IRTitle(array()),$Profile);
+		$PrimaryKey=\ApplicationHelpers::GetValidAnnotationUsingProfile($annots, new IRPrimaryKey(array()),$Profile);
+		$Hidden=\ApplicationHelpers::GetValidAnnotationUsingProfile($annots, new IRHidden(array()),$Profile);
+		
+		if($Is_ToManyRelation || !isset($ParentClass))
+			$FieldName = $p->name;
+		else 
+			$FieldName=ApplicationHelpers::GetClientSideClassName(get_class($ParentClass)).'_2E'.$ParentProperty.'_2E'.$p->name;
+		$__title='';
+		$dsfield = new \IRERP\Basics\Descriptors\DataSourceField();
+		if(isset($FieldTitle)) $__title=$FieldTitle->GetTitle($Cls,$ParentClass);
+		$dsfield->setFieldName($FieldName);
+		$dsfield->setFieldType($FieldType->Type);
+		$dsfield->setTitle($__title);
+		if(isset($Hidden)) $dsfield->setHidden(true);
+		if(isset($PrimaryKey)) $dsfield->setPrimaryKey(true);
+		$dsfield->setReflectionProperty($p);
+		$dsfield->setIRMClass($Cls);
+		$DS->addField($dsfield);
+	}	
+	protected static function GDSD_ForProperty(ReflectionProperty $p,IRDataModel $Cls, $ParentClass,$ParentProperty='',$Profile,&$DS)
+	{
+		$meta = $Cls->getEntityManager()->getClassMetadata(get_class($Cls));
+		$pmeta = NULL;
+		if(isset($ParentClass))
+			$pmeta = $ParentClass->getEntityManager()->getClassMetadata(get_class($ParentClass));
+
+		$reader=new AnnotationReader();
+		$reader->setIgnoreNotImportedAnnotations(FALSE);
+		$annots = $reader->getPropertyAnnotations($p);
+		//Check That Field Can Use To ClientSide or Not
+		$IRUSEINCLIENT= \ApplicationHelpers::GetValidAnnotationUsingProfile($annots, new IRUseInClientDS(array()),$Profile);
+		
+		
+		if($IRUSEINCLIENT==NULL)return ; 	/*{			echo get_class($Cls).$p->getName().' for profile:'.$Profile.' is NULL'.'<br/>';			return ;			} else			echo get_class($Cls).$p->getName().' for profile:'.$Profile.' is '.$IRUSEINCLIENT->Profile.'<br/>';				*/
+		//Check That Realtion is *One or *Many?
+		$Is_ToManyRelation=false;
+		if(isset($ParentClass)) 
+			if($pmeta->
+				associationMappings
+					[$ParentProperty]['type']
+				==
+				ApplicationHelpers::ManyToMany 
+				||
+			   $pmeta->
+			   	associationMappings
+			   		[$ParentProperty]['type']
+			   	==
+			   	ApplicationHelpers::OneToMany)	$Is_ToManyRelation=TRUE;
+		$IRParentGridMember= \ApplicationHelpers::GetValidAnnotationUsingProfile($annots, new IRParentGridMember(array()),$Profile);
+		if($IRParentGridMember==NULL && isset($ParentClass) && (!$Is_ToManyRelation)) return;
+		//Get Field Type
+		$FieldType = \ApplicationHelpers::GetValidAnnotationUsingProfile($annots, new IRPropertyType(array()),$Profile);
+		$isuseasprofile = \ApplicationHelpers::GetValidAnnotationUsingProfile($annots,new IRUseAsProfile(array()),$Profile);				
+		if($FieldType==NULL){
+			//Complex Field -- Get MetaStructure
+ 			//*ToOne?
+			\ApplicationHelpers::GDSD_FP_Complex_ToOne($p, $Cls, $Profile, &$DS, $meta, $isuseasprofile);
+			//*ToMany
+			\ApplicationHelpers::GDSD_FP_Complex_ToMany($p, $Cls, $Profile, &$DS, $meta, $isuseasprofile,$annots);
+		}
+		else
+			\ApplicationHelpers::GDSD_FP_SimpleField($p, $Cls, $ParentClass,$ParentProperty, $Profile, &$DS, $annots);
+			
+			
+	}	
 	public static function GetDataSourceDescriptor(IRDataModel $Cls,$Profile='General',IRDataModel $ParentClass=NULL,$ParentProperty='')
 	{
-		$ManyToOne=2;
-		$OneToOne=1;
-		$ManyToMany=8;
-		$OneToMany=4;
 		//Check That is There GetDataSourceDescriptor Method in $Cls
 		$clsref = new \ReflectionClass($Cls);
 		$clsmethod=NULL;
@@ -68,88 +341,78 @@ class ApplicationHelpers
 		//Get All Properties
 		$allprops = $clsref->getProperties();
 		$reader=new AnnotationReader();
-		$reader->setIgnoreNotImportedAnnotations(true);
-		foreach ($allprops as $p) {
-			print_r('Prop:'.$p->name.'*** <br/>');
-			$dsfield = new \IRERP\Basics\Descriptors\DataSourceField();
-			$annots = $reader->getPropertyAnnotations($p);
-			//Check That Field Can Use To ClientSide or Not
-				$IRUSEINCLIENT= \ApplicationHelpers::GetValidAnnotationUsingProfile($annots, new IRUseInClientDS(array()),$Profile);
-				if($IRUSEINCLIENT==NULL) continue;
-				$IRParentGridMember= \ApplicationHelpers::GetValidAnnotationUsingProfile($annots, new IRParentGridMember(array()),$Profile);
-				if($IRParentGridMember==NULL) continue;
-				//Get Field Type
-				$FieldType = \ApplicationHelpers::GetValidAnnotationUsingProfile($annots, new IRPropertyType(array()),$Profile);
-				print_r($annots);
-				if($FieldType==NULL){
-					//Complex Field 
-					//Check That Relation is *ToOne?
-					$meta = $Cls->getEntityManager()->getClassMetadata(get_class($Cls));
-					if($meta->associationMappings[$p->name]['type']==$ManyToOne 
-												||
-					   $meta->associationMappings[$p->name]['type']==$OneToOne)
-						{
-							//Check That Can We Use this Property
-							//Is Defined IRUseAsProfile
-							$isuseasprofile = \ApplicationHelpers::GetValidAnnotationUsingProfile($annots,new IRUseAsProfile(array()),$Profile);
-							if($isuseasprofile==NULL) continue;
-							$trgcls = new \ReflectionClass($meta->associationMappings[$p->name]['targetEntity']);
-							$trgcls= $trgcls->newInstance();
-							$tmprtns=\ApplicationHelpers::GetDataSourceDescriptor($trgcls,$isuseasprofile->TargetProfile,$Cls,$p->name);
-							if($tmprtns!=NULL)
-							{
-								if($tmprtns['Fields']!=NULL)
-									foreach ($tmprtns['Fields'] as $tmpa)
-									{
-										if($isuseasprofile->PrefixTitle!=NULL) $tmpa->setTitle($isuseasprofile->PrefixTitle.$tmpa->getTitle());
-										if($isuseasprofile->PostfixTitle!=NULL) $tmpa->setTitle($tmpa->getTitle().$isuseasprofile->PostfixTitle);
-										$DS->addField($tmpa);
-									}
-								if($tmprtns['DataSource']!=NULL)
-									$DS->addDetail($tmprtns['DataSource']);
-							}
-						}
-						//Check That Relation is *ToMany
-					if($meta->associationMappings[$p->name]['type']==$ManyToMany 
-												||
-					   $meta->associationMappings[$p->name]['type']==$OneToMany)
-						{
-							$trgcls = new \ReflectionClass($meta->associationMappings[$p->name]['targetEntity']);
-							$trgcls= $trgcls->newInstance();
-							$tmprtns=\ApplicationHelpers::GetDataSourceDescriptor($trgcls,$isuseasprofile->TargetProfile,$Cls,$p->name);
-							if($tmprtns!=NULL)
-							{
-								if($tmprtns['Fields']!=NULL)
-									foreach ($tmprtns['Fields'] as $tmpa)
-										$DS->addField($tmpa);
-								if($tmprtns['DataSource']!=NULL)
-									$DS->addDetail($tmprtns['DataSource']);
-							}
-						}
-				}else{
-					//Simple Field
-					$FieldType=\ApplicationHelpers::GetValidAnnotationUsingProfile($annots, new IRPropertyType(array()),$Profile);
-					$FieldTitle=\ApplicationHelpers::GetValidAnnotationUsingProfile($annots, new IRTitle(array()),$Profile);
-					if($ParentClass==NULL)
-						$FieldName = $p->name;
-					else 
-						$FieldName=str_replace('\\', '_5c', get_class($ParentClass)).$ParentProperty.'_2E'.$p->name;
-					
-					$dsfield->setFieldName($FieldName);
-					$dsfield->setFieldType($FieldType->Type);
-					$dsfield->setTitle($FieldTitle->GetTitle($Cls,$ParentClass));
-					if($FieldName=='id') {$dsfield->setHidden(true);$dsfield->setPrimaryKey(true);}
-				}
-				$DS->addField($dsfield);
+		$reader->setIgnoreNotImportedAnnotations(FALSE);
+		foreach ($allprops as $p) 
+		{
+			//print_r("Pop:".get_class($Cls).'.'.$p->getName().'<br/>');
+		ApplicationHelpers::GDSD_ForProperty($p, $Cls,$ParentClass,$ParentProperty, $Profile, &$DS);
+/*		print_r('Fields added to count:'.count($DS->getFields())." FOR CLASS ".get_class($Cls)."<br/>");
+		print_r('Props Are:');
+		foreach($DS->getFields() as $f) print_r($f->getFieldName().',');
+		print_r('<br/>');*/
 		}
-		$ID = str_replace('\\', '_', get_class($Cls));
+		$pmeta = NULL;
+		if(isset($ParentClass))
+			$pmeta = $ParentClass->getEntityManager()->getClassMetadata(get_class($ParentClass));
+		$Is_ToManyRelation=false;
+		$Is_ToOneRelation=false;
+		if(isset($pmeta)) 
+			if($pmeta->
+				associationMappings
+					[$ParentProperty]['type']
+				==
+				ApplicationHelpers::ManyToMany 
+				||
+			   $pmeta->
+			   	associationMappings
+			   		[$ParentProperty]['type']
+			   	==
+			   	ApplicationHelpers::OneToMany)	$Is_ToManyRelation=TRUE;
+		if(isset($pmeta)) 
+			if($pmeta->
+				associationMappings
+					[$ParentProperty]['type']
+				==
+				ApplicationHelpers::ManyToOne 
+				||
+			   $pmeta->
+			   	associationMappings
+			   		[$ParentProperty]['type']
+			   	==
+			   	ApplicationHelpers::OneToOne)	$Is_ToOneRelation=TRUE;
+				
+		
+	
+		//Just for * To One Relation
+		if(isset($ParentClass) && $Is_ToOneRelation)
+		{
+
+			$Fields=array();
+			foreach ($DS->getFields() as $__1) $Fields[]=$__1;
+			//Get Standad DataSource
+			$DS=\ApplicationHelpers::GetDataSourceDescriptor($Cls,'GENERAL');
+			$DS=$DS['DataSource'];
+			
+			foreach ($Fields as $__1)
+			{
+				$__1->setHelpDataSource($DS);
+			}
+			$DS->setIRMClass($Cls);
+			return array('Fields'=>$Fields,'DataSource'=>$DS);
+		}
+		else 
+		{
+		$ID = ApplicationHelpers::GetClientSideClassName(get_class($Cls));
 		$DS->setID($ID);
-		$Address = str_replace('\\IRERP\\modules\\', '', get_class($Cls));
+		$Address = str_replace('IRERP\\modules\\', '', get_class($Cls));
 		$Address=str_replace('\\models', '', $Address);
 		$Address=str_replace('\\', '/', $Address);
-		$Address=\Yii::app()->baseUrl.'/'.$Address;
+		$Address=\Yii::app()->baseUrl.'/'.$Address.'/advjds/'.$Profile.'/NONE/NONE';
 		$DS->setdataURL($Address);
+		$DS->setProfile($Profile);
+		$DS->setIRMClass($Cls);
 		return array('Fields'=>NULL,'DataSource'=>$DS);
+		}
 	} 
 	
 	public static function 
@@ -190,7 +453,7 @@ public static function parseObjectToArray($object) {
  * @param string $ClassName
  * @param string $namespace
  */
-public static function TranslateSCVarsToDoctrine($VarName,$ClassName)
+public static function TranslateSCVarsToDoctrine($VarName,$ClassName,$namespace)
 {
 	$reader= new AnnotationReader();
 	$methods = get_class_methods($ClassName);
@@ -354,6 +617,83 @@ public static function mime_content_type($filename) {
             return 'application/octet-stream';
         }
     }
+    
+    /**
+     * 
+     * 
+     * 
+     * 
+     * Get All Property Has Specified Annotations & Profile
+     * @param IRDataModel $Cls
+     * @param array $SpecAnnot_Profile, array like array(array(annot,profile),array(annot,profile),..)
+     * @deprecated
+     */
+    public static function GetAllPropSpecAnnot
+    (IRDataModel $Cls,array $SpecAnnot_Profile)
+    {
+    	$rtn=array();
+    	$clsref = new \ReflectionClass($Cls);
+		$allprops = $clsref->getProperties();
+		$reader=new AnnotationReader();
+		$reader->setIgnoreNotImportedAnnotations(FALSE);
+		foreach ($allprops as $p) 
+		{
+			$ValidProperty=true;
+			$annots=$reader->getPropertyAnnotations($p);
+			foreach($SpecAnnot_Profile as $spcanpr)
+			{
+				$_profile=$spcanpr[1];
+				$_annots=$spcanpr[0];
+				$_find=ApplicationHelpers::GetValidAnnotationUsingProfile($annots, $_annots,$_profile);
+				if(isset($_find)) if($_find->Profile==$_profile) $_find=true; else $_find=false; else $_find=false;
+				print_r($_find.' For ');
+				print_r($_annots);
+				$ValidProperty= $ValidProperty & $_find;
+			}
+			if($ValidProperty) $rtn[]=$p;
+		}
+		return $rtn;
+    }
+
+    public static function TranslateFieldName_From_Client2Server($ClientFieldName,$ClassName=NULL)
+    {
+    	//FIXME: when $ClassName Passed To function , it needs to search all property in function to find IRUseInClient(ClientName="PCName")
+    	return urldecode(str_replace('_', '%', $ClientFieldName));
+    }
+    
+    public static function GetMetaClass($ClassName)
+    {
+    	\Yii::app()->doctrine->getEntityManager()->getClassMetadata($ClassName);
+    }
+    public static function getEntityProfileFromUrl($ControllerUniqeId)
+    {
+    	$totalurl = \Yii::app()->getRequest()->getUrl();
+		$questionmark=strpos($totalurl, '?');
+		if($questionmark==NULL) $questionmark = strlen($totalurl);
+		$totalurl= substr($totalurl, 0,$questionmark);
+		
+		$currentcontrollerAddress = \Yii::app()->getRequest()->getBaseUrl().'/'.$ControllerUniqeId;
+		$aUrl = split('/', $totalurl);
+		$aController= split('/', $currentcontrollerAddress);
+		
+		$jdsindex=count($aController);
+		$typ = $aUrl[$jdsindex];
+		if($typ!='advjds') return;
+		$Profile='';
+		$ParentClass='';
+		$ParentProperty='';
+		try {
+		$Profile=$aUrl[$jdsindex+1];
+		return $Profile;
+		$ParentClass=$aUrl[$jdsindex+2];
+		$ParentProperty=$aUrl[$jdsindex+3];	
+		} catch (\Exception $e) {
+			//TODO: Make Below Better.
+			print_r($e);
+			return;
+		}
+    }
+    
 }
 
 

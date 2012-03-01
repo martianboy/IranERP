@@ -8,5 +8,17 @@ namespace IRERP\Basics\Annotations\UI;
 /** @Annotation */
 final class IRUseInClientDS extends IRUIAnnotation
 {
+	/**
+	 * 
+	 * Inicates That This Property Use In Form
+	 * @var bool
+	 */
+	public $ShowInForm=true;
+	/**
+	 * 
+	 * Inicates That This Property Show In Grid
+	 * @var bool
+	 */
+	public $ShowInGrid=true;
 }
 ?>

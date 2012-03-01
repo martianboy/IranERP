@@ -108,22 +108,33 @@ class ReportController extends IRController
 					default: return "";
 				}
 				break;
+			// Saving a report
+			case "SaveReport":
+				$report = base64_decode(sti_get_xml_value($client_data, "Report"));
+				$report_key = sti_get_xml_value($client_data, "ReportKey");
+				$new_report_flag = sti_get_xml_value($client_data, "NewReportFlag");
+				echo  sti_save_report($report, $report_key, $new_report_flag);
+				break;
+			// Loading a report when running the viewer or designer
+ 			case "LoadReport":
+				echo sti_get_report($client_data);
+				break;
+				
+			case "ViewerFx":
+				if (!isset($report_key)) $report_key = "null";
+				$this->render('viewer');
+				//return str_replace("#MARKER_REPORT_PARAMS#", sti_get_parameters(), file_get_contents("viewer.html"));
+				break;
+				
+				
 				
 			
 				
 			
 			/*
 			// Loading ViewerFx
-			case "ViewerFx":
-				if (!isset($report_key)) $report_key = "null";
-				return str_replace("#MARKER_REPORT_PARAMS#", sti_get_parameters(), file_get_contents("viewer.html"));
-				break;
 			
 			
-			// Loading a report when running the viewer or designer
- 			case "LoadReport":
-				return sti_get_report($client_data);
-				break;
 			
 			// Loading a report by the specified URL
 			// Used for debug. Does not work in the released version
@@ -132,13 +143,6 @@ class ReportController extends IRController
 				break;
 			
 			
-			// Saving a report
-			case "SaveReport":
-				$report = base64_decode(sti_get_xml_value($client_data, "Report"));
-				$report_key = sti_get_xml_value($client_data, "ReportKey");
-				$new_report_flag = sti_get_xml_value($client_data, "NewReportFlag");
-				return sti_save_report($report, $report_key, $new_report_flag);
-				break;
 			
 			
 			

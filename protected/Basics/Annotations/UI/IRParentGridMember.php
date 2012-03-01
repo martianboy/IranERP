@@ -8,7 +8,9 @@ namespace IRERP\Basics\Annotations\UI;
  * این نشانه در کلاس اول قرار می گیرد و می گوید اعضای نمایشی لازم عبارتند از 
  * اینها
  */
-/** @Annotation */
+/** @Annotation 
+ * @deprecated
+ * */
 final class IRParentGridMember extends IRUIAnnotation
 {
 	

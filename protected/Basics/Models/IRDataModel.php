@@ -1,21 +1,100 @@
 <?php
 namespace IRERP\Basics\Models;
 
+use IRERP\Utils\AnnotationHelper;
+
+use IRERP\Basics\Annotations\UI\IRInternalType;
+
+use IRERP\Basics\Descriptors\DataSourceField;
+
+use IRERP\Basics\JoinTb;
+
+use IRERP\Basics\Descriptors\DataSource;
+
 use \Doctrine\Common\Annotations\AnnotationReader,
 	 \IRERP\Basics\Annotations\scField,
 	\IRERP\Basics,
 	 \CModel, \Yii;
-use \IRERP\Basics\JoinTb;
+
+use \Doctrine\ORM\Mapping\Id,\Doctrine\ORM\Mapping\GeneratedValue
+,\Doctrine\ORM\Mapping\Column
+;
+
+use 
+IRERP\Basics\Annotations\UI\IRUseInClientDS,
+IRERP\Basics\Annotations\UI\IRClientName,
+IRERP\Basics\Annotations\UI\IRTitle,
+IRERP\Basics\Annotations\UI\IRPropertyType,
+IRERP\Basics\Annotations\UI\IRParentGridMember,
+IRERP\Basics\Annotations\UI\IRPickListMember,
+IRERP\Basics\Annotations\UI\IRUseAsProfile,
+IRERP\Basics\Annotations\UI\IRPrimaryKey,
+IRERP\Basics\Annotations\UI\IRHidden
+;
+   
+use IRERP\Basics\Descriptors\DescriptorBase;
+use Doctrine\ORM\Mapping\Entity;
 //This shoud be defined inside php.ini file, not here
 //date_default_timezone_set('UTC');
 
 /**
  * @MappedSuperclass
  * @author masoud
+ * each IRDataModel has 3 Profiles By default, They Are:
+ * GENERAL  : When Use As Direct Not In Another Class
+ * DETAIL   : When Use In Another Class As Property With 1-n Relation
+ * ABSTRACT : When Use In Another Class As Property with 1-1 Relation
+ * Picklist : When Use In PickList
  *
  */
 class IRDataModel extends CModel
 {
+	////////////////////////////////
+	/////// Doctrine Section
+	private $_entityPersister;
+	private $_identifier;
+	protected function get_identifier()
+	{
+		return $this->_identifier;
+	}
+	protected function set_identifier($v)
+	{
+		$this->_identifier=$v;
+	}
+	
+	protected  function get_entityPersister()
+	{
+		return $this->_entityPersister;
+	}
+	
+	protected  function set_entityPersister($v)
+	{
+		$this->_entityPersister=$v;
+	}
+	public function DoctrineLoad()
+	{
+		//This function Will Override By Doctrine Proxy Auto Generate
+		// and call __load method
+	}
+	//////////////////////////////////////
+	
+	
+	private $GeneralConfiguration = array
+	(
+	//Define Useful Function Names For Generator
+	    DescriptorBase::MethodName_GenDataSource =>'__GetDataSource',
+		DescriptorBase::MethodName_GenForm => '__GetForm',
+		DescriptorBase::MethodName_GenGrid => '__GetGrid',
+		DescriptorBase::MethodName_GetDisplayField => '__GetDisplayField'
+	);
+	
+	public function GetGeneralConfiguration()
+	{
+		return $this->GeneralConfiguration;
+	}
+	
+	
+	
 	private static $_names=array();
 
 	/**
@@ -27,6 +106,13 @@ class IRDataModel extends CModel
 	
 	/**
 	 * @Id @generatedValue(strategy="AUTO") @Column(type="integer")
+	 * 
+	 * @IRUseInClientDS()
+	 * @IRClientName(ClientName="id")
+	 * @IRPrimaryKey(NotForProfile="ABSTRACT,")
+	 * @IRHidden
+	 * @IRPropertyType(Type="integer")
+	 * @IRParentGridMember
 	 * @var integer
 	 */
 	protected $id = null;
@@ -74,7 +160,12 @@ class IRDataModel extends CModel
 	 * @var string[]
 	 */
 	protected $annotationValues = array();
-	
+	/**
+	 * 
+	 * @IRHidden
+	 * @IRPropertyType(Type="string")
+	 * @var unknown_type
+	 */
 	protected $HelpField='';
 	public function setHelpField($v){$this->HelpField=$v;}
    /**
@@ -182,6 +273,88 @@ class IRDataModel extends CModel
 	public function getIsDeleted(){return $this->IsDeleted;}
 	public function setIsDeleted($d){$this->IsDeleted=$d;}
 
+	public function CreateClassFrom_SentData_By_Client($functionName,DataSource $DS,array $ExceptParams=NULL){
+		foreach ($DS->getFields() as $f)
+		{
+			
+			$FieldName=\ApplicationHelpers::TranslateFieldName_From_Client2Server($f->getFieldName());
+			$propname='';
+			if(strpos($FieldName, '\\')>-1)
+			{
+				$parts= explode('.', $FieldName);
+				if(count($parts)>3) continue;
+				switch(count($parts))
+				{
+					case 2:
+						$propname=$parts[1];
+						if(isset($ExceptParams)) if(key_exists($propname, $ExceptParams)) continue;
+						$this->$propname= call_user_func($functionName,$FieldName);
+						break;
+					case 3:
+						if($parts[2]=='id'){
+							
+							$propname=$parts[1];
+							// Get Target Class Name
+							$clsdesc= \ApplicationHelpers::GetClassAnnots(get_class($this),$DS->getProfile());
+							$ClientFieldValue= call_user_func($functionName,$FieldName);
+							if(key_exists($propname, $clsdesc))
+								if(
+									key_exists(get_class(new IRInternalType(array())),
+													 $clsdesc[$propname]))
+													 {
+													 	$_tmp = $clsdesc [$propname] [get_class(new IRInternalType(array()))] ;
+													 	$clsname=$_tmp->ClassName;
+													 	//Get Class Name
+													 	$cls = new $clsname();
+													 	$cls=$cls->GetByID($ClientFieldValue);
+													 	$this->$propname=$cls;
+													 }
+							
+						} 
+						break;
+				}
+			}
+			else 
+			{
+				$parts= explode('.', $FieldName);
+				if(count($parts)>2) continue;
+				switch(count($parts))
+				{
+					case 1:
+						$propname=$parts[0];
+						if(isset($ExceptParams)) if(key_exists($propname, $ExceptParams)) continue;
+						$this->$propname= call_user_func($functionName,$FieldName);
+						break;
+					case 2:
+						if($parts[1]=='id'){
+							
+							$propname=$parts[0];
+							// Get Target Class Name
+							//$clsdesc= ApplicationHelpers::GetClassAnnots(get_class($this),$DS->getProfile());
+							$clsdesc = AnnotationHelper::GetClassAnnotations(get_class($this), $DS->getProfile());
+							$ClientFieldValue= call_user_func($functionName,$f->getFieldName());
+
+							if(key_exists($propname, $clsdesc['Properties']))
+								if(
+									key_exists(get_class(new IRInternalType(array())),
+													 $clsdesc['Properties'][$propname]))
+													 {
+													 	$_tmp = $clsdesc['Properties'] [$propname] [get_class(new IRInternalType(array()))] ;
+													 	$clsname=$_tmp->ClassName;
+													 	//Get Class Name
+													 	$cls = new $clsname();
+													 	$cls=$cls->GetByID($ClientFieldValue);
+													 	$this->$propname=$cls;
+													 }
+							
+						} 
+						break;
+				}
+			}
+			
+		}
+		
+	}
 	public function CreateClassFromScUsingMethod($functionName,$ExceptedProperties=NULL,$ValueArray = NULL){
 		$reader = new AnnotationReader();
 		$methods=get_class_methods(get_class($this));
@@ -236,6 +409,78 @@ class IRDataModel extends CModel
 		$this->persistEntity();
 	}
 
+
+	public function GetClassSCPropertiesInArray_Advance(DataSource $DS)
+	{
+		
+		//if(!isset($Profile) || !isset($ClassName)) return;
+		$rtnval=array();
+		$propref=new \ReflectionProperty(get_class($this), 'id');
+		$propref->setAccessible(true);
+		$PropValue=$propref->getValue($this);
+		$rtnval['id']=$PropValue;
+
+		foreach ($DS->getFields() as $f)
+		{
+			
+			if($f=='id') continue;
+			$fieldName=$f->getFieldName();
+			/*$fieldName=str_replace('_', '\\', $fieldName);
+			$fieldName=urldecode($fieldName);
+			if(strpos($fieldName, '\\')>-1) $fieldName=substr($fieldName, strpos($fieldName, '.')+1);
+			*//*$fieldName=str_replace('.', '->', $fieldName);
+			$fieldName='$this->'.$fieldName;
+			print_r($fieldName.' TO EVAL . 	');
+			print_r($this->Title);
+			$ap='';
+			$b='$this->Title';
+			$a=eval($b);
+			print_r('eval1='.$a);
+			print_r('eval1='.$ap);
+			*/
+			try {
+				$fieldName=\ApplicationHelpers::TranslateFieldName_From_Client2Server($fieldName);
+				$parts=explode('.', $fieldName);
+				$PropValue=$this;
+				$propref=null;
+				//print_r($fieldName.':');
+				//print_r($parts);
+				try{
+				for ($i=0;$i<count($parts);$i++){
+					$_clsname = get_class($PropValue);
+					if(\ApplicationHelpers::IsORMProxyClass($_clsname)) $PropValue->DoctrineLoad();
+					$propref=new \ReflectionProperty(get_class($PropValue), $parts[$i]);
+					
+					
+				//print_r('  |  Class:'.$propref->class.' prop:'. $propref->name.'  |   ');	
+				$propref->setAccessible(true);
+				if(isset($PropValue))
+					$PropValue=$propref->getValue($PropValue);
+				else 
+				{$PropValue=NULL;
+				//print_r('Break at '.$parts[$i]);
+				break;}
+				 	/*echo gettype($PropValue);
+				 	if(gettype($PropValue)=='object') echo 'Class:'.get_class($PropValue);
+				 	echo '***';*/
+				
+				}
+				}catch(\Exception $e){
+					//print_r($e);
+					$PropValue=NULL;
+				}catch(\ReflectionException $ec){
+					//print_r($e);
+					$PropValue=NULL;
+				}
+				//print_r($PropValue);
+				$rtnval[$f->getFieldName()]=$PropValue;
+			} catch (Exception $e) {
+				$rtnval[$f->getFieldName()]=null;
+			}
+		}
+		return $rtnval;														
+	}
+	
 	public function GetClassSCPropertiesInArray($ExceptedProperties=NULL){
 		$rtnval=array();
 		$isarray=is_array($ExceptedProperties);
@@ -256,7 +501,6 @@ class IRDataModel extends CModel
 				if(is_a($annots,'\IRERP\Basics\Annotations\scField')){
 					//if defined Annotation is scField
 					//Get Value
-					
 					try{
 					$rtnval[$annots->name]=	call_user_func(array(&$this, 'get'.$propname));
 					}catch(\Exception $ex){}

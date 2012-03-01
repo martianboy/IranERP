@@ -337,7 +337,7 @@
             
 		    <a id="Profile" href="{$this->baseUrl}/#!/profile">کاربر</a>
 		    
-		    <a id="LogOutAnchor" href="{$this->baseUrl}/logout">خروج</a>
+		    <a id="LogOutAnchor" href="{$this->baseUrl}/#!/logout">خروج</a>
 	        
 	        <img src="" alt="" id="CorpLogo">
 	        <img src="" alt="" id="IRERPLogo">

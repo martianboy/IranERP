@@ -9,6 +9,8 @@ namespace IRERP\Basics;
  * 									'HelpField'=>array('Type'=>['Value' or 'function'],
  * 									
  */
+use IRERP\Basics\Annotations\UI\IRUseAsProfile;
+
 class JoinTb
 {
 	
@@ -18,6 +20,7 @@ class JoinTb
 	protected $whstr='';
 	protected $whparam=array();
 	protected $HelpField=array();
+	protected $ClassProfile='GENERAL';
 	public function __construct($JoinTBArray=NULL){
 		if(isset($JoinTBArray)){
 			if(isset($JoinTBArray['Class'])) $this->Class=$JoinTBArray['Class'];
@@ -30,6 +33,9 @@ class JoinTb
 		}
 	}
 	
+	public function getClassProfile(){return $this->ClassProfile;}
+	public function setClassProfile($v){$this->ClassProfile=$v;}
+	
 	public function getClass(){return $this->Class;}
 	public function setClass($v){$this->Class=$v;}
 	
@@ -39,6 +45,19 @@ class JoinTb
 	public function getPropClass(){return $this->PropClass;}
 	public function setPropClass($v){$this->PropClass=$v;}
 
+	public function getPropClassProfile(){
+		$rtn='GENERAL';
+		$clsdesc=\IRERP\Utils\AnnotationHelper::GetClassAnnotations($this->getClass(), $this->getClassProfile());
+		if(key_exists($this->getProp(), $clsdesc['Properties']))
+		{
+			if(key_exists(get_class(new IRUseAsProfile(array())), $clsdesc['Properties'][$this->getProp()]))
+			{
+					$ann=$clsdesc['Properties'][$this->getProp()][get_class(new IRUseAsProfile(array()))];
+					$rtn=$ann->TargetProfile;
+			}
+		}
+		return $rtn;
+	}
 	public function getPropClassInstance($em=NULL){
 		$r = new \ReflectionClass($this->getPropClass());
 		return $r->newInstance($em);
